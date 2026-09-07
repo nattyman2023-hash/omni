@@ -1,0 +1,1292 @@
+{
+  "generatedAt": "2026-09-04T18:23:48.122Z",
+  "workspaceRoot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development",
+  "applicationRoot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni",
+  "stitchFolders": [
+    "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform",
+    "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)",
+    "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)"
+  ],
+  "counts": {
+    "stitchFolders": 3,
+    "totalFilesUnderStitch": 88,
+    "htmlFiles": 42,
+    "pngScreenshots": 42,
+    "jpgImages": 0,
+    "webpImages": 0,
+    "svgImages": 0,
+    "designMdFiles": 4,
+    "uniqueHtmlDesigns": 30,
+    "duplicateHtmlFiles": 24,
+    "appPackageJsons": 1,
+    "appViteConfigs": 1,
+    "appTailwindConfigs": 1
+  },
+  "applicationInfo": {
+    "packageJsons": [
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\package.json"
+    ],
+    "viteConfigs": [
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\vite.config.mts"
+    ],
+    "tailwindConfigs": [
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\tailwind.config.cjs"
+    ]
+  },
+  "htmlRecords": [
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\code.html",
+      "fileName": "code.html",
+      "dirName": "stitch_omni_developments_digital_platform",
+      "sizeBytes": 90225,
+      "sha256": "59fd827fcd6d61c7e21260ce5819318fde2e56fd649a9c274ead3a6165c7aa66",
+      "h1": "Transforming Homes Across Greater Manchester",
+      "h2s": [
+        "Comprehensive Design & Build Services",
+        "The Craftsmanship of Full Transformation",
+        "Why We Are Trusted by Homeowners Across Manchester",
+        "A Clear, Stress-Free Journey From Blueprint to Handover",
+        "Recent Projects in Manchester & Cheshire",
+        "What Our Clients Say",
+        "Serving Greater Manchester & South Cheshire",
+        "Let’s Build Something Exceptional Together"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": null,
+      "route": "/",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\code.html",
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_about_us\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_about_us\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_about_us",
+      "sizeBytes": 54722,
+      "sha256": "e88d456945f550e938372754d21b73405305e865c8a705e1b9d662ad3d4af4b9",
+      "h1": "Built Around Quality, Communication and Craftsmanship",
+      "h2s": [
+        "A Greater Manchester Contractor Built on Word-of-Mouth",
+        "The Standards That Define Every Build",
+        "From Architectural Concept to Flawless Finish",
+        "The Craftsmen and Project Directors on Your Site",
+        "Selected Transformations",
+        "Ready to Discuss Your Home Transformation?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_about_us\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "About",
+      "route": "/about",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_about_us\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_areas_we_cover\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_areas_we_cover\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_areas_we_cover",
+      "sizeBytes": 57299,
+      "sha256": "0ddce719304832adf96d30b0bec81dc0af8d161de99408c1947a426e197d23f3",
+      "h1": "Serving Greater Manchester & Cheshire",
+      "h2s": [
+        "Why Local Regional Knowledge Matters",
+        "Primary Operational Districts",
+        "Recent Projects By Location",
+        "Permitted Development Rights & Statutory Approvals",
+        "Planning a Project in Your Area?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_areas_we_cover\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Areas Covered",
+      "route": "/areas",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_areas_we_cover\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_bathroom_installation\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_bathroom_installation\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_bathroom_installation",
+      "sizeBytes": 72259,
+      "sha256": "e614955a1a32d65479ac7b823d2716b1f1da044ed4bbdc48f7f95bf04e16841a",
+      "h1": "Bathroom Renovations & Installations in Manchester & Cheshire",
+      "h2s": [
+        "Transform Your Washroom Into a Spa-Grade Retreat",
+        "Our Bathroom Renovation Process",
+        "Hale Victorian Transformation: 1980s Clutter to Microcement Spa",
+        "Recent Bathroom Installations",
+        "Bathroom Renovation FAQs",
+        "Planning a Bathroom Renovation?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_bathroom_installation\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Bathroom Renovations",
+      "route": "/services/bathroom-renovations",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_bathroom_installation\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_client_reviews\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_client_reviews\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_client_reviews",
+      "sizeBytes": 56245,
+      "sha256": "584b602d8000c78cdf6973db271f3b6e4d923add79811e5c915a9292aa4b894c",
+      "h1": "What Our Clients Say",
+      "h2s": [
+        "Verified Client Case Studies",
+        "From Structural Framing to Handover Finish",
+        "Have You Worked with Omni Developments?",
+        "Planning Your Own Project?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_client_reviews\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Reviews",
+      "route": "/reviews",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_client_reviews\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_contact_us\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_contact_us\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_contact_us",
+      "sizeBytes": 43970,
+      "sha256": "24aaedaa91fc2cb2930e6e2756a911151d5f3e9fab5475841bccdb799c97cbfa",
+      "h1": "Let’s Talk About Your Project",
+      "h2s": [
+        "Choose Your Preferred Route",
+        "General Enquiry Form",
+        "Frequently Asked Feasibility Questions",
+        "Ready to Transform Your Home?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_contact_us\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Contact",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_contact_us\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guides_advice\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guides_advice\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_guides_advice",
+      "sizeBytes": 59577,
+      "sha256": "c9928040d05fea8dfea1dc4fc1d51b7426d909387f97abddff3ac3b14fad7db2",
+      "h1": "Planning Your Next Home Project?",
+      "h2s": [
+        "The Complete Greater Manchester Home Extension Guide 2025: Costs, Permitted Development & Timelines",
+        "Curated Architectural Briefings",
+        "Download the 2025 Residential Feasibility Checklist (PDF)",
+        "Projects Built Using These Methods",
+        "Turn Advice Into a Realised Project"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guides_advice\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Guides Hub",
+      "route": "/guides",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guides_advice\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guide_article\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guide_article\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_guide_article",
+      "sizeBytes": 66220,
+      "sha256": "b222f61b7097dbbe0220e5f2d36dd2fce40844db2d1e1fc9e4b55dc3075a9ff0",
+      "h1": "The Complete Greater Manchester Home Extension Guide: Costs, Planning & Timelines",
+      "h2s": [
+        "Planning Permission vs Permitted Development Rights",
+        "Realistic 2025 Extension Costs in Greater Manchester",
+        "Structural Steelwork & Goalpost Frames",
+        "Phased 14-Week Construction Schedule",
+        "Managing Variations & Hidden Costs",
+        "Frequently Asked Questions",
+        "Further Technical Guides",
+        "Thinking About Your Own Project?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guide_article\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Guide Article",
+      "route": "/guides/greater-manchester-home-extension-guide",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guide_article\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_home",
+      "sizeBytes": 90225,
+      "sha256": "59fd827fcd6d61c7e21260ce5819318fde2e56fd649a9c274ead3a6165c7aa66",
+      "h1": "Transforming Homes Across Greater Manchester",
+      "h2s": [
+        "Comprehensive Design & Build Services",
+        "The Craftsmanship of Full Transformation",
+        "Why We Are Trusted by Homeowners Across Manchester",
+        "A Clear, Stress-Free Journey From Blueprint to Handover",
+        "Recent Projects in Manchester & Cheshire",
+        "What Our Clients Say",
+        "Serving Greater Manchester & South Cheshire",
+        "Let’s Build Something Exceptional Together"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Homepage",
+      "route": "/",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\code.html",
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home_extensions\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home_extensions\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_home_extensions",
+      "sizeBytes": 77938,
+      "sha256": "f80bf08a2843c2cc72b9a7a88f12465e60c6d1d491589322ed1ede87e2f9193f",
+      "h1": "Home Extensions in Manchester & Cheshire",
+      "h2s": [
+        "Transform the Space You Already Own",
+        "Our 8-Step Extension Process",
+        "Interactive Extension Transformation",
+        "Recent Extension Commissions",
+        "Frequently Asked Questions",
+        "Planning an Extension in Greater Manchester?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home_extensions\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Home Extensions",
+      "route": "/services/home-extensions",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home_extensions\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_how_it_works\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_how_it_works\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_how_it_works",
+      "sizeBytes": 50799,
+      "sha256": "bdd21733e7c79f331d225550cbbcf5c5cc3a361b1b62788d5c72f9e25c2c85be",
+      "h1": "A Clear, Stress-Free Journey From Idea to Finished Home",
+      "h2s": [
+        "The 8-Stage Construction Blueprint",
+        "Unrivalled Transparency: You Are Never Kept in the Dark",
+        "Executed With Total Process Discipline",
+        "Ready to Start Your Home Transformation?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_how_it_works\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "How It Works",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_how_it_works\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_manchester_location_page\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_manchester_location_page\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_manchester_location_page",
+      "sizeBytes": 66383,
+      "sha256": "86d61c96ff9e86d19b02f26d386f867bcf27db1b7a6510afc027c28cc8dae737",
+      "h1": "Builders & Home Renovation Specialists in Manchester",
+      "h2s": [
+        "Delivering Architectural Excellence Across Manchester",
+        "Manchester Construction & Renovation Capabilities",
+        "1920s Semi Knock-Through & Architectural Extension",
+        "Recent Projects in & Near Manchester",
+        "Homeowner Experiences Across Manchester",
+        "The Omni Construction Framework",
+        "Manchester Planning & Building FAQ",
+        "Planning a Project in Manchester?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_manchester_location_page\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Manchester Location",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_manchester_location_page\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_case_study\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_case_study\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_project_case_study",
+      "sizeBytes": 62972,
+      "sha256": "dc7bf50d030903ffa50027832ec1644cef3ec2d37117661a751cdbaf7a87e45b",
+      "h1": "Altrincham Open-Plan Cedar & Zinc Wrap",
+      "h2s": [
+        "The Brief: Creating light and spatial connectivity for modern family life",
+        "The Challenge: Heavy structural masonry and tight boundary party walls",
+        "Our Approach: Turnkey precision and site foreman continuity",
+        "The Architectural Transformation",
+        "Scope of Works Delivered",
+        "Project Visual Gallery",
+        "Explore Related Case Studies",
+        "Considering Something Similar?"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_case_study\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Project Case Study",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_case_study\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_quote_confirmation\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_quote_confirmation\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_quote_confirmation",
+      "sizeBytes": 46976,
+      "sha256": "4284470c397a90d76712c8dba3a3a7e284f5c867e9ca7aa2b4f31ce1753dd46f",
+      "h1": "Thanks — We’ve Received Your Project",
+      "h2s": [
+        "What Happens Next",
+        "Recent Architectural Works Near You"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_quote_confirmation\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Quote Confirmation",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_quote_confirmation\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_request_a_quote\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_request_a_quote\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_request_a_quote",
+      "sizeBytes": 69149,
+      "sha256": "80b53cda977035d23199ee15239c75aee05aa7f797535233f5d5769b8c9b9766",
+      "h1": "Request a Comprehensive Project Quote",
+      "h2s": [
+        "What type of development are you planning?",
+        "Tell Us About Your Property",
+        "Tell Us What You'd Like to Achieve",
+        "When Would You Like to Start?",
+        "Show Us Your Project",
+        "How Should We Contact You?",
+        "Specification Successfully Dispatched"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_request_a_quote\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Request a Quote",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_request_a_quote\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_services\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_services\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_services",
+      "sizeBytes": 69254,
+      "sha256": "e5abf4200cbbc38278d5c2458a0e0de23fd52778e3c243a46fe15cb42484af73",
+      "h1": "Comprehensive Design & Build Services",
+      "h2s": [
+        "Specialised Residential Construction",
+        "Not sure what your project needs yet?",
+        "Why Homeowners Across Manchester Choose Omni",
+        "Our Proven 7-Step Delivery Process",
+        "Verified Reviews & Client Words",
+        "Recent Completed Projects",
+        "Let's Discuss Your Project"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_services\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Services Listing",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_services\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_construction_quote_builder",
+      "sizeBytes": 73789,
+      "sha256": "d1dd6056fdcbe13a9a28209820383b3d78c50cb174ee18209911a216135e148e",
+      "h1": "Formal Quotation & Feasibility Tender",
+      "h2s": [
+        "Demolition, Site Setup & Enabling Works",
+        "Groundworks, Substructure & Foundations",
+        "Structural Steelwork & RSJ Goalposts",
+        "Superstructure, Brickwork & Roof Envelope",
+        "Architectural Glazing & External Joinery",
+        "Electrical, Plumbing & Underfloor Heating",
+        "Client Discretionary Options (Add-on Variations)"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Construction Quote Builder",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_crm_dashboard",
+      "sizeBytes": 56870,
+      "sha256": "11299de11aefc76ecef9f2238bf740531ea8fc89b92343ddf8b8ce774bca25fe",
+      "h1": "Operations & Estimating Control",
+      "h2s": [
+        "Today's Site Movements & Critical Path",
+        "Active Construction Milestones",
+        "Action Items & Compliance Deadlines",
+        "Inbound Enquiries",
+        "Pending Tenders & Quotes",
+        "Site Diary & Audit Log"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "CRM Dashboard",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_crm_login",
+      "sizeBytes": 13068,
+      "sha256": "0576603e615773f1f06e24dccdd5613a25ccc708b9ff19cce47ed8726c2f206b",
+      "h1": "Welcome Back",
+      "h2s": [],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "CRM Login",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_customer_quotation",
+      "sizeBytes": 68625,
+      "sha256": "99e2fb065dbc9f141b141f7fce56e45b1209fb10dcd8047c99f601fd8322e0fa",
+      "h1": "Personalized Project Tender & Architectural Quotation",
+      "h2s": [
+        "Dr. Julian & Claire Montgomery",
+        "Executive Project Summary & Scope of Works",
+        "Transparent Itemised Breakdown",
+        "Optional Architectural Additions",
+        "6-Stage Phased Milestone Schedule",
+        "Contractual Protections & Guarantees",
+        "Accept Quotation & Reserve Start Slot"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Customer Quotation",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_lead_pipeline",
+      "sizeBytes": 72668,
+      "sha256": "c8ad93f832781fdb50ec7c798b8400bef1de2cacf5eb54d6bab0dc89438e8e40",
+      "h1": "Lead Pipeline Management",
+      "h2s": [
+        "Add New Residential Construction Lead"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Lead Pipeline",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_lead_profile",
+      "sizeBytes": 51574,
+      "sha256": "25896bd45f7428dcfccacefef0c06cd57591bf70d4073870c7a44bb990b2f448",
+      "h1": "Dr. Julian Montgomery",
+      "h2s": [
+        "Customer Profile",
+        "Property Baseline",
+        "Scope of Works",
+        "Financials & Scheduling",
+        "Lead Activity & Audit Trail"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Lead Profile",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_project_photos",
+      "sizeBytes": 61341,
+      "sha256": "fc9eb828bcd7c90fffea3af6cab7294b8eba4ed3cda70529b98d74a7d1e760f4",
+      "h1": "Project Media Archive",
+      "h2s": [],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Project Photos",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_project_variations",
+      "sizeBytes": 60148,
+      "sha256": "035fe8a6dddc0f73bea77432e71b8b82ef790dbe4be5ed76a0ca6d5def264447",
+      "h1": "Project Variations & Scope Adjustments",
+      "h2s": [
+        "Subgrade Deep Trench Stepping due to Tree Root Zone",
+        "Bespoke Handcrafted Utility Room Cabinetry & Quartz Upgrade",
+        "Linear ACO Slot Drain & Exterior Italian Porcelain Terrace Drainage\nCRITICAL PATH",
+        "Additional First-Fix Cat6A Data Cabling & Smart Lutron Lighting Circuits",
+        "JCT MW 2024 Financial Reconciliation Summary"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Project Variations",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_project_workspace",
+      "sizeBytes": 55025,
+      "sha256": "45c34ffbb2028a47d32d319d760a62b8805479d7fe30a48bfeba17212b0cb4a2",
+      "h1": "42 Parkway — Double Storey Wraparound & Knock-Through",
+      "h2s": [
+        "Structural Milestone Timeline"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Project Workspace",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_site_diary",
+      "sizeBytes": 54105,
+      "sha256": "d67abf9b2a73ede89c513ec41cccca8efa314edb20dd71f346b072424814e250",
+      "h1": "42 Parkway Diary",
+      "h2s": [
+        "Log Daily Site Entry",
+        "Historical Daily Site Logs"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Site Diary",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_site_visit_inspection",
+      "sizeBytes": 52938,
+      "sha256": "039a0355d66ee1ddc0692e2a022a30868da4604bc82f43cb1c259d38bc9e4960",
+      "h1": null,
+      "h2s": [
+        "Client Brief & Architectural Intent",
+        "Precision Laser Measurements",
+        "Site Conditions & Subgrade Check",
+        "Recommended Structural Strategy",
+        "Statutory & Physical Risks",
+        "Survey Photos & Scans"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Site Visit Inspection",
+      "route": null,
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_construction_quote_builder",
+      "sizeBytes": 73789,
+      "sha256": "d1dd6056fdcbe13a9a28209820383b3d78c50cb174ee18209911a216135e148e",
+      "h1": "Formal Quotation & Feasibility Tender",
+      "h2s": [
+        "Demolition, Site Setup & Enabling Works",
+        "Groundworks, Substructure & Foundations",
+        "Structural Steelwork & RSJ Goalposts",
+        "Superstructure, Brickwork & Roof Envelope",
+        "Architectural Glazing & External Joinery",
+        "Electrical, Plumbing & Underfloor Heating",
+        "Client Discretionary Options (Add-on Variations)"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Construction Quote Builder",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_calendar\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_calendar\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_crm_calendar",
+      "sizeBytes": 41243,
+      "sha256": "d6ac3acd8ed9bf04fc727caa33ef5170014be2edef917488110210e4a60dab82",
+      "h1": "Operations, Site Surveys & Build Schedule Calendar",
+      "h2s": [
+        "Event Details — Laser Site Survey & Briefing"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_calendar\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "CRM Calendar",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_calendar\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_crm_dashboard",
+      "sizeBytes": 56870,
+      "sha256": "11299de11aefc76ecef9f2238bf740531ea8fc89b92343ddf8b8ce774bca25fe",
+      "h1": "Operations & Estimating Control",
+      "h2s": [
+        "Today's Site Movements & Critical Path",
+        "Active Construction Milestones",
+        "Action Items & Compliance Deadlines",
+        "Inbound Enquiries",
+        "Pending Tenders & Quotes",
+        "Site Diary & Audit Log"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "CRM Dashboard",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_crm_login",
+      "sizeBytes": 13068,
+      "sha256": "0576603e615773f1f06e24dccdd5613a25ccc708b9ff19cce47ed8726c2f206b",
+      "h1": "Welcome Back",
+      "h2s": [],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "CRM Login",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_customer_quotation",
+      "sizeBytes": 68625,
+      "sha256": "99e2fb065dbc9f141b141f7fce56e45b1209fb10dcd8047c99f601fd8322e0fa",
+      "h1": "Personalized Project Tender & Architectural Quotation",
+      "h2s": [
+        "Dr. Julian & Claire Montgomery",
+        "Executive Project Summary & Scope of Works",
+        "Transparent Itemised Breakdown",
+        "Optional Architectural Additions",
+        "6-Stage Phased Milestone Schedule",
+        "Contractual Protections & Guarantees",
+        "Accept Quotation & Reserve Start Slot"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Customer Quotation",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoices\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoices\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_invoices",
+      "sizeBytes": 59006,
+      "sha256": "d44d7fb582a3663c1a6ff02f684e57e3cd0c342665b2ea36a4e416990027cf7a",
+      "h1": "Invoices & JCT Payment Applications",
+      "h2s": [],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoices\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Invoices",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoices\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoice_builder\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoice_builder\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_invoice_builder",
+      "sizeBytes": 48077,
+      "sha256": "a09a2803944a6c0607dce6e2e24267405a40e38718353ae15f9847c6d919f7f6",
+      "h1": "Create Construction Invoice",
+      "h2s": [
+        "Billing Entity & Project Schedule",
+        "Billable Milestone Packages & Line Items"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoice_builder\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Invoice Builder",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoice_builder\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_lead_pipeline",
+      "sizeBytes": 72668,
+      "sha256": "c8ad93f832781fdb50ec7c798b8400bef1de2cacf5eb54d6bab0dc89438e8e40",
+      "h1": "Lead Pipeline Management",
+      "h2s": [
+        "Add New Residential Construction Lead"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Lead Pipeline",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_lead_profile",
+      "sizeBytes": 51574,
+      "sha256": "25896bd45f7428dcfccacefef0c06cd57591bf70d4073870c7a44bb990b2f448",
+      "h1": "Dr. Julian Montgomery",
+      "h2s": [
+        "Customer Profile",
+        "Property Baseline",
+        "Scope of Works",
+        "Financials & Scheduling",
+        "Lead Activity & Audit Trail"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Lead Profile",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_project_photos",
+      "sizeBytes": 61341,
+      "sha256": "fc9eb828bcd7c90fffea3af6cab7294b8eba4ed3cda70529b98d74a7d1e760f4",
+      "h1": "Project Media Archive",
+      "h2s": [],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Project Photos",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_project_variations",
+      "sizeBytes": 60148,
+      "sha256": "035fe8a6dddc0f73bea77432e71b8b82ef790dbe4be5ed76a0ca6d5def264447",
+      "h1": "Project Variations & Scope Adjustments",
+      "h2s": [
+        "Subgrade Deep Trench Stepping due to Tree Root Zone",
+        "Bespoke Handcrafted Utility Room Cabinetry & Quartz Upgrade",
+        "Linear ACO Slot Drain & Exterior Italian Porcelain Terrace Drainage\nCRITICAL PATH",
+        "Additional First-Fix Cat6A Data Cabling & Smart Lutron Lighting Circuits",
+        "JCT MW 2024 Financial Reconciliation Summary"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Project Variations",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_project_workspace",
+      "sizeBytes": 55025,
+      "sha256": "45c34ffbb2028a47d32d319d760a62b8805479d7fe30a48bfeba17212b0cb4a2",
+      "h1": "42 Parkway — Double Storey Wraparound & Knock-Through",
+      "h2s": [
+        "Structural Milestone Timeline"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Project Workspace",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_site_diary",
+      "sizeBytes": 54105,
+      "sha256": "d67abf9b2a73ede89c513ec41cccca8efa314edb20dd71f346b072424814e250",
+      "h1": "42 Parkway Diary",
+      "h2s": [
+        "Log Daily Site Entry",
+        "Historical Daily Site Logs"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Site Diary",
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_site_visit_inspection",
+      "sizeBytes": 52938,
+      "sha256": "039a0355d66ee1ddc0692e2a022a30868da4604bc82f43cb1c259d38bc9e4960",
+      "h1": null,
+      "h2s": [
+        "Client Brief & Architectural Intent",
+        "Precision Laser Measurements",
+        "Site Conditions & Subgrade Check",
+        "Recommended Structural Strategy",
+        "Statutory & Physical Risks",
+        "Survey Photos & Scans"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Site Visit Inspection",
+      "route": null,
+      "duplicate": true,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html",
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html"
+      ]
+    },
+    {
+      "fullPath": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_tasks\\code.html",
+      "relativePath": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_tasks\\code.html",
+      "fileName": "code.html",
+      "dirName": "omni_developments_manchester_tasks",
+      "sizeBytes": 65286,
+      "sha256": "000a115837caa463a0d8e42b493d1339b657b2d1b0c98f6a82d2149b2ad0ff4c",
+      "h1": "Operational Tasks & Statutory Compliance",
+      "h2s": [
+        "Trafford Council Building Control Pre-Plaster Sign-Off"
+      ],
+      "title": null,
+      "screenshot": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_tasks\\screen.png",
+      "designMd": "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+      "pageLabel": "Tasks",
+      "duplicate": false,
+      "duplicateGroup": [
+        "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_tasks\\code.html"
+      ]
+    }
+  ],
+  "uniqueRecords": [
+    {
+      "path": "stitch_omni_developments_digital_platform\\code.html",
+      "h1": "Transforming Homes Across Greater Manchester",
+      "route": "/",
+      "pageLabel": null,
+      "sha256": "59fd827fcd6d"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_about_us\\code.html",
+      "h1": "Built Around Quality, Communication and Craftsmanship",
+      "route": "/about",
+      "pageLabel": "About",
+      "sha256": "e88d456945f5"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_areas_we_cover\\code.html",
+      "h1": "Serving Greater Manchester & Cheshire",
+      "route": "/areas",
+      "pageLabel": "Areas Covered",
+      "sha256": "0ddce7193048"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_bathroom_installation\\code.html",
+      "h1": "Bathroom Renovations & Installations in Manchester & Cheshire",
+      "route": "/services/bathroom-renovations",
+      "pageLabel": "Bathroom Renovations",
+      "sha256": "e614955a1a32"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_client_reviews\\code.html",
+      "h1": "What Our Clients Say",
+      "route": "/reviews",
+      "pageLabel": "Reviews",
+      "sha256": "584b602d8000"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_contact_us\\code.html",
+      "h1": "Let’s Talk About Your Project",
+      "pageLabel": "Contact",
+      "sha256": "24aaedaa91fc"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guides_advice\\code.html",
+      "h1": "Planning Your Next Home Project?",
+      "route": "/guides",
+      "pageLabel": "Guides Hub",
+      "sha256": "c9928040d05f"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guide_article\\code.html",
+      "h1": "The Complete Greater Manchester Home Extension Guide: Costs, Planning & Timelines",
+      "route": "/guides/greater-manchester-home-extension-guide",
+      "pageLabel": "Guide Article",
+      "sha256": "b222f61b7097"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home_extensions\\code.html",
+      "h1": "Home Extensions in Manchester & Cheshire",
+      "route": "/services/home-extensions",
+      "pageLabel": "Home Extensions",
+      "sha256": "f80bf08a2843"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_how_it_works\\code.html",
+      "h1": "A Clear, Stress-Free Journey From Idea to Finished Home",
+      "pageLabel": "How It Works",
+      "sha256": "bdd21733e7c7"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_manchester_location_page\\code.html",
+      "h1": "Builders & Home Renovation Specialists in Manchester",
+      "pageLabel": "Manchester Location",
+      "sha256": "86d61c96ff9e"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_case_study\\code.html",
+      "h1": "Altrincham Open-Plan Cedar & Zinc Wrap",
+      "pageLabel": "Project Case Study",
+      "sha256": "dc7bf50d0309"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_quote_confirmation\\code.html",
+      "h1": "Thanks — We’ve Received Your Project",
+      "pageLabel": "Quote Confirmation",
+      "sha256": "4284470c397a"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_request_a_quote\\code.html",
+      "h1": "Request a Comprehensive Project Quote",
+      "pageLabel": "Request a Quote",
+      "sha256": "80b53cda9770"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_services\\code.html",
+      "h1": "Comprehensive Design & Build Services",
+      "pageLabel": "Services Listing",
+      "sha256": "e5abf4200cbb"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\code.html",
+      "h1": "Formal Quotation & Feasibility Tender",
+      "pageLabel": "Construction Quote Builder",
+      "sha256": "d1dd6056fdcb"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\code.html",
+      "h1": "Operations & Estimating Control",
+      "pageLabel": "CRM Dashboard",
+      "sha256": "11299de11aef"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\code.html",
+      "h1": "Welcome Back",
+      "pageLabel": "CRM Login",
+      "sha256": "0576603e6157"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\code.html",
+      "h1": "Personalized Project Tender & Architectural Quotation",
+      "pageLabel": "Customer Quotation",
+      "sha256": "99e2fb065dbc"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\code.html",
+      "h1": "Lead Pipeline Management",
+      "pageLabel": "Lead Pipeline",
+      "sha256": "c8ad93f83278"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\code.html",
+      "h1": "Dr. Julian Montgomery",
+      "pageLabel": "Lead Profile",
+      "sha256": "25896bd45f74"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\code.html",
+      "h1": "Project Media Archive",
+      "pageLabel": "Project Photos",
+      "sha256": "fc9eb828bcd7"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\code.html",
+      "h1": "Project Variations & Scope Adjustments",
+      "pageLabel": "Project Variations",
+      "sha256": "035fe8a6dddc"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\code.html",
+      "h1": "42 Parkway — Double Storey Wraparound & Knock-Through",
+      "pageLabel": "Project Workspace",
+      "sha256": "45c34ffbb202"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\code.html",
+      "h1": "42 Parkway Diary",
+      "pageLabel": "Site Diary",
+      "sha256": "d67abf9b2a73"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\code.html",
+      "h1": null,
+      "route": null,
+      "pageLabel": "Site Visit Inspection",
+      "sha256": "039a0355d66e"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_calendar\\code.html",
+      "h1": "Operations, Site Surveys & Build Schedule Calendar",
+      "pageLabel": "CRM Calendar",
+      "sha256": "d6ac3acd8ed9"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoices\\code.html",
+      "h1": "Invoices & JCT Payment Applications",
+      "pageLabel": "Invoices",
+      "sha256": "d44d7fb582a3"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoice_builder\\code.html",
+      "h1": "Create Construction Invoice",
+      "pageLabel": "Invoice Builder",
+      "sha256": "a09a2803944a"
+    },
+    {
+      "path": "stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_tasks\\code.html",
+      "h1": "Operational Tasks & Statutory Compliance",
+      "pageLabel": "Tasks",
+      "sha256": "000a115837ca"
+    }
+  ],
+  "imageInventory": {
+    "png": [
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_about_us\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_areas_we_cover\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_bathroom_installation\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_client_reviews\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_contact_us\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guides_advice\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_guide_article\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_home_extensions\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_how_it_works\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_manchester_location_page\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_case_study\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_quote_confirmation\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_request_a_quote\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\omni_developments_manchester_services\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_construction_quote_builder\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_calendar\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_dashboard\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_crm_login\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_customer_quotation\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoices\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_invoice_builder\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_pipeline\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_lead_profile\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_photos\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_variations\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_project_workspace\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_diary\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_site_visit_inspection\\screen.png",
+      "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\omni_developments_manchester_tasks\\screen.png"
+    ],
+    "jpg": [],
+    "webp": [],
+    "svg": []
+  },
+  "designMdFiles": [
+    "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\DESIGN.md",
+    "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform\\stitch_omni_developments_digital_platform\\architectural_craft\\DESIGN.md",
+    "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (1)\\stitch_omni_developments_digital_platform\\architectural_craft\\DESIGN.md",
+    "c:\\Users\\Natty\\Desktop\\Anti Grav\\Omni\\Omni Development\\stitch_omni_developments_digital_platform (2)\\stitch_omni_developments_digital_platform\\architectural_craft\\DESIGN.md"
+  ]
+}

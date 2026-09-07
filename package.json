@@ -1,0 +1,55 @@
+{
+  "name": "omni-development-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently \"vite --host 0.0.0.0\" \"tsx server/server.ts\"",
+    "build": "vite build && tsc -p server/tsconfig.json",
+    "start": "node dist-server/server.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p client/tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit",
+    "lint": "tsc -p client/tsconfig.json --noEmit",
+    "db:migrate": "node scripts/migrate.js"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "bcryptjs": "latest",
+    "cookie-parser": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "express-rate-limit": "latest",
+    "helmet": "latest",
+    "lucide-react": "latest",
+    "multer": "latest",
+    "mysql2": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-router-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@types/cookie-parser": "latest",
+    "@types/express": "latest",
+    "@types/multer": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "latest",
+    "autoprefixer": "^10.5.4",
+    "concurrently": "latest",
+    "jsdom": "latest",
+    "lighthouse": "^13.4.1",
+    "playwright": "^1.62.1",
+    "sharp": "^0.35.4",
+    "tailwindcss": "^3.4.19",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest"
+  }
+}

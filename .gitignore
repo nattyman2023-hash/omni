@@ -1,0 +1,19 @@
+node_modules/
+dist/
+dist-server/
+.env
+.env.local
+uploads/private/
+uploads/
+qa/
+visual-qa/
+deployment/
+design-reference/
+visual-reference/
+Photos/
+Omni Development/
+Generates Map Image/
+*.log
+*.sqlite
+*.sqlite3
+*.db

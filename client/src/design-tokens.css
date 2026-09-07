@@ -1,0 +1,134 @@
+/**
+ * Omni Developments — centralized design system.
+ *
+ * Tokens are transcribed verbatim from DESIGN.md (Architectural Craft).
+ * tailwind.config.cjs already exposes these as Tailwind utilities; this
+ * file adds the CSS custom-property source of truth plus the base
+ * "application styles" (button / card / badge / metric / field variants)
+ * so the design system is centralized in one place. Import once, after
+ * tailwind.css. No CDN Tailwind in production.
+ */
+
+:root {
+  /* Core palette (DESIGN.md) */
+  --omni-ink: #0F172A;
+  --omni-bg-dark: #0B1120;
+  --omni-slate: #1E293B;
+  --omni-slate-2: #131B2E;
+  --omni-border-slate: #334155;
+  --omni-white: #FFFFFF;
+  --omni-ground: #F8FAFC;
+  --omni-surface: #F8F9FF;
+  --omni-subtle: #F1F5F9;
+  --omni-border-stone: #E2E8F0;
+  --omni-muted: #45464D;
+  --omni-amber: #F59E0B;
+  --omni-amber-deep: #D97706;
+  --omni-amber-text: #904D00;
+  --omni-amber-subtle: #FEF3C7;
+  --omni-blue: #0284C7;
+  --omni-blue-deep: #0369A1;
+  --omni-green: #059669;
+  --omni-black: #000000;
+
+  /* Layout */
+  --omni-container-max: 1280px;
+  --omni-gutter-desktop: 32px;
+  --omni-gutter-tablet: 24px;
+  --omni-gutter-mobile: 16px;
+
+  /* Spacing scale (8px rhythm) */
+  --omni-space-2xs: 0.25rem;
+  --omni-space-xs: 0.5rem;
+  --omni-space-sm: 0.75rem;
+  --omni-space-md: 1rem;
+  --omni-space-lg: 1.5rem;
+  --omni-space-xl: 2rem;
+  --omni-space-2xl: 3rem;
+  --omni-space-3xl: 4.5rem;
+
+/* ----- Base application styles (DESIGN.md component definitions) ----- */
+
+/* Primary action: solid #0F172A, 4px radius, Manrope 14px semi-bold */
+.omni-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--omni-space-xs);
+  padding: 12px 24px; border-radius: var(--omni-radius-sm); background: var(--omni-ink); color: var(--omni-white);
+  font-family: var(--omni-font-heading); font-weight: 600; font-size: 14px; line-height: 20px;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.omni-btn-primary:hover { background: var(--omni-slate); }
+
+/* Accent action: solid #D97706 */
+.omni-btn-accent {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--omni-space-xs);
+  padding: 12px 24px; border-radius: var(--omni-radius-sm); background: var(--omni-amber-deep); color: var(--omni-white);
+  font-family: var(--omni-font-heading); font-weight: 600; font-size: 14px; line-height: 20px; transition: background 0.18s ease;
+}
+.omni-btn-accent:hover { background: #B45309; }
+
+/* Ghost / secondary: 1px stone border on white */
+.omni-btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--omni-space-xs);
+  padding: 11px 23px; border-radius: var(--omni-radius-sm); border: 1px solid var(--omni-border-stone);
+  background: var(--omni-white); color: var(--omni-ink); font-family: var(--omni-font-heading); font-weight: 600; font-size: 14px; line-height: 20px;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.omni-btn-ghost:hover { border-color: var(--omni-ink); background: var(--omni-ground); }
+
+/* Card / panel: 8px radius, 1px stone border, level-1 shadow */
+.omni-card { border-radius: var(--omni-radius-md); border: 1px solid var(--omni-border-stone); background: var(--omni-white); box-shadow: var(--omni-shadow-1); }
+
+/* Dark architectural slate card: #1E293B, 1px #334155 border */
+.omni-card-dark { border-radius: var(--omni-radius-md); border: 1px solid var(--omni-border-slate); background: var(--omni-slate); color: var(--omni-white); }
+
+/* Trust badge: label-caps tracking, framed micro-tag */
+.omni-badge {
+  display: inline-flex; align-items: center; gap: var(--omni-space-2xs); padding: 2px var(--omni-space-xs);
+  border-radius: var(--omni-radius-sm); background: var(--omni-bg-dark); color: var(--omni-amber);
+  font-family: var(--omni-font-heading); font-weight: 700; font-size: 11px; line-height: 16px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+
+/* Metric pod */
+.omni-metric { font-family: var(--omni-font-heading); font-weight: 800; font-size: 48px; line-height: 52px; letter-spacing: -0.03em; }
+
+/* Uppercase label (label-caps) */
+.omni-label-caps { font-family: var(--omni-font-heading); font-weight: 700; font-size: 11px; line-height: 16px; letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* Form field (DESIGN.md §6) */
+.omni-field {
+  height: 44px; width: 100%; border-radius: var(--omni-radius-sm); border: 1px solid #CBD5E1;
+  background: var(--omni-white); color: var(--omni-ink); padding: 0 12px; font-family: var(--omni-font-body); font-size: 15px;
+}
+.omni-field::placeholder { color: #94A3B8; }
+.omni-field:focus { outline: none; border-color: var(--omni-blue); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
+
+/* Status indicator pill (9999px, status only) */
+.omni-status { display: inline-flex; align-items: center; border-radius: var(--omni-radius-pill); }
+
+  --omni-space-4xl: 6rem;
+
+  /* Radii — restrained, engineered edges */
+  --omni-radius-sm: 4px;
+  --omni-radius-md: 8px;
+  --omni-radius-lg: 12px;
+  --omni-radius-pill: 9999px;
+
+  /* Elevation (architectural surface layering) */
+  --omni-shadow-1: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
+  --omni-shadow-2: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --omni-shadow-3: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+
+  /* Breakpoints (mirror of the Tailwind config) */
+  --omni-bp-sm: 640px;
+  --omni-bp-md: 768px;
+  --omni-bp-lg: 1024px;
+  --omni-bp-xl: 1280px;
+
+  /* Fonts */
+  --omni-font-heading: 'Manrope', Inter, system-ui, sans-serif;
+  --omni-font-body: 'Inter', system-ui, sans-serif;
+}
+
+/* Prevent horizontal scroll from decorative absolute elements (-right-4 glows etc.) */
+html, body { overflow-x: hidden; }
+#root { overflow-x: clip; }

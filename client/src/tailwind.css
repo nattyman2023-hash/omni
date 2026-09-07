@@ -1,0 +1,7 @@
+/* Tailwind utility layer for the Stitch-sourced visual components (Header, Footer,
+   About, Areas, Bathroom Renovations). Preflight is disabled in tailwind.config.cjs
+   so this does not reset element defaults relied on by pages still using the legacy
+   hand-rolled styles.css system. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
