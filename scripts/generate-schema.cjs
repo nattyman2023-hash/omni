@@ -5,6 +5,7 @@ const projectRoot = path.resolve(__dirname, '..');
 const migrationDir = path.join(projectRoot, 'database', 'migrations');
 const outputPath = path.join(projectRoot, 'deploy', 'schema.sql');
 const checkOnly = process.argv.includes('--check');
+const normalizeLineEndings = value => value.replace(/\r\n?/g, '\n');
 
 function renderSchema() {
   const files = fs.readdirSync(migrationDir)
@@ -24,7 +25,7 @@ function renderSchema() {
   ].join('\n');
 
   const body = files.map(file => {
-    const sql = fs.readFileSync(path.join(migrationDir, file), 'utf8').trim();
+    const sql = normalizeLineEndings(fs.readFileSync(path.join(migrationDir, file), 'utf8')).trim();
     return `-- BEGIN MIGRATION: ${file}\n${sql}\n-- END MIGRATION: ${file}`;
   }).join('\n\n');
 
@@ -34,7 +35,9 @@ function renderSchema() {
 const expected = renderSchema();
 
 if (checkOnly) {
-  const current = fs.existsSync(outputPath) ? fs.readFileSync(outputPath, 'utf8') : '';
+  const current = fs.existsSync(outputPath)
+    ? normalizeLineEndings(fs.readFileSync(outputPath, 'utf8'))
+    : '';
   if (current !== expected) {
     process.stderr.write('deploy/schema.sql is out of sync with database/migrations. Run npm run db:schema:generate.\n');
     process.exit(1);
