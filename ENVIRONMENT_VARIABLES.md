@@ -16,6 +16,11 @@ The repository contains names only in `.env.example`. Values below are required 
 | `DATABASE_NAME` | production | MySQL database name. |
 | `DATABASE_USER` | production | MySQL user. |
 | `DATABASE_PASSWORD` | production | MySQL password. |
+| `TEST_DATABASE_HOST` | MySQL verification only | Disposable test database hostname; never the live Omni database. |
+| `TEST_DATABASE_PORT` | MySQL verification only | Disposable test database port; defaults to 3306. |
+| `TEST_DATABASE_NAME` | MySQL verification only | Must clearly contain test, QA or sandbox and must not contain prod/production/live. |
+| `TEST_DATABASE_USER` | MySQL verification only | Dedicated test database user. |
+| `TEST_DATABASE_PASSWORD` | MySQL verification only | Dedicated test database password. |
 | `SESSION_SECRET` | configure now | Reserved for the planned persistent session adapter; the current temporary build still uses process-memory sessions. |
 | `BOOTSTRAP_ADMIN_EMAIL` | one-time setup only | Database administrator email used only when no owner/admin exists. |
 | `BOOTSTRAP_ADMIN_PASSWORD` | one-time setup only | Plaintext bootstrap input held only in Hostinger environment settings; remove after first login. |
@@ -33,4 +38,8 @@ The repository contains names only in `.env.example`. Values below are required 
 | `UPLOAD_DIR` | recommended | Persistent private upload directory. |
 | `UPLOAD_MAX_FILE_SIZE` | optional | Deployment-level upload policy; the current application limit is 8 MB per file. |
 
-When the database variables are absent locally, `/api/health` reports `not-configured` and contact/quote submissions use a local in-memory fallback for development verification. Do not use that mode for production. In `STAGING_MODE=true`, health responses intentionally omit database state and `robots.txt` disallows all crawlers.
+When database variables are absent locally, contact/quote submissions use the
+in-memory development fallback. In production there is no fallback: `/api/health`
+returns HTTP 503 and forms return the honest storage-unavailable error. In
+`STAGING_MODE=true`, health responses intentionally omit database details and
+`robots.txt` disallows all crawlers.

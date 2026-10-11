@@ -2,7 +2,7 @@
 
 For the current temporary-domain handover, use
 `docs/HOSTINGER_TEMP_DEPLOYMENT.md`, import
-`deployment/hostinger-schema.sql` into the new Hostinger database, and upload the
+`deploy/schema.sql` into the new Hostinger database, and upload the
 clean ZIP named in that handover after the final verification run.
 
 No deployment, branch push or production connection was made during this build.
@@ -25,10 +25,10 @@ Copy the variable names from `.env.example` into Hostinger’s Node.js environme
 ## Database and uploads
 
 Create a brand-new Hostinger MySQL database and import
-`deployment/hostinger-schema.sql` through phpMyAdmin before starting the
-temporary application. This is the authoritative initial Hostinger setup method.
-The ordered `npm run db:migrate` runner remains available for reviewed future
-additive migrations when an execution mechanism is available; it is not a second
+`deploy/schema.sql` through phpMyAdmin before starting the
+temporary application. The ordered migrations are authoritative and generate this
+checked import artifact. The `npm run db:migrate` runner remains available for
+reviewed future additive migrations when an execution mechanism is available; it is not a second
 initial-install path.
 
 Uploaded files are written through a storage abstraction to `UPLOAD_DIR` using random filenames and private storage. Configure `UPLOAD_DIR` to a persistent directory available to the Node.js application. If the selected Hostinger plan does not provide persistent local storage for Node processes, connect an object-storage adapter before enabling production uploads; do not expose the private directory through the web server.

@@ -1,10 +1,11 @@
--- Omni Developments temporary Hostinger database schema
--- Initial Hostinger setup: import this file once through phpMyAdmin.
--- Safe to import again: schema creation is conditional and seed rows are guarded.
--- This file is additive only. It does not drop, truncate or delete data.
+-- GENERATED FILE: do not edit directly.
+-- Source of truth: database/migrations/*.sql in filename order.
+-- Regenerate with: npm run db:schema:generate
+-- Verify with: npm run db:schema:check
 
 SET NAMES utf8mb4;
-
+-- BEGIN MIGRATION: 001_initial.sql
+-- Omni Developments initial schema. Run migrations in version order.
 CREATE TABLE IF NOT EXISTS schema_migrations (
   version VARCHAR(32) PRIMARY KEY,
   applied_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS service_faqs (
   question VARCHAR(255) NOT NULL,
   answer TEXT NOT NULL,
   sort_order INT NOT NULL DEFAULT 0,
-  CONSTRAINT fk_service_faqs_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE,
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE,
   INDEX idx_service_faqs_service (service_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -74,7 +75,7 @@ CREATE TABLE IF NOT EXISTS projects (
   publication_status ENUM('draft','published','archived') NOT NULL DEFAULT 'draft',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_projects_category FOREIGN KEY (category_id) REFERENCES project_categories(id) ON DELETE SET NULL,
+  FOREIGN KEY (category_id) REFERENCES project_categories(id) ON DELETE SET NULL,
   INDEX idx_projects_status (publication_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -85,17 +86,8 @@ CREATE TABLE IF NOT EXISTS project_media (
   alt_text VARCHAR(255) NOT NULL,
   media_kind ENUM('image','document') NOT NULL DEFAULT 'image',
   sort_order INT NOT NULL DEFAULT 0,
-  CONSTRAINT fk_project_media_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+  FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
   INDEX idx_project_media_project (project_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS project_tags (
-  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  project_id BIGINT UNSIGNED NOT NULL,
-  tag VARCHAR(80) NOT NULL,
-  sort_order INT NOT NULL DEFAULT 0,
-  CONSTRAINT fk_project_tags_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-  INDEX idx_project_tags_project (project_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS areas (
@@ -141,7 +133,7 @@ CREATE TABLE IF NOT EXISTS guides (
   published_at DATETIME NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_guides_category FOREIGN KEY (category_id) REFERENCES guide_categories(id) ON DELETE SET NULL,
+  FOREIGN KEY (category_id) REFERENCES guide_categories(id) ON DELETE SET NULL,
   INDEX idx_guides_status (publication_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -193,7 +185,7 @@ CREATE TABLE IF NOT EXISTS quote_request_files (
   mime_type VARCHAR(120) NOT NULL,
   size_bytes BIGINT UNSIGNED NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_quote_request_files_quote FOREIGN KEY (quote_request_id) REFERENCES quote_requests(id) ON DELETE CASCADE,
+  FOREIGN KEY (quote_request_id) REFERENCES quote_requests(id) ON DELETE CASCADE,
   INDEX idx_quote_files_quote (quote_request_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -205,13 +197,25 @@ CREATE TABLE IF NOT EXISTS activity_audit_records (
   entity_id BIGINT UNSIGNED NULL,
   metadata JSON NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_activity_audit_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
   INDEX idx_audit_created (created_at),
   INDEX idx_audit_entity (entity_type, entity_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- The three records below are neutral supplied-photo placeholders already used by
--- the application. They do not assert an address, customer, price or accreditation.
+INSERT IGNORE INTO schema_migrations (version) VALUES ('001_initial');
+-- END MIGRATION: 001_initial.sql
+
+-- BEGIN MIGRATION: 002_project_content.sql
+-- Project content used by the staff project workspace. Every statement is safe to rerun.
+CREATE TABLE IF NOT EXISTS project_tags (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  project_id BIGINT UNSIGNED NOT NULL,
+  tag VARCHAR(80) NOT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+  INDEX idx_project_tags_project (project_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 INSERT IGNORE INTO project_categories (name, slug) VALUES
   ('Extensions', 'extensions'),
   ('Renovations', 'renovations'),
@@ -238,7 +242,7 @@ WHERE NOT EXISTS (SELECT 1 FROM projects WHERE slug = 'bathroom-installation');
 INSERT INTO project_media (project_id, stored_filename, alt_text, media_kind, sort_order)
 SELECT p.id, '/images/site-interior.webp', 'Open-plan extension and garden connection supplied project photography', 'image', 0
 FROM projects p WHERE p.slug = 'open-plan-extension'
-  AND NOT EXISTS (SELECT 1 FROM project_media m WHERE m.project_id = p.id AND m.stored_filename = '/images/site-interior.webp');
+  AND NOT EXISTS (SELECT 1 FROM project_media m WHERE m.project_id = p.id AND m.sort_order = 0);
 INSERT INTO project_media (project_id, stored_filename, alt_text, media_kind, sort_order)
 SELECT p.id, '/images/timber-frame.webp', 'Open-plan extension supplied project photography', 'image', 1
 FROM projects p WHERE p.slug = 'open-plan-extension'
@@ -251,7 +255,7 @@ FROM projects p WHERE p.slug = 'open-plan-extension'
 INSERT INTO project_media (project_id, stored_filename, alt_text, media_kind, sort_order)
 SELECT p.id, '/images/project-renovation-01.webp', 'Property improvements supplied project photography', 'image', 0
 FROM projects p WHERE p.slug = 'property-improvements'
-  AND NOT EXISTS (SELECT 1 FROM project_media m WHERE m.project_id = p.id AND m.stored_filename = '/images/project-renovation-01.webp');
+  AND NOT EXISTS (SELECT 1 FROM project_media m WHERE m.project_id = p.id AND m.sort_order = 0);
 INSERT INTO project_media (project_id, stored_filename, alt_text, media_kind, sort_order)
 SELECT p.id, '/images/driveway-finish.webp', 'Property improvements supplied project photography', 'image', 1
 FROM projects p WHERE p.slug = 'property-improvements'
@@ -264,7 +268,7 @@ FROM projects p WHERE p.slug = 'property-improvements'
 INSERT INTO project_media (project_id, stored_filename, alt_text, media_kind, sort_order)
 SELECT p.id, '/images/project-bathroom-01.webp', 'Bathroom installation supplied project photography', 'image', 0
 FROM projects p WHERE p.slug = 'bathroom-installation'
-  AND NOT EXISTS (SELECT 1 FROM project_media m WHERE m.project_id = p.id AND m.stored_filename = '/images/project-bathroom-01.webp');
+  AND NOT EXISTS (SELECT 1 FROM project_media m WHERE m.project_id = p.id AND m.sort_order = 0);
 INSERT INTO project_media (project_id, stored_filename, alt_text, media_kind, sort_order)
 SELECT p.id, '/images/interior-stair.webp', 'Bathroom installation supplied project photography', 'image', 1
 FROM projects p WHERE p.slug = 'bathroom-installation'
@@ -289,6 +293,5 @@ INSERT INTO project_tags (project_id, tag, sort_order)
 SELECT p.id, 'Installation', 1 FROM projects p WHERE p.slug = 'bathroom-installation'
   AND NOT EXISTS (SELECT 1 FROM project_tags t WHERE t.project_id = p.id AND t.tag = 'Installation');
 
-INSERT IGNORE INTO schema_migrations (version) VALUES
-  ('001_initial'),
-  ('002_project_content');
+INSERT IGNORE INTO schema_migrations (version) VALUES ('002_project_content');
+-- END MIGRATION: 002_project_content.sql

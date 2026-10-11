@@ -3,12 +3,14 @@ dist/
 dist-server/
 .env
 .env.local
+.env.test
+.env.test.local
+.env.*.local
 uploads/private/
 uploads/
 qa/
 visual-qa/
-deployment/*
-!deployment/hostinger-schema.sql
+deployment/
 design-reference/
 visual-reference/
 Photos/

@@ -27,15 +27,19 @@ Open `http://localhost:3000`.
 - `npm run dev` — Vite and Express development servers.
 - `npm run build` — production frontend build plus compiled server.
 - `npm start` — serves `dist` and `/api/*` from Express.
-- `npm test` — Vitest content and route-data checks.
-- `npm run typecheck` — TypeScript checks for client and server.
+- `npm test` — generated-schema drift, content, route-data and production database-guard checks.
+- `npm run typecheck` — TypeScript checks for client, server and tests.
+- `npm run test:mysql` — restart-persistence checks against an explicitly configured disposable MySQL database.
 - `npm run db:migrate` — applies SQL migrations after MySQL environment variables are configured.
 
 ## Implemented areas
 
 Public routes, responsive navigation, service filtering, project filtering, project galleries, area pages, guide articles, accessible accordions, contact submission, six-step quote wizard, upload validation, non-sequential public references, rate limiting, honeypot protection, private upload storage, protected staff login structure, health endpoint, sitemap, robots rules and production fallback routing are included.
 
-The current local fallback stores submissions in process memory when MySQL is not configured. Configure MySQL before production use; see `DATABASE_SETUP.md`.
+The local development fallback stores submissions in process memory. In production,
+MySQL and the expected schema are mandatory: health is degraded and contact/quote
+requests return an honest 503 response if durable storage is unavailable. See
+`DATABASE_SETUP.md`.
 
 ## Content status
 

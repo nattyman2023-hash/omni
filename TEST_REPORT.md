@@ -1,5 +1,33 @@
 # Omni Development final pre-deployment review
 
+## Phase 1 durable-lead update — 2026-10-11
+
+Phase 1 code is implemented but is not complete until the strict disposable-MySQL
+persistence suite passes. Current results:
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | Passed: client, server and test TypeScript |
+| `npm test` | Passed: generated-schema drift check plus 2 files / 6 tests |
+| `npm run build` | Passed; existing bundle-size warning remains |
+| Production without MySQL | Passed: health is HTTP 503/degraded; contact and quote APIs return the honest storage-unavailable response and do not use memory |
+| `npm run test:mysql` | Awaiting a disposable database through required `TEST_DATABASE_*` variables; the suite fails closed rather than skipping |
+
+The ordered files in `database/migrations` are authoritative. `deploy/schema.sql`
+is deterministically generated from them, and `npm test` rejects drift. The quote
+file foreign key remains `quote_request_files.quote_request_id ->
+quote_requests.id ON DELETE CASCADE`.
+
+The MySQL suite applies those migrations, exercises a contact, quote and file row,
+creates and edits a project, restarts the built server, and then verifies every row
+directly. It rejects missing test settings, unsafe database names, a normal
+production database name, and identical test/production configurations. It has not
+been weakened or skipped.
+
+The previous Hostinger ZIP is superseded and must not be uploaded. Its replacement,
+`deployment/omni-hostinger-phase1-mysql-verification-20261011.zip`, is a test
+candidate only until the disposable MySQL suite passes.
+
 ## Temporary Hostinger preparation update — 2026-10-11
 
 Preparation is isolated on branch `hostinger-temporary-review`; nothing was
@@ -22,8 +50,9 @@ Current verification:
 | MySQL-backed public forms | **Blocked locally:** no disposable MySQL service or credentials were available |
 | Upload persistence after redeploy | **Blocked:** requires verification on the new Hostinger temporary application storage |
 
-The authoritative first-install database file is
-`deployment/hostinger-schema.sql`, intended for the new Hostinger database only.
+This historical temporary-preparation result is superseded by the Phase 1 update
+above. The current first-install database file is `deploy/schema.sql`, intended for
+a new Hostinger database only.
 Static review confirms conditional table creation, guarded seed inserts, migration
 history records and cascading foreign keys for quote files, project media and
 project tags. Runtime import and second-import verification remain required in the
@@ -154,11 +183,10 @@ was used for production.
 
 ## Database status
 
-Database persistence is **not verified**. No Docker, MySQL or MariaDB executable was
-available, and the actual `npm run db:migrate` run on 2026-09-07 stopped before
-connecting with: `Database environment variables are missing`. Therefore direct contact/quote row
-verification, quote-file foreign-key verification, migration rerun verification,
-restart persistence and database-backed email-failure behavior remain blocked.
+Database persistence is **not yet verified** because no disposable
+`TEST_DATABASE_*` connection is configured. The Phase 1 suite is implemented and
+must pass unchanged before this phase can be marked complete. MySQL, MariaDB and
+Docker were not installed automatically, and the live Omni database was not used.
 
 Without MySQL, the project workspace clearly labels changes as **Preview storage
 only** and those changes are session-only. Do not claim CRM persistence or mark the
@@ -225,7 +253,8 @@ retention rules and CRM workflow ownership.
 - Lighthouse reports: `qa/lighthouse/final-*.json`
 - Photo mapping: `PHOTO_MAPPING.md`
 - Missing/owner content handoff: `REAL_CONTENT_REQUIRED.md`
-- Hostinger package: `deployment/omni-hostinger-temporary-review-final.zip`
+- Hostinger package: `deployment/omni-hostinger-phase1-mysql-verification-20261011.zip`
+  (verification candidate; not a final upload until MySQL persistence passes).
 
 ## Owner local review commands
 

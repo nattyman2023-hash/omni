@@ -50,8 +50,8 @@ context only; all project/location verification flags are currently `No`.
 
 ## Blocking configuration
 
-The local QA run had no Docker, MySQL or MariaDB executable and no database
-environment. `npm run db:migrate` therefore stopped before connecting. Supply a
-temporary local MySQL/MariaDB configuration and verify migrations, rerun safety,
-direct enquiry/file rows and restart persistence before treating the application as
-ready for Hostinger.
+The strict persistence suite requires a disposable MySQL database through
+`TEST_DATABASE_*`; it refuses the live/production database and matching test and
+production configurations. No disposable connection was available during the local
+Phase 1 run. Supply test-only values and run `npm run build` followed by
+`npm run test:mysql` before treating Phase 1 as complete.

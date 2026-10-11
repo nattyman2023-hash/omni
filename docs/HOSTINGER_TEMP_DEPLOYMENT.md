@@ -57,16 +57,18 @@ For the first Hostinger setup, the authoritative method is manual import through
 phpMyAdmin of:
 
 ```text
-deployment/hostinger-schema.sql
+deploy/schema.sql
 ```
 
-The combined file is additive and re-runnable. It creates the migration-history
+The combined file is generated from the ordered migrations, additive and re-runnable. It creates the migration-history
 table, the tables required by the currently implemented site and project workspace,
 their foreign keys, and the existing neutral supplied-photo project records. It
 does not drop, truncate or delete data.
 
-The checked-in `npm run db:migrate` runner remains the authoritative mechanism for
-reviewed future additive migration files when the deployment environment provides a
+The ordered files in `database/migrations` are authoritative. `npm run
+db:schema:generate` builds `deploy/schema.sql`, and the normal test suite rejects
+schema drift. The checked-in `npm run db:migrate` runner safely applies reviewed
+future additive migration files when the deployment environment provides a
 safe way to execute it. It connects using the same `DATABASE_*` variables, checks
 `schema_migrations`, and skips recorded versions. It is not required for the first
 Hostinger import because managed Node.js hosting does not provide a general npm-over-
@@ -128,7 +130,7 @@ per file.
 | Output directory | `dist` (generated frontend; Express also needs `dist-server`) |
 | Entry file | `dist-server/server.js` |
 | Start command | `npm start` |
-| Database migration | Import `deployment/hostinger-schema.sql` through phpMyAdmin before first start |
+| Database migration | Import `deploy/schema.sql` through phpMyAdmin before first start |
 | Health URL | `/health` |
 
 Do not hardcode a port. Do not use the current live Omni domain or its database.
@@ -144,14 +146,16 @@ temporary Hostinger database before acceptance.
 
 ## Deployment package
 
-The prepared ZIP is:
-
-`C:\Users\Natty\Desktop\Anti Grav\Omni\deployment\omni-hostinger-temporary-review-20261011.zip`
+The previous `omni-hostinger-temporary-review-20261011.zip` is superseded and must
+not be uploaded. The replacement verification package is
+`deployment/omni-hostinger-phase1-mysql-verification-20261011.zip`. It is a
+candidate for disposable MySQL verification only and is not the final upload until
+the persistence suite passes.
 
 It excludes `node_modules`, `.git`, `.env` files, generated build output, QA
 screenshots/reports, Stitch/source reference folders, local uploads, local database
 files and logs. It includes the application source, public images, ordered source
-migrations, `deployment/hostinger-schema.sql`, the package lockfile and names-only
+migrations, generated `deploy/schema.sql`, the package lockfile and names-only
 environment examples.
 
 ## Rollback and safety

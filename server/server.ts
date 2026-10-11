@@ -17,14 +17,17 @@ const distPath = path.join(projectRoot, 'dist');
 const uploadRoot = path.resolve(process.env.UPLOAD_DIR || path.join(projectRoot, 'uploads', 'private'));
 const projectUploadRoot = path.resolve(process.env.PROJECT_UPLOAD_DIR || path.join(projectRoot, 'uploads', 'public', 'projects'));
 const port = Number(process.env.PORT || 3000);
+const productionMode = process.env.NODE_ENV === 'production';
 const stagingMode = ['1', 'true', 'yes'].includes(String(process.env.STAGING_MODE || '').trim().toLowerCase());
 const outboundMessagesEnabled = ['1', 'true', 'yes'].includes(String(process.env.OUTBOUND_MESSAGES_ENABLED || '').trim().toLowerCase());
 const secureCookie = process.env.COOKIE_SECURE === undefined
-  ? process.env.NODE_ENV === 'production'
+  ? productionMode
   : ['1', 'true', 'yes'].includes(String(process.env.COOKIE_SECURE).trim().toLowerCase());
 
 const requiredDbKeys = ['DATABASE_HOST', 'DATABASE_NAME', 'DATABASE_USER', 'DATABASE_PASSWORD'];
 const databaseConfigured = requiredDbKeys.every(key => Boolean(process.env[key]));
+type DatabaseStatus = 'not-configured' | 'unchecked' | 'connected' | 'unavailable';
+let databaseStatus: DatabaseStatus = databaseConfigured ? 'unchecked' : 'not-configured';
 let pool: Pool | null = null;
 if (databaseConfigured) {
   pool = mysql.createPool({
@@ -37,6 +40,43 @@ if (databaseConfigured) {
     connectionLimit: 5,
     charset: 'utf8mb4',
   });
+}
+
+const productionTables = ['users', 'projects', 'contact_enquiries', 'quote_requests', 'quote_request_files'] as const;
+const enquiryUnavailableMessage = "We couldn't send your enquiry, please call or email us.";
+
+class DatabaseUnavailableError extends Error {
+  constructor(message = enquiryUnavailableMessage) {
+    super(message);
+    this.name = 'DatabaseUnavailableError';
+  }
+}
+
+function databaseErrorCode(error: unknown) {
+  if (!error || typeof error !== 'object' || !('code' in error)) return 'unknown';
+  const code = String((error as { code?: unknown }).code || 'unknown');
+  return /^[A-Z0-9_]+$/.test(code) ? code : 'unknown';
+}
+
+function reportDatabaseFailure(context: string, error?: unknown) {
+  databaseStatus = pool ? 'unavailable' : 'not-configured';
+  const suffix = error ? ` code=${databaseErrorCode(error)}` : '';
+  console.error(`[database] ${context}.${suffix} Credentials and connection details were not logged.`);
+}
+
+async function verifyProductionDatabase() {
+  if (!productionMode) return;
+  if (!pool) {
+    reportDatabaseFailure('Production MySQL configuration is missing');
+    throw new DatabaseUnavailableError();
+  }
+  try {
+    for (const table of productionTables) await pool.query(`SELECT 1 FROM \`${table}\` LIMIT 0`);
+    databaseStatus = 'connected';
+  } catch (error) {
+    reportDatabaseFailure('Production MySQL is unreachable or its schema is incomplete', error);
+    throw new DatabaseUnavailableError();
+  }
 }
 
 type ContactRecord = { reference: string; name: string; email: string; phone: string; message: string; createdAt: string };
@@ -233,6 +273,7 @@ function localProjectById(id: string) {
 async function listProjects(includeUnpublished = false): Promise<ProjectRecord[]> {
   const activePool = pool;
   if (!activePool) {
+    if (productionMode) throw new DatabaseUnavailableError('Project information is temporarily unavailable. Please try again shortly.');
     return Array.from(localProjects.values()).filter(project => includeUnpublished || project.published);
   }
 
@@ -334,32 +375,69 @@ async function saveProjectToDatabase(input: ProjectInput, projectId?: number) {
 
 async function saveContact(data: z.infer<typeof contactSchema>, publicReference: string) {
   const createdAt = new Date().toISOString();
-  localContacts.push({ reference: publicReference, name: data.name, email: data.email, phone: data.phone, message: data.message, createdAt });
-  if (pool) {
-    await pool.execute(
-      'INSERT INTO contact_enquiries (public_reference, name, email, telephone, preferred_contact_method, message, source_page, privacy_consent, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())',
-      [publicReference, data.name, data.email, data.phone, data.preferredContact, data.message, data.source, true],
-    );
+  if (!pool) {
+    if (productionMode) throw new DatabaseUnavailableError();
+    localContacts.push({ reference: publicReference, name: data.name, email: data.email, phone: data.phone, message: data.message, createdAt });
+  } else {
+    try {
+      await pool.execute(
+        'INSERT INTO contact_enquiries (public_reference, name, email, telephone, preferred_contact_method, message, source_page, privacy_consent, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+        [publicReference, data.name, data.email, data.phone, data.preferredContact, data.message, data.source, true],
+      );
+      databaseStatus = 'connected';
+    } catch (error) {
+      reportDatabaseFailure('Contact enquiry could not be stored', error);
+      throw new DatabaseUnavailableError();
+    }
   }
   const notification = await sendNotification({ kind: 'contact', reference: publicReference, name: data.name, email: data.email, summary: data.message });
-  if (pool) await pool.execute('UPDATE contact_enquiries SET notification_status = ?, notification_error = ? WHERE public_reference = ?', [notification.status, notification.error || null, publicReference]);
+  if (pool) {
+    try {
+      await pool.execute('UPDATE contact_enquiries SET notification_status = ?, notification_error = ? WHERE public_reference = ?', [notification.status, notification.error || null, publicReference]);
+    } catch (error) {
+      reportDatabaseFailure('Contact notification status could not be updated after the enquiry was stored', error);
+    }
+  }
   return createdAt;
 }
 
 async function saveQuote(data: z.infer<typeof quoteSchema>, publicReference: string, files: { storedFilename: string; originalName: string; mimeType: string; size: number }[]) {
   const createdAt = new Date().toISOString();
-  localQuotes.push({ reference: publicReference, projectType: data.projectType, contactName: data.contactName, email: data.email, files: files.map(file => file.originalName), createdAt });
-  if (pool) {
-    const [result] = await pool.execute<ResultSetHeader>(
-      'INSERT INTO quote_requests (public_reference, project_type, property_type, postcode, description, project_stage, budget_range, desired_start, contact_name, email, telephone, preferred_contact_method, privacy_consent, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
-      [publicReference, data.projectType, data.propertyType, data.postcode, data.description, data.stage, data.budget, data.start, data.contactName, data.email, data.phone, data.preferredContact, true],
-    );
-    for (const file of files) {
-      await pool.execute('INSERT INTO quote_request_files (quote_request_id, stored_filename, original_filename, mime_type, size_bytes, created_at) VALUES (?, ?, ?, ?, ?, NOW())', [result.insertId, file.storedFilename, file.originalName, file.mimeType, file.size]);
+  if (!pool) {
+    if (productionMode) throw new DatabaseUnavailableError();
+    localQuotes.push({ reference: publicReference, projectType: data.projectType, contactName: data.contactName, email: data.email, files: files.map(file => file.originalName), createdAt });
+  } else {
+    const connection = await pool.getConnection().catch(error => {
+      reportDatabaseFailure('Quote database connection could not be acquired', error);
+      throw new DatabaseUnavailableError();
+    });
+    try {
+      await connection.beginTransaction();
+      const [result] = await connection.execute<ResultSetHeader>(
+        'INSERT INTO quote_requests (public_reference, project_type, property_type, postcode, description, project_stage, budget_range, desired_start, contact_name, email, telephone, preferred_contact_method, privacy_consent, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+        [publicReference, data.projectType, data.propertyType, data.postcode, data.description, data.stage, data.budget, data.start, data.contactName, data.email, data.phone, data.preferredContact, true],
+      );
+      for (const file of files) {
+        await connection.execute('INSERT INTO quote_request_files (quote_request_id, stored_filename, original_filename, mime_type, size_bytes, created_at) VALUES (?, ?, ?, ?, ?, NOW())', [result.insertId, file.storedFilename, file.originalName, file.mimeType, file.size]);
+      }
+      await connection.commit();
+      databaseStatus = 'connected';
+    } catch (error) {
+      await connection.rollback().catch(() => undefined);
+      reportDatabaseFailure('Quote request and file records could not be stored atomically', error);
+      throw new DatabaseUnavailableError();
+    } finally {
+      connection.release();
     }
   }
   const notification = await sendNotification({ kind: 'quote', reference: publicReference, name: data.contactName, email: data.email, summary: `${data.projectType} — ${data.postcode}` });
-  if (pool) await pool.execute('UPDATE quote_requests SET notification_status = ?, notification_error = ? WHERE public_reference = ?', [notification.status, notification.error || null, publicReference]);
+  if (pool) {
+    try {
+      await pool.execute('UPDATE quote_requests SET notification_status = ?, notification_error = ? WHERE public_reference = ?', [notification.status, notification.error || null, publicReference]);
+    } catch (error) {
+      reportDatabaseFailure('Quote notification status could not be updated after the quote was stored', error);
+    }
+  }
   return createdAt;
 }
 
@@ -370,16 +448,23 @@ function adminRequired(req: Request, res: Response, next: NextFunction) {
 }
 
 async function healthPayload() {
-  let database = 'not-configured';
+  let database: DatabaseStatus = pool ? databaseStatus : 'not-configured';
   if (pool) {
-    try { await pool.query('SELECT 1'); database = 'connected'; } catch { database = 'unavailable'; }
+    try {
+      if (productionMode) await verifyProductionDatabase();
+      else await pool.query('SELECT 1');
+      database = 'connected';
+    } catch {
+      database = 'unavailable';
+    }
   }
-  const payload: { status: string; service: string; timestamp: string; database?: string } = { status: 'ok', service: 'omni-development-site', timestamp: new Date().toISOString() };
+  const degraded = productionMode && database !== 'connected';
+  const payload: { status: string; service: string; timestamp: string; database?: string } = { status: degraded ? 'degraded' : 'ok', service: 'omni-development-site', timestamp: new Date().toISOString() };
   if (!stagingMode) payload.database = database;
-  return payload;
+  return { statusCode: degraded ? 503 : 200, payload };
 }
 
-app.get(['/health', '/api/health'], async (_req, res) => { res.json(await healthPayload()); });
+app.get(['/health', '/api/health'], async (_req, res) => { const health = await healthPayload(); res.status(health.statusCode).json(health.payload); });
 
 app.get('/api/site-settings', (_req, res) => res.json({ name: 'Omni Developments', area: 'Greater Manchester & Cheshire', phone: process.env.PUBLIC_PHONE || '07928 149 731', email: process.env.PUBLIC_EMAIL || 'admin@omnidevelopment.co.uk', whatsapp: process.env.PUBLIC_WHATSAPP || 'https://wa.me/447928149731', stagingMode, outboundMessagesEnabled }));
 
@@ -400,7 +485,7 @@ app.post('/api/contact', contactLimiter, async (req, res, next) => {
   if (parsed.data?.website) return res.status(400).json({ message: 'Unable to process this enquiry.' });
   if (!parsed.data) return res.status(400).json({ message: parsed.message });
   const publicReference = reference('ENQ');
-  try { await saveContact(parsed.data, publicReference); res.status(201).json({ reference: publicReference, message: 'Your enquiry has been received. We will follow up using the details you provided.' }); } catch (error) { next(error); }
+  try { await verifyProductionDatabase(); await saveContact(parsed.data, publicReference); res.status(201).json({ reference: publicReference, message: 'Your enquiry has been received. We will follow up using the details you provided.' }); } catch (error) { next(error); }
 });
 
 app.post('/api/quote', quoteLimiter, upload.array('files', 8), async (req, res, next) => {
@@ -410,6 +495,7 @@ app.post('/api/quote', quoteLimiter, upload.array('files', 8), async (req, res, 
   if (files.some(file => !validMagic(file))) return res.status(400).json({ message: 'One or more uploads could not be verified as a supported file type.' });
   const storedFiles: { storedFilename: string; originalName: string; mimeType: string; size: number }[] = [];
   try {
+    await verifyProductionDatabase();
     if (files.length) await fs.mkdir(uploadRoot, { recursive: true });
     for (const file of files) {
       const storedFilename = `${crypto.randomUUID()}.${safeExtension(file)}`;
@@ -419,7 +505,10 @@ app.post('/api/quote', quoteLimiter, upload.array('files', 8), async (req, res, 
     const publicReference = reference('QTE');
     await saveQuote(parsed.data, publicReference, storedFiles);
     res.status(201).json({ reference: publicReference, message: 'Your quote request has been received.', files: storedFiles.map(file => file.originalName) });
-  } catch (error) { next(error); }
+  } catch (error) {
+    await Promise.all(storedFiles.map(file => fs.unlink(path.join(uploadRoot, file.storedFilename)).catch(() => undefined)));
+    next(error);
+  }
 });
 
 app.post('/api/admin/project-images', adminRequired, upload.array('images', 8), async (req, res, next) => {
@@ -558,16 +647,23 @@ app.use(async (req, res, next) => {
   next();
 });
 app.use((_req, res) => res.status(404).json({ message: 'Not found.' }));
-app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => { if (error instanceof multer.MulterError) return res.status(400).json({ message: error.code === 'LIMIT_FILE_SIZE' ? 'Each upload must be 8 MB or smaller.' : 'Upload could not be processed.' }); console.error(error); res.status(500).json({ message: 'The request could not be completed. Please try again.' }); });
+app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => { if (error instanceof multer.MulterError) return res.status(400).json({ message: error.code === 'LIMIT_FILE_SIZE' ? 'Each upload must be 8 MB or smaller.' : 'Upload could not be processed.' }); if (error instanceof DatabaseUnavailableError) return res.status(503).json({ message: error.message }); console.error(error); res.status(500).json({ message: 'The request could not be completed. Please try again.' }); });
 
 async function startServer() {
-  try {
-    await bootstrapAdministrator();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'unknown database bootstrap error';
-    console.error(`Administrator bootstrap failed: ${message}`);
-    process.exitCode = 1;
-    return;
+  if (productionMode) {
+    try {
+      await verifyProductionDatabase();
+      await bootstrapAdministrator();
+    } catch (error) {
+      if (!(error instanceof DatabaseUnavailableError)) reportDatabaseFailure('Administrator bootstrap could not be completed', error);
+      console.error('[database] Server is starting in degraded mode. Public enquiries are disabled until MySQL and its schema are available.');
+    }
+  } else {
+    try {
+      await bootstrapAdministrator();
+    } catch (error) {
+      reportDatabaseFailure('Development administrator bootstrap could not be completed', error);
+    }
   }
   const server = app.listen(port, '0.0.0.0', () => process.stdout.write(`Omni Development server listening on port ${port}${stagingMode ? ' (temporary review mode)' : ''}\n`));
   let shuttingDown = false;

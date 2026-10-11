@@ -10,10 +10,13 @@
     "dev": "concurrently \"vite --host 0.0.0.0\" \"tsx server/server.ts\"",
     "build": "vite build && tsc -p server/tsconfig.json",
     "start": "node dist-server/server.js",
-    "test": "vitest run",
-    "typecheck": "tsc -p client/tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit",
+    "test": "node scripts/generate-schema.cjs --check && vitest run --config vitest.config.mts",
+    "test:mysql": "vitest run --config vitest.mysql.config.mts",
+    "typecheck": "tsc -p client/tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit && tsc -p server/tsconfig.test.json --noEmit",
     "lint": "tsc -p client/tsconfig.json --noEmit",
-    "db:migrate": "node scripts/migrate.js"
+    "db:migrate": "node scripts/migrate.js",
+    "db:schema:generate": "node scripts/generate-schema.cjs",
+    "db:schema:check": "node scripts/generate-schema.cjs --check"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^6.1.1",
