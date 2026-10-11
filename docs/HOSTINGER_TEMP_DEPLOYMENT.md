@@ -20,6 +20,7 @@ production database connection was performed.
 | Migration system | Ordered SQL files in `database/migrations/`, run by `npm run db:migrate` |
 | Database driver | `mysql2/promise` pool in the Express server |
 | Health URL | `/health` (safe response) and `/api/health` |
+| Deployment branch | `hostinger-temporary-review` |
 
 The server reads the Hostinger-provided `PORT`, binds to `0.0.0.0`, serves the Vite
 build and supports direct refreshes for the registered React routes. API requests use
@@ -32,11 +33,16 @@ Use `.env.hostinger.example` as the names-only checklist. Configure values in
 Hostinger's environment settings; do not upload `.env` or place credentials in this
 repository.
 
-Required for the configured application/database:
+Required for the configured temporary application/database:
 
 `NODE_ENV`, `PORT`, `APP_URL`, `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`,
 `DATABASE_USER`, `DATABASE_PASSWORD`, `TRUST_PROXY`, `COOKIE_SECURE`,
 `STAGING_MODE`, and `OUTBOUND_MESSAGES_ENABLED`.
+
+`SESSION_SECRET` should also be generated and stored in Hostinger now so it is
+available when database-backed staff sessions are introduced. The current build
+does not yet consume it; staff sessions are process-memory only and are cleared by
+a restart.
 
 For this temporary review domain use `STAGING_MODE=true` and
 `OUTBOUND_MESSAGES_ENABLED=false`. The server adds
@@ -47,24 +53,40 @@ enabled by this application.
 
 ## Database migration method
 
-The authoritative method is the checked-in migration runner:
+For the first Hostinger setup, the authoritative method is manual import through
+phpMyAdmin of:
 
 ```text
-npm run db:migrate
+deployment/hostinger-schema.sql
 ```
 
-It connects using the existing `DATABASE_*` convention, creates `schema_migrations`
-if needed, checks each migration version before execution, runs only unapplied SQL
-files in filename order, and records the migration version. Re-running the command
-skips applied files. The current migrations are:
+The combined file is additive and re-runnable. It creates the migration-history
+table, the tables required by the currently implemented site and project workspace,
+their foreign keys, and the existing neutral supplied-photo project records. It
+does not drop, truncate or delete data.
+
+The checked-in `npm run db:migrate` runner remains the authoritative mechanism for
+reviewed future additive migration files when the deployment environment provides a
+safe way to execute it. It connects using the same `DATABASE_*` variables, checks
+`schema_migrations`, and skips recorded versions. It is not required for the first
+Hostinger import because managed Node.js hosting does not provide a general npm-over-
+SSH workflow.
+
+The source migrations represented by the combined file are:
 
 1. `database/migrations/001_initial.sql` — current site, enquiry, quote, upload,
    project and audit tables.
 2. `database/migrations/002_project_content.sql` — project tags and supplied project
    content/media, guarded by `IF NOT EXISTS` and duplicate checks.
 
-No live database was connected during preparation. Run migrations only against the
-new Hostinger temporary database after checking the database name and user.
+No live database was connected during preparation. Import the combined schema only
+into the new Hostinger temporary database after checking the database name and user.
+Never import it into the existing production database.
+
+The current CRM navigation contains placeholder screens for leads, quotes, site
+visits, calendar, tasks and invoices. This batch does not expand those modules.
+Tables are included only for currently implemented users, settings, content,
+projects/media/tags, contact enquiries, quote requests/files and audit records.
 
 ## Administrator bootstrap
 
@@ -88,24 +110,25 @@ database user records. Without MySQL, local development may use the existing
 
 Quote files are written to `UPLOAD_DIR` using randomized filenames and are not served
 by Express as public files. Project images use `PROJECT_UPLOAD_DIR` and are served
-publicly only when their project record is published. Both are local filesystem
-storage, not database or object storage. Configure persistent Hostinger storage and
-verify a file survives restart/redeployment before treating uploads as production
-safe. No executable upload types are accepted; file content is checked by magic bytes
-and the application limit is 8 MB per file.
+from the project upload route. Both currently use local filesystem storage, not the
+database or object storage. Configure absolute persistent Hostinger paths outside a
+release/build directory and verify that both file types survive a restart and a
+redeployment before treating uploads as safe. No executable upload types are
+accepted; file content is checked by magic bytes and the application limit is 8 MB
+per file.
 
 ## Hostinger values to enter
 
 | Setting | Value |
 | --- | --- |
-| Framework selection | Node.js application (manual/custom application if offered) |
+| Framework selection | Express.js when detected; otherwise Node.js `Other`/custom application |
 | Node version | Node 20 LTS or newer; local verification used Node 24.15.0 |
 | Application/root directory | Upload the prepared package contents to the application root selected in Hostinger |
 | Build command | `npm run build` |
 | Output directory | `dist` (generated frontend; Express also needs `dist-server`) |
 | Entry file | `dist-server/server.js` |
 | Start command | `npm start` |
-| Database migration | `npm run db:migrate` over the deployment shell after environment setup |
+| Database migration | Import `deployment/hostinger-schema.sql` through phpMyAdmin before first start |
 | Health URL | `/health` |
 
 Do not hardcode a port. Do not use the current live Omni domain or its database.
@@ -114,21 +137,22 @@ Do not hardcode a port. Do not use the current live Omni domain or its database.
 
 The local production-shaped server passed the public route, form, staff login/logout,
 upload validation and project publishing checks previously recorded in
-`TEST_REPORT.md`. The current build also passes `npm test`, `npm run lint`,
-`npm run typecheck` and `npm run build`. MySQL was not available locally, so direct
-database-row persistence and a real Hostinger migration run remain unverified.
+`TEST_REPORT.md`. The current temporary-package verification is recorded there as
+well. MySQL was not available locally, so direct database-backed public-form and
+restart-persistence checks remain unverified and must be completed on the new
+temporary Hostinger database before acceptance.
 
 ## Deployment package
 
 The prepared ZIP is:
 
-`C:\Users\Natty\Desktop\Anti Grav\Omni\deployment\omni-hostinger-temporary-review-final.zip`
+`C:\Users\Natty\Desktop\Anti Grav\Omni\deployment\omni-hostinger-temporary-review-20261011.zip`
 
-It excludes `node_modules`,
-`.git`, `.env` files, generated build output, QA screenshots/reports, Stitch/source
-reference folders, local uploads, local database files and logs. It includes the
-application source, public images, migrations, package lockfile and environment
-examples.
+It excludes `node_modules`, `.git`, `.env` files, generated build output, QA
+screenshots/reports, Stitch/source reference folders, local uploads, local database
+files and logs. It includes the application source, public images, ordered source
+migrations, `deployment/hostinger-schema.sql`, the package lockfile and names-only
+environment examples.
 
 ## Rollback and safety
 

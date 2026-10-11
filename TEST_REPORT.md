@@ -1,5 +1,34 @@
 # Omni Development final pre-deployment review
 
+## Temporary Hostinger preparation update — 2026-10-11
+
+Preparation is isolated on branch `hostinger-temporary-review`; nothing was
+deployed, pushed or connected to the live Omni domain or database.
+
+Current verification:
+
+| Check | Result |
+| --- | --- |
+| `npm run lint` | Passed |
+| `npm run typecheck` | Passed |
+| `npm test` | Passed: 1 file, 3 tests |
+| `npm run build` | Passed; bundle-size warning remains |
+| Production-shaped staging start | Passed on `process.env.PORT=3202`, bound by the application to `0.0.0.0` |
+| Required direct routes | Passed: 12/12 returned HTTP 200 |
+| Browser/layout/Axe suite | Passed: 60 screenshots, 60 layout checks, 60 accessibility checks, 0 failures |
+| Public contact and quote UI | Passed in the development-only memory fallback; quote double-submit protection passed |
+| Staff authentication/project workflow | Passed in the isolated local authentication test |
+| Staging protection | Passed: response `X-Robots-Tag`, blocking `robots.txt`, safe health response and outbound messaging disabled |
+| MySQL-backed public forms | **Blocked locally:** no disposable MySQL service or credentials were available |
+| Upload persistence after redeploy | **Blocked:** requires verification on the new Hostinger temporary application storage |
+
+The authoritative first-install database file is
+`deployment/hostinger-schema.sql`, intended for the new Hostinger database only.
+Static review confirms conditional table creation, guarded seed inserts, migration
+history records and cascading foreign keys for quote files, project media and
+project tags. Runtime import and second-import verification remain required in the
+new temporary MySQL database before acceptance.
+
 Date: 2026-09-07
 
 Status: **INCOMPLETE for Hostinger temporary deployment**; **READY FOR OWNER VISUAL

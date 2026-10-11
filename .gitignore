@@ -7,7 +7,8 @@ uploads/private/
 uploads/
 qa/
 visual-qa/
-deployment/
+deployment/*
+!deployment/hostinger-schema.sql
 design-reference/
 visual-reference/
 Photos/

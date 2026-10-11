@@ -16,7 +16,7 @@ The repository contains names only in `.env.example`. Values below are required 
 | `DATABASE_NAME` | production | MySQL database name. |
 | `DATABASE_USER` | production | MySQL user. |
 | `DATABASE_PASSWORD` | production | MySQL password. |
-| `SESSION_SECRET` | before production admin auth | Reserved for the production session adapter. |
+| `SESSION_SECRET` | configure now | Reserved for the planned persistent session adapter; the current temporary build still uses process-memory sessions. |
 | `BOOTSTRAP_ADMIN_EMAIL` | one-time setup only | Database administrator email used only when no owner/admin exists. |
 | `BOOTSTRAP_ADMIN_PASSWORD` | one-time setup only | Plaintext bootstrap input held only in Hostinger environment settings; remove after first login. |
 | `BOOTSTRAP_ADMIN_NAME` | optional | Display name for the one-time bootstrap administrator. |
