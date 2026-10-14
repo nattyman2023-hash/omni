@@ -1,0 +1,25 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Dynamic crawler files use the configured public URL and staging mode.
+RewriteRule ^robots\.txt$ api/index.php?resource=robots [QSA,L]
+RewriteRule ^sitemap\.xml$ api/index.php?resource=sitemap [QSA,L]
+
+# Send API requests to the PHP front controller.
+RewriteRule ^api/index\.php$ - [L]
+RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]
+
+# Leave real assets and uploaded project images alone.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# React owns all other browser routes.
+RewriteRule ^ index.html [L]
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
