@@ -6,6 +6,7 @@ dist-server/
 .env.test
 .env.test.local
 .env.*.local
+php/api/config.local.php
 uploads/private/
 uploads/
 qa/

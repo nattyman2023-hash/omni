@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "concurrently \"vite --host 0.0.0.0\" \"tsx server/server.ts\"",
     "build": "vite build && tsc -p server/tsconfig.json",
+    "build:php": "vite build && node scripts/build-php-deployment.cjs",
     "start": "node dist-server/server.js",
     "test": "node scripts/generate-schema.cjs --check && vitest run --config vitest.config.mts",
     "test:mysql": "vitest run --config vitest.mysql.config.mts",

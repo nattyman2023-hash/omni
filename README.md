@@ -2,6 +2,8 @@
 
 A Hostinger-compatible React/Vite frontend with an Express API for Omni Developments. The public website is built from the supplied Stitch exports and supplied project photography, with reusable service, project, area and guide templates.
 
+For ordinary shared hosting, the repository also includes a PHP 8.1 + MySQL API with the same frontend contract. This keeps the React interface while removing the need for a continuously running Node process. See `DEPLOYMENT_PHP.md`.
+
 ## Local preview
 
 Requirements: Node.js 20 LTS or newer and npm.
@@ -23,6 +25,8 @@ npm start
 Open `http://localhost:3000`.
 
 ## Available commands
+
+Use `npm run build:php` to create the PHP shared-hosting upload package in `deployment/php-public-html`.
 
 - `npm run dev` — Vite and Express development servers.
 - `npm run build` — production frontend build plus compiled server.
