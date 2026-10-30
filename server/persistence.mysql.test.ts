@@ -1,73 +1,12 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
-import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import bcrypt from 'bcryptjs';
-import mysql, { type Connection } from 'mysql2/promise';
+import mysql from 'mysql2/promise';
 import { describe, expect, it } from 'vitest';
-
-type DbConfig = { host: string; port: number; database: string; user: string; password: string };
-
-function requiredTestDatabase(): DbConfig {
-  const required = ['TEST_DATABASE_HOST', 'TEST_DATABASE_PORT', 'TEST_DATABASE_NAME', 'TEST_DATABASE_USER', 'TEST_DATABASE_PASSWORD'] as const;
-  const missing = required.filter(key => !process.env[key]);
-  if (missing.length) {
-    throw new Error(`MySQL persistence verification requires ${missing.join(', ')}. No test was skipped.`);
-  }
-
-  const config = {
-    host: String(process.env.TEST_DATABASE_HOST),
-    port: Number(process.env.TEST_DATABASE_PORT),
-    database: String(process.env.TEST_DATABASE_NAME),
-    user: String(process.env.TEST_DATABASE_USER),
-    password: String(process.env.TEST_DATABASE_PASSWORD),
-  };
-
-  if (!Number.isInteger(config.port) || config.port < 1 || config.port > 65535) {
-    throw new Error('TEST_DATABASE_PORT must be an integer from 1 to 65535.');
-  }
-
-  if (!/(test|qa|sandbox)/i.test(config.database) || /(prod|production|live)/i.test(config.database)) {
-    throw new Error('TEST_DATABASE_NAME must clearly identify a disposable test/QA/sandbox database and must not contain prod, production or live.');
-  }
-
-  const productionName = String(process.env.DATABASE_NAME || '').trim();
-  if (productionName && config.database.toLowerCase() === productionName.toLowerCase()) {
-    throw new Error('Safety stop: TEST_DATABASE_NAME matches DATABASE_NAME.');
-  }
-
-  const productionConfigured = ['DATABASE_HOST', 'DATABASE_NAME', 'DATABASE_USER', 'DATABASE_PASSWORD'].every(key => Boolean(process.env[key]));
-  if (productionConfigured) {
-    const sameConfiguration = config.host.toLowerCase() === String(process.env.DATABASE_HOST).toLowerCase()
-      && config.port === Number(process.env.DATABASE_PORT || 3306)
-      && config.database.toLowerCase() === String(process.env.DATABASE_NAME).toLowerCase()
-      && config.user.toLowerCase() === String(process.env.DATABASE_USER).toLowerCase()
-      && config.password === String(process.env.DATABASE_PASSWORD);
-    if (sameConfiguration) throw new Error('Safety stop: test and production database configurations are identical.');
-  }
-
-  return config;
-}
-
-async function applyAuthoritativeMigrations(connection: Connection) {
-  const migrationDir = path.resolve('database', 'migrations');
-  const files = (await fs.readdir(migrationDir)).filter(file => /^\d+.*\.sql$/i.test(file)).sort();
-  for (const file of files) await connection.query(await fs.readFile(path.join(migrationDir, file), 'utf8'));
-}
-
-async function availablePort() {
-  return await new Promise<number>((resolve, reject) => {
-    const probe = net.createServer();
-    probe.once('error', reject);
-    probe.listen(0, '127.0.0.1', () => {
-      const address = probe.address();
-      if (!address || typeof address === 'string') return reject(new Error('Could not reserve a local test port.'));
-      probe.close(error => error ? reject(error) : resolve(address.port));
-    });
-  });
-}
+import { applyAuthoritativeMigrations, availablePort, requiredTestDatabase, type DbConfig } from './mysql.test-support';
 
 async function startApplication(config: DbConfig, port: number, uploadRoot: string) {
   const entry = path.resolve('dist-server', 'server.js');
@@ -184,8 +123,29 @@ describe('MySQL persistence across an application restart', () => {
         body: JSON.stringify({ email: adminEmail, password: adminPassword }),
       });
       expect(loginResponse.status).toBe(200);
-      const cookie = String(loginResponse.headers.get('set-cookie') || '').split(';', 1)[0];
+      const setCookie = String(loginResponse.headers.get('set-cookie') || '');
+      const cookie = setCookie.split(';', 1)[0];
       expect(cookie).toContain('omni_staff_session=');
+      expect(setCookie).toMatch(/HttpOnly/i);
+      expect(setCookie).toMatch(/SameSite=Lax/i);
+
+      const wrongPassword = await fetch(`${baseUrl}/api/admin/login`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: adminEmail, password: `${adminPassword}-wrong` }),
+      });
+      const unknownEmail = await fetch(`${baseUrl}/api/admin/login`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: `missing-${adminEmail}`, password: adminPassword }),
+      });
+      expect(wrongPassword.status).toBe(401);
+      expect(unknownEmail.status).toBe(401);
+      expect(await wrongPassword.json()).toEqual(await unknownEmail.json());
+
+      const session = await fetch(`${baseUrl}/api/admin/session`, { headers: { Cookie: cookie } });
+      expect(session.status).toBe(200);
+      expect(await session.json()).toMatchObject({ authenticated: true, user: { email: adminEmail, role: 'admin' } });
+      const [storedSessions] = await connection.execute<mysql.RowDataPacket[]>('SELECT token_hash FROM staff_sessions WHERE user_id = ?', [adminResult.insertId]);
+      expect(storedSessions).toEqual([{ token_hash: crypto.createHash('sha256').update(cookie.split('=')[1]).digest('hex') }]);
 
       const projectPayload = {
         slug: projectSlug,
@@ -217,6 +177,22 @@ describe('MySQL persistence across an application restart', () => {
       const projectAfterRestart = await fetch(`${secondRun.baseUrl}/api/projects/${projectSlug}`);
       expect(projectAfterRestart.status).toBe(200);
       expect((await projectAfterRestart.json() as { title: string }).title).toBe('Phase 1 persistence QA record updated');
+
+      const sessionAfterRestart = await fetch(`${secondRun.baseUrl}/api/admin/summary`, { headers: { Cookie: cookie } });
+      expect(sessionAfterRestart.status).toBe(200);
+      const leadFeed = await fetch(`${secondRun.baseUrl}/api/admin/leads`, { headers: { Cookie: cookie } });
+      expect(leadFeed.status).toBe(200);
+      expect((await leadFeed.json() as { records: Array<{ reference: string }> }).records.some(record => record.reference === contactReference)).toBe(true);
+      const quoteFeed = await fetch(`${secondRun.baseUrl}/api/admin/quotes`, { headers: { Cookie: cookie } });
+      expect(quoteFeed.status).toBe(200);
+      expect((await quoteFeed.json() as { records: Array<{ reference: string }> }).records.some(record => record.reference === quoteReference)).toBe(true);
+
+      const logout = await fetch(`${secondRun.baseUrl}/api/admin/logout`, { method: 'POST', headers: { Cookie: cookie } });
+      expect(logout.status).toBe(204);
+      const afterLogout = await fetch(`${secondRun.baseUrl}/api/admin/summary`, { headers: { Cookie: cookie } });
+      expect(afterLogout.status).toBe(401);
+      const staleLogout = await fetch(`${secondRun.baseUrl}/api/admin/logout`, { method: 'POST', headers: { Cookie: cookie } });
+      expect(staleLogout.status).toBe(204);
 
       const [contacts] = await connection.execute<mysql.RowDataPacket[]>('SELECT id FROM contact_enquiries WHERE public_reference = ? AND email = ?', [contactReference, contactEmail]);
       const [quotes] = await connection.execute<mysql.RowDataPacket[]>('SELECT id FROM quote_requests WHERE public_reference = ? AND email = ?', [quoteReference, quoteEmail]);

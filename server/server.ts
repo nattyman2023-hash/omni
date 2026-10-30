@@ -23,6 +23,10 @@ const outboundMessagesEnabled = ['1', 'true', 'yes'].includes(String(process.env
 const secureCookie = process.env.COOKIE_SECURE === undefined
   ? productionMode
   : ['1', 'true', 'yes'].includes(String(process.env.COOKIE_SECURE).trim().toLowerCase());
+// reCAPTCHA v2 is enforced on public forms only when both keys are configured.
+const recaptchaSiteKey = String(process.env.RECAPTCHA_SITE_KEY || '').trim();
+const recaptchaSecretKey = String(process.env.RECAPTCHA_SECRET_KEY || '').trim();
+const recaptchaEnabled = Boolean(recaptchaSiteKey && recaptchaSecretKey);
 
 const requiredDbKeys = ['DATABASE_HOST', 'DATABASE_NAME', 'DATABASE_USER', 'DATABASE_PASSWORD'];
 const databaseConfigured = requiredDbKeys.every(key => Boolean(process.env[key]));
@@ -42,7 +46,7 @@ if (databaseConfigured) {
   });
 }
 
-const productionTables = ['users', 'projects', 'contact_enquiries', 'quote_requests', 'quote_request_files'] as const;
+const productionTables = ['users', 'projects', 'contact_enquiries', 'quote_requests', 'quote_request_files', 'staff_sessions', 'activity_audit_records', 'crm_site_visits', 'crm_tasks', 'crm_calendar_events', 'crm_invoices'] as const;
 const enquiryUnavailableMessage = "We couldn't send your enquiry, please call or email us.";
 
 class DatabaseUnavailableError extends Error {
@@ -100,7 +104,7 @@ type ProjectRecord = {
 const localContacts: ContactRecord[] = [];
 const localQuotes: QuoteRecord[] = [];
 const localProjects = new Map<string, ProjectRecord>();
-const sessions = new Map<string, number>();
+const localSessions = new Map<string, number>();
 
 const LOCAL_PROJECTS: Omit<ProjectRecord, 'id' | 'createdAt' | 'updatedAt'>[] = [
   {
@@ -147,7 +151,9 @@ LOCAL_PROJECTS.forEach((project, index) => {
 
 const app = express();
 app.disable('x-powered-by');
-if (process.env.TRUST_PROXY) app.set('trust proxy', process.env.TRUST_PROXY);
+// Express treats a string as an address list, so a hop count such as Hostinger's TRUST_PROXY=1 must be numeric.
+const trustProxy = String(process.env.TRUST_PROXY || '').trim();
+if (trustProxy) app.set('trust proxy', /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy === 'true' ? true : trustProxy);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 if (stagingMode) app.use((_req, res, next) => { res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive'); next(); });
 app.use(cookieParser());
@@ -156,6 +162,7 @@ app.use(express.urlencoded({ extended: true, limit: '150kb' }));
 
 const contactLimiter = rateLimit({ windowMs: 10 * 60 * 1000, limit: 8, standardHeaders: 'draft-7', legacyHeaders: false, message: { message: 'Too many enquiries from this network. Please try again shortly.' } });
 const quoteLimiter = rateLimit({ windowMs: 20 * 60 * 1000, limit: 4, standardHeaders: 'draft-7', legacyHeaders: false, message: { message: 'Too many quote requests from this network. Please try again shortly.' } });
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false, message: { message: 'Too many sign-in attempts. Please wait and try again.' } });
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024, files: 8, fieldSize: 30 * 1024 },
@@ -238,19 +245,48 @@ function parseBody<T extends z.ZodTypeAny>(schema: T, body: unknown) {
   return { data: result.data as z.infer<T>, message: '' } as const;
 }
 
+/** Returns an error message when the submitted reCAPTCHA token is missing or rejected; empty string when it passes. */
+async function recaptchaFailure(body: unknown, remoteIp: string | undefined) {
+  if (!recaptchaEnabled) return '';
+  const token = String((body as Record<string, unknown> | undefined)?.recaptchaToken || '').trim();
+  if (!token || token.length > 4000) return 'Please tick the "I\'m not a robot" box before sending.';
+  try {
+    const params = new URLSearchParams({ secret: recaptchaSecretKey, response: token });
+    if (remoteIp) params.set('remoteip', remoteIp);
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', { method: 'POST', body: params, signal: AbortSignal.timeout(8000) });
+    const result = await response.json() as { success?: boolean };
+    return result.success ? '' : 'The robot check expired or failed. Please tick the box again.';
+  } catch (error) {
+    console.error('reCAPTCHA verification unavailable', error);
+    return "We couldn't verify the robot check. Please try again or call us.";
+  }
+}
+
 async function bootstrapAdministrator() {
   if (!pool) return;
   const email = String(process.env.BOOTSTRAP_ADMIN_EMAIL || '').trim().toLowerCase();
   const password = String(process.env.BOOTSTRAP_ADMIN_PASSWORD || '');
   const displayName = String(process.env.BOOTSTRAP_ADMIN_NAME || 'Omni Administrator').trim().slice(0, 120);
-  if (!email || !password) return;
+  if (!email || password.length < 12) return;
   const [adminRows] = await pool.execute('SELECT id FROM users WHERE role IN (\'owner\', \'admin\') LIMIT 1');
   if ((adminRows as Array<{ id: number }>).length > 0) return;
-  const [existingRows] = await pool.execute('SELECT id FROM users WHERE email = ? LIMIT 1', [email]);
-  if ((existingRows as Array<{ id: number }>).length > 0) return;
   const passwordHash = await bcrypt.hash(password, 12);
-  await pool.execute('INSERT INTO users (email, password_hash, display_name, role, is_active) VALUES (?, ?, ?, \'owner\', TRUE)', [email, passwordHash, displayName]);
-  process.stdout.write('Administrator bootstrap completed. Remove BOOTSTRAP_ADMIN_PASSWORD after the first successful login.\n');
+  await pool.execute(
+    "INSERT INTO users (email, password_hash, display_name, role, is_active) SELECT ?, ?, ?, 'owner', TRUE WHERE NOT EXISTS (SELECT 1 FROM users WHERE role IN ('owner','admin'))",
+    [email, passwordHash, displayName],
+  );
+}
+
+async function auditAuthentication(userId: number | null, action: string, email: string) {
+  if (!pool) return;
+  try {
+    await pool.execute(
+      "INSERT INTO activity_audit_records (user_id, action, entity_type, entity_id, metadata) VALUES (?, ?, 'authentication', ?, ?)",
+      [userId, action, userId, JSON.stringify({ emailHash: crypto.createHash('sha256').update(email.trim().toLowerCase()).digest('hex') })],
+    );
+  } catch {
+    console.error('[authentication] Audit record could not be stored.');
+  }
 }
 
 type ProjectInput = z.infer<typeof projectSchema>;
@@ -441,10 +477,44 @@ async function saveQuote(data: z.infer<typeof quoteSchema>, publicReference: str
   return createdAt;
 }
 
-function adminRequired(req: Request, res: Response, next: NextFunction) {
+type StaffUser = { id: number; email: string; name: string; role: string };
+const staffUnavailableMessage = 'The staff system is temporarily unavailable. Please contact the administrator.';
+// Compared against when an email is unknown so login timing does not reveal which accounts exist.
+const unknownUserHash = bcrypt.hashSync(crypto.randomBytes(18).toString('hex'), 12);
+
+function sessionTokenHash(token: string) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+async function currentStaffUser(req: Request): Promise<StaffUser | null> {
   const token = req.cookies?.omni_staff_session as string | undefined;
-  if (!token || !sessions.has(token) || (sessions.get(token) || 0) < Date.now()) return res.status(401).json({ message: 'Staff authentication required.' });
-  next();
+  if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
+  if (!pool) {
+    if (productionMode || !localSessions.has(token) || (localSessions.get(token) || 0) < Date.now()) return null;
+    return { id: 0, email: String(process.env.ADMIN_EMAIL || ''), name: 'Development administrator', role: 'owner' };
+  }
+  const tokenHash = sessionTokenHash(token);
+  const [rows] = await pool.execute(
+    "SELECT u.id, u.email, u.display_name AS name, u.role FROM staff_sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > UTC_TIMESTAMP() AND u.is_active = TRUE AND u.role IN ('owner','admin','staff') LIMIT 1",
+    [tokenHash],
+  );
+  const user = (rows as StaffUser[])[0];
+  if (!user) return null;
+  await pool.execute('UPDATE staff_sessions SET last_seen_at = CURRENT_TIMESTAMP WHERE token_hash = ?', [tokenHash]);
+  return user;
+}
+
+async function adminRequired(req: Request, res: Response, next: NextFunction) {
+  if (!req.cookies?.omni_staff_session) return res.status(401).json({ message: 'Staff authentication required.' });
+  if (!pool && productionMode) return res.status(503).json({ message: 'Staff access has not been configured.' });
+  try {
+    const user = await currentStaffUser(req);
+    if (!user) return res.status(401).json({ message: 'Staff authentication required.' });
+    res.locals.staffUser = user;
+    return next();
+  } catch {
+    return res.status(503).json({ message: staffUnavailableMessage });
+  }
 }
 
 async function healthPayload() {
@@ -466,7 +536,7 @@ async function healthPayload() {
 
 app.get(['/health', '/api/health'], async (_req, res) => { const health = await healthPayload(); res.status(health.statusCode).json(health.payload); });
 
-app.get('/api/site-settings', (_req, res) => res.json({ name: 'Omni Developments', area: 'Greater Manchester & Cheshire', phone: process.env.PUBLIC_PHONE || '07928 149 731', email: process.env.PUBLIC_EMAIL || 'admin@omnidevelopment.co.uk', whatsapp: process.env.PUBLIC_WHATSAPP || 'https://wa.me/447928149731', stagingMode, outboundMessagesEnabled }));
+app.get('/api/site-settings', (_req, res) => res.json({ name: 'Omni Developments', area: 'Greater Manchester & Cheshire', phone: process.env.PUBLIC_PHONE || '07928 149 731', email: process.env.PUBLIC_EMAIL || 'admin@omnidevelopment.co.uk', whatsapp: process.env.PUBLIC_WHATSAPP || 'https://wa.me/447928149731', stagingMode, outboundMessagesEnabled, recaptchaSiteKey: recaptchaEnabled ? recaptchaSiteKey : '' }));
 
 app.get('/api/projects', async (_req, res, next) => {
   try { res.json({ projects: await listProjects(false), database: pool ? 'configured' : 'not-configured' }); } catch (error) { next(error); }
@@ -484,6 +554,8 @@ app.post('/api/contact', contactLimiter, async (req, res, next) => {
   const parsed = parseBody(contactSchema, req.body);
   if (parsed.data?.website) return res.status(400).json({ message: 'Unable to process this enquiry.' });
   if (!parsed.data) return res.status(400).json({ message: parsed.message });
+  const captchaError = await recaptchaFailure(req.body, req.ip);
+  if (captchaError) return res.status(400).json({ message: captchaError });
   const publicReference = reference('ENQ');
   try { await verifyProductionDatabase(); await saveContact(parsed.data, publicReference); res.status(201).json({ reference: publicReference, message: 'Your enquiry has been received. We will follow up using the details you provided.' }); } catch (error) { next(error); }
 });
@@ -493,6 +565,8 @@ app.post('/api/quote', quoteLimiter, upload.array('files', 8), async (req, res, 
   if (!parsed.data) return res.status(400).json({ message: parsed.message });
   const files = (req.files as Express.Multer.File[] | undefined) || [];
   if (files.some(file => !validMagic(file))) return res.status(400).json({ message: 'One or more uploads could not be verified as a supported file type.' });
+  const captchaError = await recaptchaFailure(req.body, req.ip);
+  if (captchaError) return res.status(400).json({ message: captchaError });
   const storedFiles: { storedFilename: string; originalName: string; mimeType: string; size: number }[] = [];
   try {
     await verifyProductionDatabase();
@@ -527,32 +601,65 @@ app.post('/api/admin/project-images', adminRequired, upload.array('images', 8), 
   } catch (error) { return next(error); }
 });
 
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
   let valid = false;
+  let userId: number | null = null;
   if (pool) {
     try {
-      const [rows] = await pool.execute('SELECT password_hash FROM users WHERE email = ? AND is_active = TRUE LIMIT 1', [email]);
-      const user = (rows as Array<{ password_hash: string }>)[0];
-      valid = Boolean(user) && await bcrypt.compare(password, user.password_hash);
+      await bootstrapAdministrator();
+      const [adminRows] = await pool.execute("SELECT id FROM users WHERE role IN ('owner','admin') LIMIT 1");
+      if (!(adminRows as Array<{ id: number }>).length) return res.status(503).json({ message: 'Staff access has not been configured.' });
+      const [rows] = await pool.execute("SELECT id, password_hash FROM users WHERE email = ? AND is_active = TRUE AND role IN ('owner','admin','staff') LIMIT 1", [email]);
+      const user = (rows as Array<{ id: number; password_hash: string }>)[0];
+      userId = user?.id || null;
+      const passwordMatches = await bcrypt.compare(password, user?.password_hash || unknownUserHash);
+      valid = Boolean(user) && Boolean(password) && passwordMatches;
     } catch {
-      return res.status(503).json({ message: 'Staff access is temporarily unavailable.' });
+      return res.status(503).json({ message: staffUnavailableMessage });
     }
   } else {
+    if (productionMode) return res.status(503).json({ message: 'Staff access has not been configured.' });
     const configuredEmail = String(process.env.ADMIN_EMAIL || '').trim().toLowerCase();
     const configuredHash = String(process.env.ADMIN_PASSWORD_HASH || '');
-    if (!configuredEmail || !configuredHash) return res.status(503).json({ message: 'Staff access is not configured yet. Add ADMIN_EMAIL and ADMIN_PASSWORD_HASH to the environment.' });
+    if (!configuredEmail || !configuredHash) return res.status(503).json({ message: 'Staff access has not been configured.' });
     valid = email === configuredEmail && await bcrypt.compare(password, configuredHash);
   }
-  if (!valid) return res.status(401).json({ message: 'The email or password was not recognised.' });
+  if (!valid) {
+    await auditAuthentication(userId, 'login_failed', email);
+    return res.status(401).json({ message: 'Email or password is incorrect.' });
+  }
   const token = crypto.randomBytes(32).toString('hex');
-  sessions.set(token, Date.now() + 8 * 60 * 60 * 1000);
+  if (pool && userId) {
+    try {
+      await pool.execute('DELETE FROM staff_sessions WHERE expires_at <= UTC_TIMESTAMP() OR user_id = ?', [userId]);
+      await pool.execute(
+        'INSERT INTO staff_sessions (token_hash, user_id, expires_at, ip_hash, user_agent) VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 8 HOUR), ?, ?)',
+        [sessionTokenHash(token), userId, crypto.createHash('sha256').update(req.ip || 'unknown').digest('hex'), String(req.get('user-agent') || '').slice(0, 255)],
+      );
+      await auditAuthentication(userId, 'login_succeeded', email);
+    } catch {
+      return res.status(503).json({ message: staffUnavailableMessage });
+    }
+  } else {
+    localSessions.set(token, Date.now() + 8 * 60 * 60 * 1000);
+  }
   res.cookie('omni_staff_session', token, { httpOnly: true, secure: secureCookie, sameSite: 'lax', maxAge: 8 * 60 * 60 * 1000 });
   res.json({ authenticated: true });
 });
 
-app.get('/api/admin/summary', adminRequired, (_req, res) => res.json({ contacts: localContacts.length, quotes: localQuotes.length, database: databaseConfigured ? 'configured' : 'not-configured' }));
+app.get('/api/admin/summary', adminRequired, async (_req, res, next) => {
+  try {
+    if (!pool) return res.json({ contacts: localContacts.length, quotes: localQuotes.length, projects: localProjects.size, database: 'not-configured' });
+    const [[contacts], [quotes], [projects]] = await Promise.all([
+      pool.query('SELECT COUNT(*) AS count FROM contact_enquiries'),
+      pool.query('SELECT COUNT(*) AS count FROM quote_requests'),
+      pool.query("SELECT COUNT(*) AS count FROM projects WHERE publication_status <> 'archived'"),
+    ]);
+    return res.json({ contacts: Number((contacts as Array<{ count: number }>)[0]?.count || 0), quotes: Number((quotes as Array<{ count: number }>)[0]?.count || 0), projects: Number((projects as Array<{ count: number }>)[0]?.count || 0), database: 'configured' });
+  } catch (error) { return next(error); }
+});
 app.get('/api/admin/projects', adminRequired, async (_req, res, next) => {
   try { res.json({ projects: await listProjects(true), database: pool ? 'configured' : 'not-configured' }); } catch (error) { next(error); }
 });
@@ -611,7 +718,49 @@ app.delete('/api/admin/projects/:id', adminRequired, async (req, res, next) => {
     return res.json({ message: 'Project archived.' });
   } catch (error) { return next(error); }
 });
-app.post('/api/admin/logout', adminRequired, (req, res) => { const token = req.cookies?.omni_staff_session as string | undefined; if (token) sessions.delete(token); res.clearCookie('omni_staff_session'); res.status(204).end(); });
+app.get('/api/admin/leads', adminRequired, async (_req, res, next) => {
+  try {
+    if (!pool) return res.json({ records: localContacts });
+    const [records] = await pool.query('SELECT id, public_reference AS reference, name, email, telephone AS phone, preferred_contact_method AS preferredContact, message, source_page AS source, created_at AS createdAt FROM contact_enquiries ORDER BY created_at DESC, id DESC LIMIT 250');
+    return res.json({ records });
+  } catch (error) { return next(error); }
+});
+app.get('/api/admin/quotes', adminRequired, async (_req, res, next) => {
+  try {
+    if (!pool) return res.json({ records: localQuotes });
+    const [records] = await pool.query('SELECT q.id, q.public_reference AS reference, q.project_type AS projectType, q.property_type AS propertyType, q.postcode, q.description, q.project_stage AS stage, q.budget_range AS budget, q.desired_start AS desiredStart, q.contact_name AS contactName, q.email, q.telephone AS phone, q.preferred_contact_method AS preferredContact, q.created_at AS createdAt, COUNT(f.id) AS fileCount FROM quote_requests q LEFT JOIN quote_request_files f ON f.quote_request_id = q.id GROUP BY q.id ORDER BY q.created_at DESC, q.id DESC LIMIT 250');
+    return res.json({ records });
+  } catch (error) { return next(error); }
+});
+const crmReadRoutes = [
+  ['/api/admin/site-visits', 'crm_site_visits', 'scheduled_at'],
+  ['/api/admin/calendar', 'crm_calendar_events', 'starts_at'],
+  ['/api/admin/tasks', 'crm_tasks', 'created_at'],
+  ['/api/admin/invoices', 'crm_invoices', 'created_at'],
+] as const;
+for (const [route, table, order] of crmReadRoutes) app.get(route, adminRequired, async (_req, res, next) => {
+  try {
+    if (!pool) return res.json({ records: [] });
+    const [records] = await pool.query(`SELECT * FROM \`${table}\` ORDER BY \`${order}\` DESC, id DESC LIMIT 250`);
+    return res.json({ records });
+  } catch (error) { return next(error); }
+});
+app.get('/api/admin/session', adminRequired, (_req, res) => {
+  const user = res.locals.staffUser as StaffUser;
+  res.set('Cache-Control', 'no-store').json({ authenticated: true, user: { name: user.name, email: user.email, role: user.role } });
+});
+// Logout never requires a live session: the cookie is always cleared and any matching server-side session destroyed.
+app.post('/api/admin/logout', async (req, res) => {
+  const token = req.cookies?.omni_staff_session as string | undefined;
+  if (token && pool) {
+    const user = await currentStaffUser(req).catch(() => null);
+    await pool.execute('DELETE FROM staff_sessions WHERE token_hash = ?', [sessionTokenHash(token)]).catch(() => undefined);
+    if (user) await auditAuthentication(user.id, 'logout', user.email);
+  }
+  if (token) localSessions.delete(token);
+  res.clearCookie('omni_staff_session', { httpOnly: true, secure: secureCookie, sameSite: 'lax' });
+  res.status(204).end();
+});
 
 app.get('/robots.txt', (_req, res) => {
   const appUrl = process.env.APP_URL || 'http://localhost:3000';

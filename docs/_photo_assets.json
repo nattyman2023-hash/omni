@@ -1,0 +1,1892 @@
+{
+  "assets": [
+    {
+      "slug": "about-omni-van",
+      "webp": {
+        "file": "about-omni-van.webp",
+        "bytes": 312886,
+        "width": 1600,
+        "height": 1200
+      },
+      "jpeg": {
+        "file": "about-omni-van.jpeg",
+        "bytes": 387885
+      },
+      "variants": [
+        {
+          "file": "about-omni-van-640.webp",
+          "width": 640
+        },
+        {
+          "file": "about-omni-van-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (6).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "completed-facade",
+      "webp": {
+        "file": "completed-facade.webp",
+        "bytes": 138042,
+        "width": 1328,
+        "height": 747
+      },
+      "jpeg": {
+        "file": "completed-facade.jpeg",
+        "bytes": 178205
+      },
+      "variants": [
+        {
+          "file": "completed-facade-640.webp",
+          "width": 640
+        },
+        {
+          "file": "completed-facade-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (10).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "driveway-finish",
+      "webp": {
+        "file": "driveway-finish.webp",
+        "bytes": 157540,
+        "width": 1328,
+        "height": 747
+      },
+      "jpeg": {
+        "file": "driveway-finish.jpeg",
+        "bytes": 183020
+      },
+      "variants": [
+        {
+          "file": "driveway-finish-640.webp",
+          "width": 640
+        },
+        {
+          "file": "driveway-finish-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (9).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "garden-beds",
+      "webp": {
+        "file": "garden-beds.webp",
+        "bytes": 442902,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "garden-beds.jpeg",
+        "bytes": 474048
+      },
+      "variants": [
+        {
+          "file": "garden-beds-640.webp",
+          "width": 640
+        },
+        {
+          "file": "garden-beds-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (17).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "garden-landscaping",
+      "webp": {
+        "file": "garden-landscaping.webp",
+        "bytes": 132708,
+        "width": 1024,
+        "height": 683
+      },
+      "jpeg": {
+        "file": "garden-landscaping.jpeg",
+        "bytes": 160281
+      },
+      "variants": [
+        {
+          "file": "garden-landscaping-640.webp",
+          "width": 640
+        },
+        {
+          "file": "garden-landscaping-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (1).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "home-extension-hero",
+      "webp": {
+        "file": "home-extension-hero.webp",
+        "bytes": 273608,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "home-extension-hero.jpeg",
+        "bytes": 343725
+      },
+      "variants": [
+        {
+          "file": "home-extension-hero-640.webp",
+          "width": 640
+        },
+        {
+          "file": "home-extension-hero-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (15).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "home-front",
+      "webp": {
+        "file": "home-front.webp",
+        "bytes": 104672,
+        "width": 1328,
+        "height": 747
+      },
+      "jpeg": {
+        "file": "home-front.jpeg",
+        "bytes": 146224
+      },
+      "variants": [
+        {
+          "file": "home-front-640.webp",
+          "width": 640
+        },
+        {
+          "file": "home-front-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (8).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "insulation-detail",
+      "webp": {
+        "file": "insulation-detail.webp",
+        "bytes": 256236,
+        "width": 1600,
+        "height": 1200
+      },
+      "jpeg": {
+        "file": "insulation-detail.jpeg",
+        "bytes": 336220
+      },
+      "variants": [
+        {
+          "file": "insulation-detail-640.webp",
+          "width": 640
+        },
+        {
+          "file": "insulation-detail-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (18).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "insulation-room",
+      "webp": {
+        "file": "insulation-room.webp",
+        "bytes": 244002,
+        "width": 1600,
+        "height": 1200
+      },
+      "jpeg": {
+        "file": "insulation-room.jpeg",
+        "bytes": 321015
+      },
+      "variants": [
+        {
+          "file": "insulation-room-640.webp",
+          "width": 640
+        },
+        {
+          "file": "insulation-room-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (20).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "interior-stair",
+      "webp": {
+        "file": "interior-stair.webp",
+        "bytes": 68318,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "interior-stair.jpeg",
+        "bytes": 138566
+      },
+      "variants": [
+        {
+          "file": "interior-stair-640.webp",
+          "width": 640
+        },
+        {
+          "file": "interior-stair-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (2).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "omni-a115905-03",
+      "webp": {
+        "file": "omni-a115905-03.webp",
+        "bytes": 115150,
+        "width": 1024,
+        "height": 683
+      },
+      "jpeg": {
+        "file": "omni-a115905-03.jpeg",
+        "bytes": 131539
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-03-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a115905-03-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 130167,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (3).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-05",
+      "webp": {
+        "file": "omni-a115905-05.webp",
+        "bytes": 350338,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a115905-05.jpeg",
+        "bytes": 385173
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-05-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a115905-05-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 388742,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (5).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-07",
+      "webp": {
+        "file": "omni-a115905-07.webp",
+        "bytes": 198164,
+        "width": 1328,
+        "height": 747
+      },
+      "jpeg": {
+        "file": "omni-a115905-07.jpeg",
+        "bytes": 207915
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-07-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a115905-07-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 206635,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (7).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-11",
+      "webp": {
+        "file": "omni-a115905-11.webp",
+        "bytes": 204140,
+        "width": 747,
+        "height": 1328
+      },
+      "jpeg": {
+        "file": "omni-a115905-11.jpeg",
+        "bytes": 208187
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-11-640.webp",
+          "width": 640
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 206043,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (11).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-12",
+      "webp": {
+        "file": "omni-a115905-12.webp",
+        "bytes": 233540,
+        "width": 747,
+        "height": 1328
+      },
+      "jpeg": {
+        "file": "omni-a115905-12.jpeg",
+        "bytes": 220470
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-12-640.webp",
+          "width": 640
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 220048,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (12).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-13",
+      "webp": {
+        "file": "omni-a115905-13.webp",
+        "bytes": 204430,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a115905-13.jpeg",
+        "bytes": 250211
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-13-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a115905-13-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 255817,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (13).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-14",
+      "webp": {
+        "file": "omni-a115905-14.webp",
+        "bytes": 353262,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a115905-14.jpeg",
+        "bytes": 390124
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-14-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a115905-14-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 394537,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (14).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-16",
+      "webp": {
+        "file": "omni-a115905-16.webp",
+        "bytes": 197936,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a115905-16.jpeg",
+        "bytes": 254368
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-16-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a115905-16-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 257458,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (16).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a115905-18",
+      "webp": {
+        "file": "omni-a115905-18.webp",
+        "bytes": 376408,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a115905-18.jpeg",
+        "bytes": 383151
+      },
+      "variants": [
+        {
+          "file": "omni-a115905-18-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a115905-18-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 383629,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (18).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120026-01",
+      "webp": {
+        "file": "omni-a120026-01.webp",
+        "bytes": 407814,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120026-01.jpeg",
+        "bytes": 445012
+      },
+      "variants": [
+        {
+          "file": "omni-a120026-01-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120026-01-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 454055,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.26 PM (1).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-00",
+      "webp": {
+        "file": "omni-a120028-00.webp",
+        "bytes": 176430,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-00.jpeg",
+        "bytes": 255815
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-00-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-00-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 257717,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM.jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-01",
+      "webp": {
+        "file": "omni-a120028-01.webp",
+        "bytes": 232286,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-01.jpeg",
+        "bytes": 296220
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-01-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-01-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 295462,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (1).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-02",
+      "webp": {
+        "file": "omni-a120028-02.webp",
+        "bytes": 242360,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-02.jpeg",
+        "bytes": 300638
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-02-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-02-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 298005,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (2).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-03",
+      "webp": {
+        "file": "omni-a120028-03.webp",
+        "bytes": 265180,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-03.jpeg",
+        "bytes": 319559
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-03-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-03-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 317997,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (3).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-04",
+      "webp": {
+        "file": "omni-a120028-04.webp",
+        "bytes": 164550,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-04.jpeg",
+        "bytes": 231506
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-04-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-04-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 231541,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (4).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-05",
+      "webp": {
+        "file": "omni-a120028-05.webp",
+        "bytes": 174632,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-05.jpeg",
+        "bytes": 239338
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-05-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-05-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 238128,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (5).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-06",
+      "webp": {
+        "file": "omni-a120028-06.webp",
+        "bytes": 194702,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-06.jpeg",
+        "bytes": 256916
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-06-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-06-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 255416,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (6).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-07",
+      "webp": {
+        "file": "omni-a120028-07.webp",
+        "bytes": 191914,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-07.jpeg",
+        "bytes": 262566
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-07-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-07-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 262828,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (7).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-08",
+      "webp": {
+        "file": "omni-a120028-08.webp",
+        "bytes": 218078,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-08.jpeg",
+        "bytes": 301589
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-08-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-08-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 304227,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (8).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-09",
+      "webp": {
+        "file": "omni-a120028-09.webp",
+        "bytes": 146798,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-09.jpeg",
+        "bytes": 233737
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-09-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-09-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 238124,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (9).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-10",
+      "webp": {
+        "file": "omni-a120028-10.webp",
+        "bytes": 172454,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-10.jpeg",
+        "bytes": 261305
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-10-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-10-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 265000,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (10).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-11",
+      "webp": {
+        "file": "omni-a120028-11.webp",
+        "bytes": 221252,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-11.jpeg",
+        "bytes": 263611
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-11-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-11-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 268472,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (11).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-12",
+      "webp": {
+        "file": "omni-a120028-12.webp",
+        "bytes": 228748,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-12.jpeg",
+        "bytes": 286140
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-12-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-12-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 289488,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (12).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-13",
+      "webp": {
+        "file": "omni-a120028-13.webp",
+        "bytes": 261842,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-13.jpeg",
+        "bytes": 304118
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-13-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-13-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 307222,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (13).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-14",
+      "webp": {
+        "file": "omni-a120028-14.webp",
+        "bytes": 231900,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-14.jpeg",
+        "bytes": 275767
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-14-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-14-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 279305,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (14).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-15",
+      "webp": {
+        "file": "omni-a120028-15.webp",
+        "bytes": 201024,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-15.jpeg",
+        "bytes": 273769
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-15-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-15-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 277786,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (15).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-16",
+      "webp": {
+        "file": "omni-a120028-16.webp",
+        "bytes": 233630,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-16.jpeg",
+        "bytes": 309309
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-16-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-16-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 311253,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (16).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-17",
+      "webp": {
+        "file": "omni-a120028-17.webp",
+        "bytes": 202082,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-17.jpeg",
+        "bytes": 279806
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-17-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-17-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 282516,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (17).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-19",
+      "webp": {
+        "file": "omni-a120028-19.webp",
+        "bytes": 180078,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-19.jpeg",
+        "bytes": 253896
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-19-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-19-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 252594,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (19).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-21",
+      "webp": {
+        "file": "omni-a120028-21.webp",
+        "bytes": 216026,
+        "width": 1600,
+        "height": 1200
+      },
+      "jpeg": {
+        "file": "omni-a120028-21.jpeg",
+        "bytes": 269776
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-21-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-21-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 268752,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (21).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-22",
+      "webp": {
+        "file": "omni-a120028-22.webp",
+        "bytes": 211366,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-22.jpeg",
+        "bytes": 273899
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-22-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-22-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 270528,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (22).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-23",
+      "webp": {
+        "file": "omni-a120028-23.webp",
+        "bytes": 283668,
+        "width": 1600,
+        "height": 1200
+      },
+      "jpeg": {
+        "file": "omni-a120028-23.jpeg",
+        "bytes": 328747
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-23-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-23-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 324041,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (23).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-24",
+      "webp": {
+        "file": "omni-a120028-24.webp",
+        "bytes": 143188,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-24.jpeg",
+        "bytes": 220820
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-24-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-24-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 220978,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (24).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-25",
+      "webp": {
+        "file": "omni-a120028-25.webp",
+        "bytes": 123306,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-25.jpeg",
+        "bytes": 184531
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-25-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-25-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 185520,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (25).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-a120028-26",
+      "webp": {
+        "file": "omni-a120028-26.webp",
+        "bytes": 97720,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-a120028-26.jpeg",
+        "bytes": 160683
+      },
+      "variants": [
+        {
+          "file": "omni-a120028-26-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-a120028-26-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 162975,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.28 PM (26).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-00",
+      "webp": {
+        "file": "omni-b102715-00.webp",
+        "bytes": 350998,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-00.jpeg",
+        "bytes": 379285
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-00-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-00-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 384634,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM.jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-01",
+      "webp": {
+        "file": "omni-b102715-01.webp",
+        "bytes": 184896,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-01.jpeg",
+        "bytes": 230159
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-01-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-01-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 232380,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (1).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-02",
+      "webp": {
+        "file": "omni-b102715-02.webp",
+        "bytes": 97260,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-02.jpeg",
+        "bytes": 164080
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-02-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-02-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 164904,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (2).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-03",
+      "webp": {
+        "file": "omni-b102715-03.webp",
+        "bytes": 124750,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-03.jpeg",
+        "bytes": 188005
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-03-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-03-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 189100,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (3).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-04",
+      "webp": {
+        "file": "omni-b102715-04.webp",
+        "bytes": 116718,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-04.jpeg",
+        "bytes": 186428
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-04-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-04-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 189484,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (4).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-05",
+      "webp": {
+        "file": "omni-b102715-05.webp",
+        "bytes": 104780,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-05.jpeg",
+        "bytes": 176937
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-05-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-05-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 177633,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (5).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-06",
+      "webp": {
+        "file": "omni-b102715-06.webp",
+        "bytes": 269172,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-06.jpeg",
+        "bytes": 326832
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-06-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-06-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 327276,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (6).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-07",
+      "webp": {
+        "file": "omni-b102715-07.webp",
+        "bytes": 523494,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-07.jpeg",
+        "bytes": 498995
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-07-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-07-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 509613,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (7).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-08",
+      "webp": {
+        "file": "omni-b102715-08.webp",
+        "bytes": 307952,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-08.jpeg",
+        "bytes": 337063
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-08-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-08-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 340481,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (8).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-09",
+      "webp": {
+        "file": "omni-b102715-09.webp",
+        "bytes": 229500,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-09.jpeg",
+        "bytes": 307126
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-09-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-09-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 307656,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (9).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-10",
+      "webp": {
+        "file": "omni-b102715-10.webp",
+        "bytes": 241050,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-10.jpeg",
+        "bytes": 320076
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-10-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-10-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 319990,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (10).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-11",
+      "webp": {
+        "file": "omni-b102715-11.webp",
+        "bytes": 247212,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-11.jpeg",
+        "bytes": 317028
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-11-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-11-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 319072,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (11).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-12",
+      "webp": {
+        "file": "omni-b102715-12.webp",
+        "bytes": 256646,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-12.jpeg",
+        "bytes": 301350
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-12-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-12-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 302790,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (12).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-13",
+      "webp": {
+        "file": "omni-b102715-13.webp",
+        "bytes": 296906,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-13.jpeg",
+        "bytes": 335501
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-13-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-13-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 337423,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (13).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-14",
+      "webp": {
+        "file": "omni-b102715-14.webp",
+        "bytes": 341202,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-14.jpeg",
+        "bytes": 365983
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-14-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-14-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 370196,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (14).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-15",
+      "webp": {
+        "file": "omni-b102715-15.webp",
+        "bytes": 381274,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-15.jpeg",
+        "bytes": 400469
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-15-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-15-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 405165,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (15).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-16",
+      "webp": {
+        "file": "omni-b102715-16.webp",
+        "bytes": 435758,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-16.jpeg",
+        "bytes": 427997
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-16-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-16-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 436931,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (16).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-17",
+      "webp": {
+        "file": "omni-b102715-17.webp",
+        "bytes": 347740,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-17.jpeg",
+        "bytes": 378567
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-17-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-17-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 379777,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (17).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-18",
+      "webp": {
+        "file": "omni-b102715-18.webp",
+        "bytes": 278260,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-18.jpeg",
+        "bytes": 300361
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-18-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-18-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 305647,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (18).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102715-19",
+      "webp": {
+        "file": "omni-b102715-19.webp",
+        "bytes": 284464,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102715-19.jpeg",
+        "bytes": 322923
+      },
+      "variants": [
+        {
+          "file": "omni-b102715-19-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102715-19-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 326281,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.15 AM (19).jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "omni-b102716-00",
+      "webp": {
+        "file": "omni-b102716-00.webp",
+        "bytes": 270768,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "omni-b102716-00.jpeg",
+        "bytes": 304162
+      },
+      "variants": [
+        {
+          "file": "omni-b102716-00-640.webp",
+          "width": 640
+        },
+        {
+          "file": "omni-b102716-00-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 307604,
+      "source": "WhatsApp Image 2026-10-16 at 10.27.16 AM.jpeg",
+      "alreadyPublished": false
+    },
+    {
+      "slug": "project-bathroom-01",
+      "webp": {
+        "file": "project-bathroom-01.webp",
+        "bytes": 31288,
+        "width": 1024,
+        "height": 682
+      },
+      "jpeg": {
+        "file": "project-bathroom-01.jpeg",
+        "bytes": 63184
+      },
+      "variants": [
+        {
+          "file": "project-bathroom-01-640.webp",
+          "width": 640
+        },
+        {
+          "file": "project-bathroom-01-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "landscape",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM.jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "site-interior",
+      "webp": {
+        "file": "site-interior.webp",
+        "bytes": 164076,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "site-interior.jpeg",
+        "bytes": 266167
+      },
+      "variants": [
+        {
+          "file": "site-interior-640.webp",
+          "width": 640
+        },
+        {
+          "file": "site-interior-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 11.59.05 AM (4).jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "timber-frame",
+      "webp": {
+        "file": "timber-frame.webp",
+        "bytes": 193884,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "timber-frame.jpeg",
+        "bytes": 296776
+      },
+      "variants": [
+        {
+          "file": "timber-frame-640.webp",
+          "width": 640
+        },
+        {
+          "file": "timber-frame-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.27 PM.jpeg",
+      "alreadyPublished": true
+    },
+    {
+      "slug": "works-site",
+      "webp": {
+        "file": "works-site.webp",
+        "bytes": 177120,
+        "width": 1200,
+        "height": 1600
+      },
+      "jpeg": {
+        "file": "works-site.jpeg",
+        "bytes": 265618
+      },
+      "variants": [
+        {
+          "file": "works-site-640.webp",
+          "width": 640
+        },
+        {
+          "file": "works-site-960.webp",
+          "width": 960
+        }
+      ],
+      "orientation": "portrait",
+      "sourceBytes": 0,
+      "source": "WhatsApp Image 2026-07-25 at 12.00.26 PM.jpeg",
+      "alreadyPublished": true
+    }
+  ],
+  "duplicates": [
+    {
+      "filename": "WhatsApp Image 2026-10-16 at.jpeg",
+      "duplicateOf": "WhatsApp Image 2026-10-16 at 10.27.15 AM.jpeg"
+    }
+  ]
+}

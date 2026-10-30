@@ -6,6 +6,9 @@ RewriteEngine On
 RewriteRule ^robots\.txt$ api/index.php?resource=robots [QSA,L]
 RewriteRule ^sitemap\.xml$ api/index.php?resource=sitemap [QSA,L]
 
+# Same safe status payload as /api/health.
+RewriteRule ^health$ api/index.php?resource=health [QSA,L]
+
 # Send API requests to the PHP front controller.
 RewriteRule ^api/index\.php$ - [L]
 RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]

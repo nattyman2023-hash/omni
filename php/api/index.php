@@ -11,6 +11,9 @@ final class ApiError extends RuntimeException
         parent::__construct($message);
     }
 }
+
+final class DatabaseConfigurationError extends RuntimeException {}
+final class DatabaseUnavailableError extends RuntimeException {}
 function loadConfig(): array
 {
     $defaults = [
@@ -20,13 +23,19 @@ function loadConfig(): array
         'DATABASE_NAME' => '',
         'DATABASE_USER' => '',
         'DATABASE_PASSWORD' => '',
+        'BOOTSTRAP_ADMIN_NAME' => 'Omni Administrator',
+        'BOOTSTRAP_ADMIN_EMAIL' => '',
+        'BOOTSTRAP_ADMIN_PASSWORD' => '',
         'COOKIE_SECURE' => 'true',
+        'TRUST_PROXY' => '',
         'STAGING_MODE' => 'false',
         'PUBLIC_PHONE' => '07928 149 731',
         'PUBLIC_EMAIL' => 'admin@omnidevelopment.co.uk',
         'PUBLIC_WHATSAPP' => 'https://wa.me/447928149731',
         'UPLOAD_DIR' => '',
         'PROJECT_UPLOAD_DIR' => '',
+        'RECAPTCHA_SITE_KEY' => '',
+        'RECAPTCHA_SECRET_KEY' => '',
     ];
     $localFile = __DIR__ . '/config.local.php';
     $local = is_file($localFile) ? require $localFile : [];
@@ -78,7 +87,7 @@ function database(): PDO
     }
     foreach (['DATABASE_HOST', 'DATABASE_NAME', 'DATABASE_USER', 'DATABASE_PASSWORD'] as $key) {
         if (setting($key) === '') {
-            fail(503, "We couldn't send your enquiry, please call or email us.");
+            throw new DatabaseConfigurationError('Database configuration is incomplete.');
         }
     }
     try {
@@ -93,10 +102,12 @@ function database(): PDO
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ]);
+        // NOW()/CURRENT_TIMESTAMP and PHP formatting must agree, whatever the host's zone is.
+        $pdo->exec("SET time_zone = '+00:00'");
         return $pdo;
     } catch (PDOException $error) {
         error_log('[database] connection failed: ' . $error->getCode());
-        fail(503, "We couldn't send your enquiry, please call or email us.");
+        throw new DatabaseUnavailableError('Database connection is unavailable.', 0, $error);
     }
 }
 
@@ -108,6 +119,42 @@ function requestData(): array
         return is_array($decoded) ? $decoded : [];
     }
     return $_POST;
+}
+
+/** reCAPTCHA v2 is enforced on public forms only when both keys are configured. */
+function recaptchaEnabled(): bool
+{
+    return setting('RECAPTCHA_SITE_KEY') !== '' && setting('RECAPTCHA_SECRET_KEY') !== '';
+}
+
+function requireRecaptcha(array $input): void
+{
+    if (!recaptchaEnabled()) {
+        return;
+    }
+    $token = trim((string) ($input['recaptchaToken'] ?? ''));
+    if ($token === '' || strlen($token) > 4000) {
+        fail(400, 'Please tick the "I\'m not a robot" box before sending.');
+    }
+    $payload = http_build_query(['secret' => setting('RECAPTCHA_SECRET_KEY'), 'response' => $token, 'remoteip' => clientIp()]);
+    $raw = false;
+    if (function_exists('curl_init')) {
+        $curl = curl_init('https://www.google.com/recaptcha/api/siteverify');
+        curl_setopt_array($curl, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $payload, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 8]);
+        $raw = curl_exec($curl);
+        curl_close($curl);
+    } else {
+        $context = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/x-www-form-urlencoded\r\n", 'content' => $payload, 'timeout' => 8]]);
+        $raw = @file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+    }
+    if (!is_string($raw) || $raw === '') {
+        error_log('reCAPTCHA verification unavailable');
+        fail(400, "We couldn't verify the robot check. Please try again or call us.");
+    }
+    $result = json_decode($raw, true);
+    if (!is_array($result) || ($result['success'] ?? false) !== true) {
+        fail(400, 'The robot check expired or failed. Please tick the box again.');
+    }
 }
 
 function textValue(array $input, string $key, int $min, int $max, string $message): string
@@ -146,9 +193,29 @@ function ensureSameOrigin(): void
     }
 }
 
-function rateLimit(string $bucket, int $limit, int $windowSeconds): void
+/**
+ * Client address for rate limiting and audit hashes. With TRUST_PROXY set to a
+ * hop count (Hostinger: 1), the address appended by the trusted proxy is used;
+ * otherwise only REMOTE_ADDR is trusted so clients cannot spoof their bucket.
+ */
+function clientIp(): string
 {
-    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    $remote = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    $hops = (int) setting('TRUST_PROXY');
+    $forwarded = trim((string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? ''));
+    if ($hops < 1 || $forwarded === '') {
+        return $remote;
+    }
+    $chain = array_values(array_filter(array_map('trim', explode(',', $forwarded)), fn ($ip) => filter_var($ip, FILTER_VALIDATE_IP) !== false));
+    if (!$chain) {
+        return $remote;
+    }
+    return $chain[max(0, count($chain) - $hops)];
+}
+
+function rateLimit(string $bucket, int $limit, int $windowSeconds, string $message = 'Too many requests from this network. Please try again shortly.'): void
+{
+    $ip = clientIp();
     $file = sys_get_temp_dir() . '/omni-rate-' . hash('sha256', $bucket . '|' . $ip) . '.json';
     $handle = fopen($file, 'c+');
     if ($handle === false) {
@@ -162,7 +229,7 @@ function rateLimit(string $bucket, int $limit, int $windowSeconds): void
         $times = json_decode($raw ?: '[]', true);
         $times = is_array($times) ? array_values(array_filter($times, fn ($time) => is_int($time) && $time > time() - $windowSeconds)) : [];
         if (count($times) >= $limit) {
-            fail(429, 'Too many requests from this network. Please try again shortly.');
+            fail(429, $message);
         }
         $times[] = time();
         ftruncate($handle, 0);
@@ -174,12 +241,112 @@ function rateLimit(string $bucket, int $limit, int $windowSeconds): void
     }
 }
 
-function requireAdmin(): void
+function sessionToken(): string
 {
-    if (empty($_SESSION['omni_admin_id']) || empty($_SESSION['omni_admin_expires']) || (int) $_SESSION['omni_admin_expires'] < time()) {
+    return trim((string) ($_COOKIE['omni_staff_session'] ?? ''));
+}
+
+function sessionCookie(string $token, int $expiresAt): void
+{
+    setcookie('omni_staff_session', $token, [
+        'expires' => $expiresAt,
+        'path' => '/',
+        'secure' => flag('COOKIE_SECURE'),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
+function createStaffSession(PDO $pdo, int $userId): void
+{
+    $token = bin2hex(random_bytes(32));
+    $expiresAt = time() + 28800;
+    $pdo->prepare('DELETE FROM staff_sessions WHERE expires_at <= UTC_TIMESTAMP() OR user_id = ?')->execute([$userId]);
+    $statement = $pdo->prepare('INSERT INTO staff_sessions (token_hash, user_id, expires_at, ip_hash, user_agent) VALUES (?, ?, ?, ?, ?)');
+    $statement->execute([
+        hash('sha256', $token),
+        $userId,
+        gmdate('Y-m-d H:i:s', $expiresAt),
+        hash('sha256', clientIp()),
+        substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255),
+    ]);
+    sessionCookie($token, $expiresAt);
+}
+
+function currentStaffUser(): ?array
+{
+    $token = sessionToken();
+    if (!preg_match('/^[a-f0-9]{64}$/', $token)) {
+        return null;
+    }
+    $pdo = database();
+    $statement = $pdo->prepare("SELECT u.id, u.email, u.display_name, u.role FROM staff_sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > UTC_TIMESTAMP() AND u.is_active = TRUE AND u.role IN ('owner','admin','staff') LIMIT 1");
+    $statement->execute([hash('sha256', $token)]);
+    $user = $statement->fetch();
+    if ($user === false) {
+        return null;
+    }
+    $pdo->prepare('UPDATE staff_sessions SET last_seen_at = CURRENT_TIMESTAMP WHERE token_hash = ?')->execute([hash('sha256', $token)]);
+    return $user;
+}
+
+function requireAdmin(): int
+{
+    $user = currentStaffUser();
+    if ($user === null) {
         fail(401, 'Staff authentication required.');
     }
-    $_SESSION['omni_admin_expires'] = time() + 28800;
+    return (int) $user['id'];
+}
+
+/** ISO-8601 timestamps so every browser parses CRM dates identically. */
+function isoTimestamps(array $rows, array $keys): array
+{
+    return array_map(function (array $row) use ($keys): array {
+        foreach ($keys as $key) {
+            if (!empty($row[$key])) {
+                $row[$key] = date(DATE_ATOM, strtotime((string) $row[$key]));
+            }
+        }
+        return $row;
+    }, $rows);
+}
+
+function auditAuthentication(PDO $pdo, ?int $userId, string $action, string $email): void
+{
+    try {
+        $statement = $pdo->prepare("INSERT INTO activity_audit_records (user_id, action, entity_type, entity_id, metadata) VALUES (?, ?, 'authentication', ?, ?)");
+        $statement->execute([
+            $userId,
+            $action,
+            $userId,
+            json_encode([
+                'email_hash' => hash('sha256', strtolower(trim($email))),
+                'ip_hash' => hash('sha256', clientIp()),
+            ], JSON_UNESCAPED_SLASHES),
+        ]);
+    } catch (Throwable $error) {
+        error_log('[authentication] audit write failed.');
+    }
+}
+
+function bootstrapAdministrator(PDO $pdo): void
+{
+    $administratorCount = (int) $pdo->query("SELECT COUNT(*) FROM users WHERE role IN ('owner','admin')")->fetchColumn();
+    if ($administratorCount > 0) {
+        return;
+    }
+    $name = trim(setting('BOOTSTRAP_ADMIN_NAME')) ?: 'Omni Administrator';
+    $email = strtolower(trim(setting('BOOTSTRAP_ADMIN_EMAIL')));
+    $password = setting('BOOTSTRAP_ADMIN_PASSWORD');
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 12) {
+        throw new DatabaseConfigurationError('Staff bootstrap configuration is incomplete.');
+    }
+    $statement = $pdo->prepare("INSERT INTO users (email, password_hash, display_name, role, is_active) SELECT ?, ?, ?, 'owner', TRUE WHERE NOT EXISTS (SELECT 1 FROM users WHERE role IN ('owner','admin'))");
+    $statement->execute([$email, password_hash($password, PASSWORD_BCRYPT), substr($name, 0, 120)]);
+    if ($statement->rowCount() > 0) {
+        auditAuthentication($pdo, (int) $pdo->lastInsertId(), 'administrator_bootstrapped', $email);
+    }
 }
 
 function normaliseFiles(string $field): array
@@ -379,29 +546,21 @@ function saveProject(array $project, ?int $id = null): array
 
 function routePath(): string
 {
+    if (($_GET['resource'] ?? '') === 'health') {
+        return '/health';
+    }
     $path = parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/api'), PHP_URL_PATH) ?: '/api';
     $position = strpos($path, '/api');
     return $position === false ? '/' : ('/' . ltrim(substr($path, $position + 4), '/'));
 }
 
 ini_set('display_errors', '0');
-ini_set('session.gc_maxlifetime', '28800');
-ini_set('session.use_strict_mode', '1');
+date_default_timezone_set('UTC');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 if (flag('STAGING_MODE')) {
     header('X-Robots-Tag: noindex, nofollow, noarchive');
 }
-session_name('omni_staff_session');
-session_set_cookie_params([
-    'lifetime' => 28800,
-    'path' => '/',
-    'secure' => flag('COOKIE_SECURE'),
-    'httponly' => true,
-    'samesite' => 'Lax',
-]);
-session_start();
-
 $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
 $route = routePath();
 
@@ -437,12 +596,20 @@ try {
     if ($method === 'GET' && $route === '/health') {
         try {
             $pdo = database();
-            foreach (['users', 'projects', 'contact_enquiries', 'quote_requests', 'quote_request_files'] as $table) {
+            foreach (['users', 'projects', 'contact_enquiries', 'quote_requests', 'quote_request_files', 'staff_sessions', 'activity_audit_records', 'crm_site_visits', 'crm_tasks', 'crm_calendar_events', 'crm_invoices'] as $table) {
                 $pdo->query("SELECT 1 FROM `$table` LIMIT 0");
             }
-            jsonResponse(['status' => 'ok', 'service' => 'omni-development-site-php', 'timestamp' => date(DATE_ATOM), 'database' => 'connected']);
+            $payload = ['status' => 'ok', 'service' => 'omni-development-site-php', 'timestamp' => date(DATE_ATOM)];
+            if (!flag('STAGING_MODE')) {
+                $payload['database'] = 'connected';
+            }
+            jsonResponse($payload);
         } catch (Throwable $error) {
-            jsonResponse(['status' => 'degraded', 'service' => 'omni-development-site-php', 'timestamp' => date(DATE_ATOM), 'database' => 'unavailable'], 503);
+            $payload = ['status' => 'degraded', 'service' => 'omni-development-site-php', 'timestamp' => date(DATE_ATOM)];
+            if (!flag('STAGING_MODE')) {
+                $payload['database'] = $error instanceof DatabaseConfigurationError ? 'not-configured' : 'unavailable';
+            }
+            jsonResponse($payload, 503);
         }
     }
 
@@ -455,6 +622,7 @@ try {
             'whatsapp' => setting('PUBLIC_WHATSAPP'),
             'stagingMode' => flag('STAGING_MODE'),
             'outboundMessagesEnabled' => false,
+            'recaptchaSiteKey' => recaptchaEnabled() ? setting('RECAPTCHA_SITE_KEY') : '',
         ]);
     }
 
@@ -488,6 +656,7 @@ try {
             fail(400, 'Privacy consent is required.');
         }
         $source = substr(trim((string) ($input['source'] ?? 'unknown')), 0, 120);
+        requireRecaptcha($input);
         $publicReference = reference('ENQ');
         $statement = database()->prepare("INSERT INTO contact_enquiries (public_reference, name, email, telephone, preferred_contact_method, message, source_page, privacy_consent, notification_status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, TRUE, 'not-configured', NOW())");
         $statement->execute([$publicReference, $name, $email, $phone, $preferred, $message, $source]);
@@ -512,6 +681,7 @@ try {
             fail(400, 'Please check the submitted details.');
         }
         $budget = substr(trim((string) ($input['budget'] ?? '')), 0, 100);
+        requireRecaptcha($input);
         $files = normaliseFiles('files');
         if (count($files) > 8) {
             fail(400, 'A maximum of 8 files can be uploaded.');
@@ -551,26 +721,48 @@ try {
     }
 
     if ($method === 'POST' && $route === '/admin/login') {
-        rateLimit('admin-login', 10, 900);
+        rateLimit('admin-login', 10, 900, 'Too many sign-in attempts. Please wait and try again.');
         $input = requestData();
         $email = strtolower(trim((string) ($input['email'] ?? '')));
         $password = (string) ($input['password'] ?? '');
-        $statement = database()->prepare("SELECT id, password_hash FROM users WHERE email = ? AND is_active = TRUE LIMIT 1");
+        $pdo = database();
+        bootstrapAdministrator($pdo);
+        $statement = $pdo->prepare("SELECT id, password_hash FROM users WHERE email = ? AND is_active = TRUE AND role IN ('owner','admin','staff') LIMIT 1");
         $statement->execute([$email]);
         $user = $statement->fetch();
-        if (!$user || !password_verify($password, $user['password_hash'])) {
-            fail(401, 'The email or password was not recognised.');
+        // Unknown emails are still checked against a fixed hash so response timing does not reveal which accounts exist.
+        $hash = $user ? (string) $user['password_hash'] : '$2y$10$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
+        $passwordMatches = password_verify($password, $hash);
+        if (!$user || !$passwordMatches || $password === '') {
+            auditAuthentication($pdo, $user ? (int) $user['id'] : null, 'login_failed', $email);
+            fail(401, 'Email or password is incorrect.');
         }
-        session_regenerate_id(true);
-        $_SESSION['omni_admin_id'] = (int) $user['id'];
-        $_SESSION['omni_admin_expires'] = time() + 28800;
+        createStaffSession($pdo, (int) $user['id']);
+        auditAuthentication($pdo, (int) $user['id'], 'login_succeeded', $email);
         jsonResponse(['authenticated' => true]);
     }
 
+    if ($method === 'GET' && $route === '/admin/session') {
+        header('Cache-Control: no-store');
+        $user = currentStaffUser();
+        if ($user === null) {
+            fail(401, 'Staff authentication required.');
+        }
+        jsonResponse(['authenticated' => true, 'user' => ['name' => $user['display_name'], 'email' => $user['email'], 'role' => $user['role']]]);
+    }
+
     if ($route === '/admin/logout' && $method === 'POST') {
-        requireAdmin();
-        $_SESSION = [];
-        session_destroy();
+        // Always clear the browser cookie, even when the server-side session has already expired.
+        sessionCookie('', time() - 3600);
+        $token = sessionToken();
+        if (preg_match('/^[a-f0-9]{64}$/', $token)) {
+            $user = currentStaffUser();
+            $pdo = database();
+            $pdo->prepare('DELETE FROM staff_sessions WHERE token_hash = ?')->execute([hash('sha256', $token)]);
+            if ($user !== null) {
+                auditAuthentication($pdo, (int) $user['id'], 'logout', (string) $user['email']);
+            }
+        }
         http_response_code(204);
         exit;
     }
@@ -581,6 +773,7 @@ try {
         jsonResponse([
             'contacts' => (int) $pdo->query('SELECT COUNT(*) FROM contact_enquiries')->fetchColumn(),
             'quotes' => (int) $pdo->query('SELECT COUNT(*) FROM quote_requests')->fetchColumn(),
+            'projects' => (int) $pdo->query("SELECT COUNT(*) FROM projects WHERE publication_status <> 'archived'")->fetchColumn(),
             'database' => 'configured',
         ]);
     }
@@ -588,6 +781,31 @@ try {
     if ($method === 'GET' && $route === '/admin/projects') {
         requireAdmin();
         jsonResponse(['projects' => listProjects(true), 'database' => 'configured']);
+    }
+
+    if ($method === 'GET' && $route === '/admin/leads') {
+        requireAdmin();
+        $rows = database()->query('SELECT id, public_reference AS reference, name, email, telephone AS phone, preferred_contact_method AS preferredContact, message, source_page AS source, created_at AS createdAt FROM contact_enquiries ORDER BY created_at DESC, id DESC LIMIT 250')->fetchAll();
+        jsonResponse(['records' => isoTimestamps($rows, ['createdAt'])]);
+    }
+
+    if ($method === 'GET' && $route === '/admin/quotes') {
+        requireAdmin();
+        $rows = database()->query('SELECT q.id, q.public_reference AS reference, q.project_type AS projectType, q.property_type AS propertyType, q.postcode, q.description, q.project_stage AS stage, q.budget_range AS budget, q.desired_start AS desiredStart, q.contact_name AS contactName, q.email, q.telephone AS phone, q.preferred_contact_method AS preferredContact, q.created_at AS createdAt, COUNT(f.id) AS fileCount FROM quote_requests q LEFT JOIN quote_request_files f ON f.quote_request_id = q.id GROUP BY q.id ORDER BY q.created_at DESC, q.id DESC LIMIT 250')->fetchAll();
+        jsonResponse(['records' => isoTimestamps($rows, ['createdAt'])]);
+    }
+
+    $crmTables = [
+        '/admin/site-visits' => ['crm_site_visits', 'scheduled_at'],
+        '/admin/calendar' => ['crm_calendar_events', 'starts_at'],
+        '/admin/tasks' => ['crm_tasks', 'created_at'],
+        '/admin/invoices' => ['crm_invoices', 'created_at'],
+    ];
+    if ($method === 'GET' && isset($crmTables[$route])) {
+        requireAdmin();
+        [$table, $order] = $crmTables[$route];
+        $rows = database()->query("SELECT * FROM `$table` ORDER BY `$order` DESC, id DESC LIMIT 250")->fetchAll();
+        jsonResponse(['records' => isoTimestamps($rows, ['created_at', 'updated_at', $order])]);
     }
 
     if ($method === 'POST' && $route === '/admin/project-images') {
@@ -637,10 +855,21 @@ try {
     }
 
     fail(404, 'Not found.');
+} catch (DatabaseConfigurationError $error) {
+    $message = str_starts_with($route, '/admin/')
+        ? 'Staff access has not been configured.'
+        : (in_array($route, ['/contact', '/quote'], true) ? "We couldn't send your enquiry, please call or email us." : 'The service is temporarily unavailable.');
+    jsonResponse(['message' => $message], 503);
+} catch (DatabaseUnavailableError | PDOException $error) {
+    $message = str_starts_with($route, '/admin/')
+        ? 'The staff system is temporarily unavailable. Please contact the administrator.'
+        : (in_array($route, ['/contact', '/quote'], true) ? "We couldn't send your enquiry, please call or email us." : 'The service is temporarily unavailable.');
+    jsonResponse(['message' => $message], 503);
 } catch (ApiError $error) {
     jsonResponse(['message' => $error->getMessage()], $error->status);
 } catch (Throwable $error) {
     error_log('[omni-api] ' . get_class($error) . ': ' . $error->getMessage());
-    jsonResponse(['message' => 'The request could not be completed. Please try again.'], 500);
+    $message = $route === '/admin/login' ? "We couldn't sign you in. Please try again." : 'The request could not be completed. Please try again.';
+    jsonResponse(['message' => $message], 500);
 }
 
