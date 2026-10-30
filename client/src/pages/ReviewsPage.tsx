@@ -18,9 +18,9 @@ export default function ReviewsPage() {
   const labels: Record<string, string> = { all: 'All Reviews', extensions: 'Extensions', renovations: 'Full Renovations', kitchens: 'Kitchens & Bathrooms' };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-amber flex flex-col w-full">
       {/* 1. HERO — bg-surface-dark (dark) */}
-      <section className="relative w-full bg-surface-dark text-on-primary py-space-3xl lg:py-space-4xl overflow-hidden">
+      <section className="page-hero tone-amber relative w-full bg-surface-dark text-on-primary py-space-3xl lg:py-space-4xl overflow-hidden">
         <div className="absolute -top-24 right-1/4 w-96 h-96 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10">
           <div className="max-w-3xl space-y-space-md">
@@ -105,7 +105,7 @@ export default function ReviewsPage() {
       </section>
 
       {/* 6. FINAL DARK CTA — bg-surface-dark */}
-      <section className="w-full bg-surface-dark text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
+      <section className="page-hero tone-teal w-full bg-surface-dark text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
         <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-80 h-80 bg-blue-deep/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute right-0 top-0 w-96 h-96 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10 text-center space-y-space-xl">

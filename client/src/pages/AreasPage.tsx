@@ -116,9 +116,9 @@ const COVERAGE_LOCATIONS = [
 
 export default function AreasPage() {
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-teal flex flex-col w-full">
         {/* Hero Section */}
-        <section className="relative bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl overflow-hidden">
+        <section className="page-hero tone-teal relative bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl overflow-hidden">
           <div className="absolute inset-0 pointer-events-none opacity-20">
             <svg className="w-full h-full" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
               <defs>
@@ -480,7 +480,7 @@ export default function AreasPage() {
         </section>
 
         {/* Closing CTA Section */}
-        <section className="bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
+        <section className="page-hero tone-amber bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
           <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
           <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop text-center relative z-10">
             <div className="max-w-3xl mx-auto space-y-space-md">

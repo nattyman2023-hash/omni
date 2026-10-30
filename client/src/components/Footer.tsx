@@ -27,16 +27,14 @@ export default function Footer() {
   }
 
   return (
-    <footer className="w-full bg-surface-slate text-on-primary pt-space-3xl pb-space-2xl">
+    <footer className="site-footer w-full text-on-primary pt-space-3xl pb-space-2xl">
       <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-2xl pb-space-2xl">
         <div className="space-y-space-md">
-          <Link to="/" className="flex items-center gap-space-xs" aria-label="Omni Developments home">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-surface-dark">
-              <svg width="16" height="16" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-                <path d="M22 72V35l28-18 28 18v37H62V45H38v27" stroke="#F59E0B" strokeWidth="8" fill="none" />
-              </svg>
-            </span>
-            <span className="font-headline-md text-headline-md tracking-tight text-on-primary">Omni Developments</span>
+          <Link to="/" className="inline-flex" aria-label="Omni Developments home">
+            <picture>
+              <source srcSet="/images/omni-logo-white.webp" type="image/webp" />
+              <img className="footer-logo-image" src="/images/omni-logo-white.png" alt="Omni Developments Ltd — Design &amp; Build Specialists" width={765} height={194} loading="lazy" />
+            </picture>
           </Link>
           <p className="font-body-sm text-body-sm text-outline-variant leading-relaxed">
             Bespoke architectural design, structural extensions, and full property refurbishments across Greater

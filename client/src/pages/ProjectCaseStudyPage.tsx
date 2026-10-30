@@ -114,7 +114,7 @@ export default function ProjectCaseStudyPage() {
   const gallery = getProjectGallery(project);
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-brick flex flex-col w-full">
       {/* BREADCRUMB & CONTEXT STRIP */}
       <section className="w-full bg-surface-container-low py-space-sm">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
@@ -426,7 +426,7 @@ export default function ProjectCaseStudyPage() {
       {/* CLOSING DARK NAVY EXECUTIVE CTA SECTION — accreditation/insurance badges reworded to
           non-claiming copy; no named staff, no numeric guarantee figures (see
           REAL_CONTENT_REQUIRED.md for the equivalent decision made on About/Bathroom) */}
-      <section className="w-full bg-surface-slate text-on-primary py-space-4xl relative overflow-hidden">
+      <section className="page-hero tone-brick w-full bg-surface-slate text-on-primary py-space-4xl relative overflow-hidden">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center">
             <div className="lg:col-span-7 space-y-space-md">

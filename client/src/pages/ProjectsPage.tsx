@@ -38,9 +38,9 @@ export default function ProjectsPage() {
   const visible = projectRecords.filter((p) => matchesCategory(p, filter));
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-brick flex flex-col w-full">
       {/* 1. HERO — bg-surface-slate (dark) */}
-      <section className="relative w-full bg-surface-slate text-on-primary overflow-hidden pb-space-3xl pt-space-2xl md:pt-space-3xl">
+      <section className="page-hero tone-brick relative w-full bg-surface-slate text-on-primary overflow-hidden pb-space-3xl pt-space-2xl md:pt-space-3xl">
         <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10">
@@ -134,7 +134,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* 4. MID-PAGE CTA — bg-surface-slate (dark) */}
-      <section className="w-full py-space-3xl bg-surface-slate text-on-primary relative overflow-hidden">
+      <section className="page-hero tone-teal w-full py-space-3xl bg-surface-slate text-on-primary relative overflow-hidden">
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10 text-center max-w-3xl lg:mx-auto">
           <span className="inline-flex items-center gap-space-2xs px-space-sm py-1 rounded bg-surface-dark font-label-caps text-label-caps text-amber-highlight tracking-widest uppercase mb-space-sm">Have a Project of Your Own?</span>
@@ -165,7 +165,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* 6. FINAL DARK CTA — bg-surface-dark */}
-      <section className="w-full py-space-4xl bg-surface-dark text-on-primary relative overflow-hidden">
+      <section className="page-hero tone-amber w-full py-space-4xl bg-surface-dark text-on-primary relative overflow-hidden">
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10 text-center max-w-3xl lg:mx-auto">
           <h2 className="font-display-hero text-display-hero-mobile md:text-display-hero font-extrabold tracking-tight text-on-primary leading-tight mb-space-md">Let&apos;s Build Something Exceptional Together</h2>

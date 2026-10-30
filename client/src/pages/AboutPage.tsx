@@ -97,7 +97,7 @@ const PROCESS_STAGES = [
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-brick flex flex-col w-full">
       {/* HERO SECTION */}
       <section className="relative bg-surface py-space-3xl lg:py-space-4xl overflow-hidden">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
@@ -423,7 +423,7 @@ export default function AboutPage() {
       </section>
 
       {/* SECTION 6: CLOSING CTA */}
-      <section className="bg-surface-slate text-on-primary py-space-3xl relative overflow-hidden">
+      <section className="page-hero tone-teal bg-surface-slate text-on-primary py-space-3xl relative overflow-hidden">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10 text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-surface-dark text-amber-highlight font-label-caps text-label-caps tracking-widest uppercase mb-space-md">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-highlight" />

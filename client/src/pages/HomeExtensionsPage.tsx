@@ -69,7 +69,7 @@ export default function HomeExtensionsPage() {
   const [openFaq, setOpenFaq] = useState(0);
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-teal flex flex-col w-full">
       {/* 1. BREADCRUMB — bg-surface-ground */}
       <section className="w-full bg-surface-ground py-space-sm">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
@@ -149,7 +149,7 @@ export default function HomeExtensionsPage() {
       </section>
 
       {/* 3. CREDIBILITY TRUST BAR — bg-surface-slate (dark) */}
-      <section className="w-full bg-surface-slate text-on-primary py-space-md shadow-inner">
+      <section className="page-hero tone-teal w-full bg-surface-slate text-on-primary py-space-md shadow-inner">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md divide-y md:divide-y-0 md:divide-x divide-border-slate/40">
             {TRUST.map((t) => (
@@ -367,7 +367,7 @@ export default function HomeExtensionsPage() {
       </section>
 
       {/* 10. FINAL DARK CTA — bg-surface-dark (dark) */}
-      <section className="w-full bg-surface-dark text-on-primary py-space-3xl relative overflow-hidden">
+      <section className="page-hero tone-teal w-full bg-surface-dark text-on-primary py-space-3xl relative overflow-hidden">
         <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-secondary/10 blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">

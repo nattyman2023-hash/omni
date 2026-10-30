@@ -68,9 +68,9 @@ export default function ServicesPage() {
   const generalBuilding = services.find((service) => service.slug === 'general-building-work');
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-teal flex flex-col w-full">
       {/* 1. Hero Section */}
-      <section className="relative w-full bg-surface-slate text-on-primary overflow-hidden">
+      <section className="page-hero tone-teal relative w-full bg-surface-slate text-on-primary overflow-hidden">
         <div className="relative z-10 max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-3xl lg:py-space-4xl flex flex-col lg:flex-row items-center gap-space-2xl">
           <div className="w-full lg:w-7/12 space-y-space-md">
             <div className="inline-flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-surface-dark/60 backdrop-blur-md">
@@ -427,7 +427,7 @@ export default function ServicesPage() {
       </section>
 
       {/* 8. Final Dark CTA Section */}
-      <section className="w-full bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
+      <section className="page-hero tone-brick w-full bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 bg-[radial-gradient(#F59E0B_1px,transparent_1px)] [background-size:24px_24px]" />
         <div className="relative z-10 max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop text-center space-y-space-lg">
           <div className="inline-flex items-center gap-space-xs px-space-sm py-space-2xs rounded-full bg-surface-dark">

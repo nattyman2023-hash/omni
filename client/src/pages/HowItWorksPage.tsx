@@ -109,7 +109,7 @@ const APPROACH_CARDS = [
 
 export default function HowItWorksPage() {
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-steel flex flex-col w-full">
       {/* BREADCRUMB STRIP */}
       <div className="w-full bg-surface-subtle">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-sm flex items-center gap-space-xs font-label-ui text-label-ui text-on-surface-variant">
@@ -123,7 +123,7 @@ export default function HowItWorksPage() {
       </div>
 
       {/* HERO SECTION */}
-      <section className="relative w-full bg-surface-slate text-on-primary overflow-hidden py-space-3xl lg:py-space-4xl">
+      <section className="page-hero tone-steel relative w-full bg-surface-slate text-on-primary overflow-hidden py-space-3xl lg:py-space-4xl">
         <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#F59E0B_1px,transparent_1px)] [background-size:24px_24px]" />
         <div className="absolute -right-32 -top-32 w-96 h-96 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10">
@@ -329,7 +329,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* CLOSING CTA */}
-      <section className="w-full bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
+      <section className="page-hero tone-brick w-full bg-surface-slate text-on-primary py-space-3xl lg:py-space-4xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#F59E0B_1px,transparent_1px)] [background-size:24px_24px]" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10 text-center space-y-space-lg">
           <div className="max-w-2xl mx-auto space-y-space-xs">

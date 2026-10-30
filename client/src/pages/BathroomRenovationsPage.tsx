@@ -21,7 +21,7 @@ export default function BathroomRenovationsPage() {
   if (!bathroomService) return null;
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="page-accent tone-sky flex flex-col w-full">
       {/* Breadcrumb Navigation Bar */}
       <section className="w-full bg-surface-ground py-space-sm">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
@@ -109,7 +109,7 @@ export default function BathroomRenovationsPage() {
       </section>
 
       {/* Credibility Trust Bar — non-numeric, no fabricated stats or ratings */}
-      <section className="w-full bg-surface-slate text-on-primary py-space-lg shadow-md">
+      <section className="page-hero tone-sky w-full bg-surface-slate text-on-primary py-space-lg shadow-md">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md text-center">
             <div className="p-space-sm flex flex-col items-center justify-center">
@@ -354,7 +354,7 @@ export default function BathroomRenovationsPage() {
       </section>
 
       {/* Final Dark CTA Section */}
-      <section className="w-full bg-surface-dark text-on-primary py-space-3xl lg:py-space-4xl shadow-2xl relative overflow-hidden">
+      <section className="page-hero tone-sky w-full bg-surface-dark text-on-primary py-space-3xl lg:py-space-4xl shadow-2xl relative overflow-hidden">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
             <div className="lg:col-span-8">

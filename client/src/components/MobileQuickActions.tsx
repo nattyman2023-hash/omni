@@ -17,7 +17,7 @@ export default function MobileQuickActions() {
         <MSIcon name="chat" size={18} />
         WhatsApp
       </a>
-      <Link className="flex-1 flex items-center justify-center gap-space-2xs py-space-xs bg-primary text-on-primary rounded font-label-ui text-label-ui font-semibold" to="/quote">
+      <Link className="flex-1 flex items-center justify-center gap-space-2xs py-space-xs bg-brand-navy text-on-primary rounded font-label-ui text-label-ui font-semibold" to="/quote">
         Free Quote
       </Link>
     </nav>
