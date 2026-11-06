@@ -2,6 +2,7 @@ import 'dotenv/config';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import express, { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -806,7 +807,21 @@ app.use(async (req, res, next) => {
 app.use((_req, res) => res.status(404).json({ message: 'Not found.' }));
 app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => { if (error instanceof multer.MulterError) return res.status(400).json({ message: error.code === 'LIMIT_FILE_SIZE' ? 'Each upload must be 8 MB or smaller.' : 'Upload could not be processed.' }); if (error instanceof DatabaseUnavailableError) return res.status(503).json({ message: error.message }); console.error(error); res.status(500).json({ message: 'The request could not be completed. Please try again.' }); });
 
+// Opt-in: hosts without shell/SQL access (Hostinger Node.js apps) can apply the
+// ordered migrations at boot. Off by default; migrations that drop tables must
+// only ever run against a database that has been backed up.
+function runMigrationsOnStart() {
+  if (!['1', 'true', 'yes'].includes(String(process.env.MIGRATE_ON_START || '').trim().toLowerCase())) return;
+  if (!databaseConfigured) return;
+  try {
+    execFileSync(process.execPath, [path.join(projectRoot, 'scripts', 'migrate.js')], { stdio: 'inherit', env: process.env, cwd: projectRoot });
+  } catch {
+    console.error('[database] Startup migrations failed; see the migration log above.');
+  }
+}
+
 async function startServer() {
+  runMigrationsOnStart();
   if (productionMode) {
     try {
       await verifyProductionDatabase();
