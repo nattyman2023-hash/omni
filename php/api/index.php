@@ -40,21 +40,56 @@ function loadConfig(): array
         'UPLOAD_DIR' => '',
         'PROJECT_UPLOAD_DIR' => '',
         'CRM_WEBHOOK_SECRET' => '',
+        // Email (SMTP out, IMAP in), e-signature links and the cron endpoint. See config.example.php.
+        // Mail keys default to '' on purpose: an empty value lets the CRM mail settings stored in the
+        // database apply, then the Zoho UK defaults (crm_sales.php CRM_MAIL_SETTINGS).
+        'OUTBOUND_MESSAGES_ENABLED' => '',
+        'SMTP_HOST' => '',
+        'SMTP_PORT' => '',
+        'SMTP_SECURE' => '',
+        'SMTP_USER' => '',
+        'SMTP_PASSWORD' => '',
+        'EMAIL_FROM' => '',
+        'EMAIL_FROM_NAME' => '',
+        'EMAIL_REPLY_TO' => '',
+        'IMAP_HOST' => '',
+        'IMAP_PORT' => '',
+        'IMAP_USER' => '',
+        'IMAP_PASSWORD' => '',
+        'IMAP_MAILBOX' => '',
+        'SIGNING_BASE_URL' => '',
+        'CRM_CRON_SECRET' => '',
     ];
-    $localFile = __DIR__ . '/config.local.php';
-    $local = is_file($localFile) ? require $localFile : [];
-    if (!is_array($local)) {
-        throw new RuntimeException('config.local.php must return an array.');
+    // Precedence: environment variable > omni-crm-config.php (one level above the web root, so a
+    // deploy that replaces public_html never deletes it) > api/config.local.php > defaults.
+    $sources = [];
+    foreach ([configFileOutsideWebRoot(), __DIR__ . '/config.local.php'] as $file) {
+        $values = is_file($file) ? require $file : [];
+        if (!is_array($values)) {
+            throw new RuntimeException(basename($file) . ' must return an array.');
+        }
+        $sources[] = $values;
     }
     foreach ($defaults as $key => $value) {
         $environment = getenv($key);
         if ($environment !== false && $environment !== '') {
             $defaults[$key] = $environment;
-        } elseif (array_key_exists($key, $local) && $local[$key] !== '') {
-            $defaults[$key] = (string) $local[$key];
+            continue;
+        }
+        foreach ($sources as $source) {
+            if (array_key_exists($key, $source) && $source[$key] !== '' && $source[$key] !== null) {
+                $defaults[$key] = is_bool($source[$key]) ? ($source[$key] ? 'true' : 'false') : (string) $source[$key];
+                break;
+            }
         }
     }
     return $defaults;
+}
+
+/** Live settings file that sits next to public_html (never inside a deploy package). */
+function configFileOutsideWebRoot(): string
+{
+    return dirname(__DIR__, 2) . '/omni-crm-config.php';
 }
 
 $config = loadConfig();
@@ -837,6 +872,8 @@ try {
         jsonResponse(['message' => 'Project archived.']);
     }
 
+    // Public quote signing (/sign/:token) and the cron endpoint (/cron/crm); no staff session.
+    handleCrmSalesPublicRoute($method, $route);
     handleCrmRoute($method, $route);
 
     fail(404, 'Not found.');

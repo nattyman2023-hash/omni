@@ -230,3 +230,228 @@
   .crm-related li { flex-wrap: wrap; }
   .crm-row-actions { width: 100%; justify-content: flex-start; }
 }
+
+/* ---------- Sales: notices, documents, email, settings ---------- */
+.crm-status-amended { color: #6d28d9; background: #ede9fe; }
+.crm-status-queued, .crm-status-pending { color: #9a5b00; background: #fef3c7; }
+.crm-status-failed { color: #b42318; background: #fee4e2; }
+.crm-status-received { color: #0f766e; background: #ccfbf1; }
+.crm-link-button:disabled { cursor: progress; opacity: .6; }
+a.crm-link-button { display: inline-block; }
+
+.crm-notice { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 14px; padding: 12px 14px; border: 1px solid; border-radius: 8px; font-size: 13px; line-height: 1.5; }
+.crm-notice > div { min-width: 0; }
+.crm-notice a { color: inherit; font-weight: 700; text-decoration: underline; }
+.crm-notice .crm-link-button { flex: 0 0 auto; color: inherit; }
+.crm-notice-success { color: #05603a; border-color: #a6f4c5; background: #ecfdf3; }
+.crm-notice-warning { color: #7a2e0e; border-color: #fedf89; background: #fffaeb; }
+.crm-notice-error { color: #912018; border-color: #fecdca; background: #fef3f2; }
+.crm-notice-info { color: #1e3a5f; border-color: #c7d7ea; background: #f0f6fc; }
+.crm-notice-list { margin: 6px 0 0; padding-left: 18px; }
+.crm-notice-list li + li { margin-top: 4px; }
+.crm-form .crm-notice:first-child { margin-top: 0; }
+.crm-stack > .crm-notice:first-child { margin-top: 22px; }
+
+.crm-doc-meta { color: var(--muted); font-size: 12px; }
+.crm-doc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; margin-top: 6px; }
+.crm-cell-doc-actions { min-width: 190px; white-space: normal; }
+.crm-cell-doc-actions .crm-doc-actions { justify-content: flex-end; margin-top: 0; }
+.crm-cell-actions .crm-doc-actions .crm-link-button + .crm-link-button { margin-left: 0; }
+.crm-locked-note { margin-bottom: 14px; padding: 10px 12px; color: #5b21b6; border: 1px solid #ddd6fe; border-radius: 8px; background: #f5f3ff; font-size: 13px; }
+
+/* Line items editor */
+.crm-items { min-width: 0; margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #f8fafc; }
+.crm-items legend { padding: 0 6px; color: var(--ink); font: 700 12px Manrope, sans-serif; }
+.crm-items-head, .crm-items-row { display: grid; grid-template-columns: minmax(0, 1fr) 72px 118px 104px 36px; gap: 8px; align-items: center; }
+.crm-items-head { padding: 0 0 6px; color: var(--muted); font: 700 11px Manrope, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.crm-items-head span:nth-child(4) { text-align: right; }
+.crm-items-rows { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.crm-items-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.crm-items-row label { display: block; min-width: 0; }
+.crm-items-row input, .crm-items-vat input { width: 100%; min-height: 40px; padding: 8px 10px; color: var(--ink); border: 1px solid #b4c1cf; border-radius: 8px; background: #fff; font: 400 14px Inter, sans-serif; }
+.crm-items-row input:focus, .crm-items-vat input:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px rgba(244,165,28,.3); }
+.crm-items:disabled input { color: var(--slate); background: #f1f5f9; }
+.crm-items-amount { color: var(--ink); font: 700 13px Manrope, sans-serif; text-align: right; white-space: nowrap; }
+.crm-items-remove { width: 36px; height: 36px; }
+.crm-items-add { margin-top: 10px; }
+.crm-items-footer { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.crm-items-vat { display: flex; width: 110px; flex-direction: column; gap: 6px; }
+.crm-items-vat span { color: var(--ink); font: 700 12px Manrope, sans-serif; }
+.crm-items-totals { display: grid; min-width: 220px; gap: 4px; margin: 0; }
+.crm-items-totals div { display: flex; justify-content: space-between; gap: 18px; font-size: 13px; }
+.crm-items-totals dt { color: var(--slate); }
+.crm-items-totals dd { margin: 0; color: var(--ink); font-weight: 600; }
+.crm-items-grand { padding-top: 6px; border-top: 1px solid var(--line); }
+.crm-items-grand dt, .crm-items-grand dd { color: var(--ink); font: 800 15px Manrope, sans-serif; }
+
+.crm-choice { display: grid; gap: 8px; margin: 0 0 14px; padding: 0; border: 0; }
+.crm-choice legend { margin-bottom: 8px; color: var(--ink); font: 700 12px Manrope, sans-serif; }
+.crm-choice label { display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.crm-choice label:has(input:checked) { border-color: var(--navy); background: var(--surface); }
+.crm-choice input { margin-top: 3px; accent-color: var(--navy); }
+.crm-choice span { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.crm-choice small { color: var(--muted); font-size: 12px; }
+
+/* Email */
+.crm-filter { margin: 22px 0 0; }
+.crm-email-item { align-items: flex-start; }
+.crm-email-dir { display: grid; flex: 0 0 auto; width: 28px; height: 28px; place-items: center; border-radius: 50%; }
+.crm-related .crm-email-outbound { color: #0369a1; background: #e0f2fe; }
+.crm-related .crm-email-inbound { color: #0f766e; background: #ccfbf1; }
+.crm-related p.crm-email-error { color: #912018; font-size: 12px; }
+.crm-email-body { margin-top: 6px; }
+.crm-email-body summary { color: var(--amber-text); font: 700 12px Manrope, sans-serif; cursor: pointer; }
+.crm-email-body summary:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.crm-related .crm-email-body p { max-height: 320px; margin-top: 6px; padding: 10px 12px; overflow: auto; color: var(--ink); border-radius: 8px; background: #f8fafc; overflow-wrap: anywhere; }
+.crm-intro-note { margin: 0 0 14px; }
+.crm-template-grid { display: grid; gap: 14px; }
+.crm-code, .crm-placeholders code { padding: 2px 6px; color: var(--ink); border-radius: 4px; background: #eef2f6; font: 500 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.crm-placeholders { margin-top: 12px; }
+.crm-placeholders > span { color: var(--muted); font: 700 11px Manrope, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.crm-placeholders ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
+.crm-checkbox { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; cursor: pointer; }
+.crm-checkbox input { width: 18px; height: 18px; accent-color: var(--navy); }
+.crm-panel-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.crm-panel-toolbar p { flex: 1 1 320px; margin: 0; }
+#email-panel > .crm-panel, #email-panel > .crm-template-grid { margin-top: 14px; }
+
+/* Settings */
+.crm-settings { margin-top: 22px; }
+.crm-settings-fieldset { display: grid; min-width: 0; gap: 14px; margin: 0; padding: 0; border: 0; }
+.crm-settings-fieldset:disabled input, .crm-settings-fieldset:disabled textarea { color: var(--slate); background: #f8fafc; }
+
+@media (max-width: 640px) {
+  .crm-items { padding: 12px 10px; }
+  .crm-items-head { display: none; }
+  .crm-items-row { grid-template-columns: 64px minmax(0, 1fr) auto 36px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+  .crm-items-desc { grid-column: 1 / -1; }
+  .crm-items-totals { width: 100%; }
+  .crm-cell-doc-actions .crm-doc-actions { justify-content: flex-start; }
+}
+
+/* ---------- Public quote signing page (/sign/:token) ---------- */
+.sign-page { min-height: 100vh; padding: 32px 16px 56px; color: var(--ink); background: var(--surface); font: 400 15px/1.55 Inter, sans-serif; }
+.sign-card { width: min(860px, 100%); margin: 0 auto; padding: 28px; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: 0 10px 30px rgba(15,23,42,.06); }
+.sign-center { text-align: center; }
+.sign-center h1 { margin: 10px 0 8px; font-size: 24px; }
+.sign-center p { color: var(--slate); }
+.sign-problem-icon { color: var(--amber-dark); }
+.sign-company { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.sign-company strong { font: 800 18px Manrope, sans-serif; }
+.sign-company p { margin: 4px 0 0; color: var(--slate); font-size: 13px; white-space: pre-line; }
+.sign-company ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.sign-company li { display: flex; align-items: center; gap: 6px; }
+.sign-company a, .sign-pdf { color: var(--amber-text); font-weight: 600; }
+.sign-heading { margin-top: 22px; }
+.sign-heading h1 { margin: 6px 0 0; font-size: 28px; line-height: 1.2; }
+.sign-facts { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 16px 0 0; }
+.sign-facts dt { color: var(--muted); font: 700 11px Manrope, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.sign-facts dd { margin: 2px 0 0; font-weight: 600; }
+.sign-pdf { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.sign-table-wrap { margin-top: 22px; overflow-x: auto; }
+.sign-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.sign-table th { padding: 10px 12px; color: var(--muted); border-bottom: 1px solid var(--line); background: #f8fafc; font: 700 11px Manrope, sans-serif; letter-spacing: .04em; text-align: left; text-transform: uppercase; }
+.sign-table td { padding: 12px; vertical-align: top; border-bottom: 1px solid var(--line); }
+.sign-table .sign-num { text-align: right; white-space: nowrap; }
+.sign-totals { display: grid; width: min(320px, 100%); gap: 6px; margin: 16px 0 0 auto; }
+.sign-totals div { display: flex; justify-content: space-between; gap: 20px; }
+.sign-totals dt { color: var(--slate); }
+.sign-totals dd { margin: 0; font-weight: 600; }
+.sign-grand { padding-top: 8px; border-top: 2px solid var(--ink); }
+.sign-grand dt, .sign-grand dd { color: var(--ink); font: 800 18px Manrope, sans-serif; }
+.sign-section { margin-top: 26px; }
+.sign-section h2, .sign-form h2, .sign-signed h2 { margin: 0 0 8px; font-size: 18px; }
+.sign-section p { margin: 0; color: var(--slate); white-space: pre-line; }
+.sign-terms { max-height: 320px; padding: 14px 16px; overflow-y: auto; color: var(--slate); border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; font-size: 13px; white-space: pre-line; }
+.sign-terms:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.sign-form { display: grid; gap: 10px; margin-top: 30px; padding: 22px; border: 2px solid var(--navy); border-radius: 12px; }
+.sign-form > p { margin: 0 0 4px; color: var(--slate); font-size: 14px; }
+.sign-form > label:not(.sign-agree) { font: 700 13px Manrope, sans-serif; }
+.sign-form #sign-name { width: 100%; min-height: 48px; padding: 10px 12px; color: var(--ink); border: 1px solid #94a3b8; border-radius: 8px; font: 400 17px Inter, sans-serif; }
+.sign-form #sign-name:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px rgba(244,165,28,.4); }
+.sign-agree { display: flex; align-items: flex-start; gap: 10px; margin-top: 4px; font-size: 14px; cursor: pointer; }
+.sign-agree input { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 2px; accent-color: var(--navy); }
+.sign-agree input:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.sign-error { margin: 0; padding: 10px 12px; color: #912018; border: 1px solid #fecdca; border-radius: 8px; background: #fef3f2; font-size: 14px; }
+.sign-button { justify-self: start; min-height: 48px; margin-top: 6px; padding: 0 22px; color: #fff; border: 0; border-radius: 8px; background: var(--navy); font: 800 15px Manrope, sans-serif; cursor: pointer; }
+.sign-button:hover { background: var(--navy-2); }
+.sign-button:disabled { cursor: progress; opacity: .7; }
+.sign-button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.sign-signed { display: flex; align-items: flex-start; gap: 14px; margin-top: 30px; padding: 20px; color: #05603a; border: 1px solid #a6f4c5; border-radius: 12px; background: #ecfdf3; }
+.sign-signed:focus { outline: none; }
+.sign-signed p { margin: 4px 0 0; color: #05603a; }
+.sign-signed h2 { color: #05603a; }
+.sign-expired, .sign-expired p, .sign-expired h2 { color: #7a2e0e; }
+.sign-expired { border-color: #fedf89; background: #fffaeb; }
+@media (max-width: 640px) {
+  .sign-page { padding: 16px 12px 40px; }
+  .sign-card { padding: 18px 16px; }
+  .sign-heading h1 { font-size: 23px; }
+  .sign-table thead { display: none; }
+  .sign-table, .sign-table tbody, .sign-table tr, .sign-table td { display: block; width: 100%; }
+  .sign-table tr { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .sign-table td, .sign-table .sign-num { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border: 0; }
+  .sign-table td::before { color: var(--muted); font: 700 11px Manrope, sans-serif; text-transform: uppercase; content: attr(data-label); }
+  .sign-table td:first-child { display: block; font-weight: 600; }
+  .sign-table td:first-child::before { content: none; }
+  .sign-form { padding: 16px; }
+  .sign-button { justify-self: stretch; }
+}
+
+/* ---------- Contract v2: contacts, customer block, Zoho Mail ---------- */
+.crm-card-company { font-weight: 600; }
+.crm-table tbody tr.crm-row-link { cursor: pointer; }
+.crm-status-type-customer { color: #047857; background: #d1fae5; }
+.crm-status-type-prospect { color: #0369a1; background: #e0f2fe; }
+.crm-status-type-supplier { color: #9a5b00; background: #fef3c7; }
+.crm-status-type-other { color: #475569; background: #f1f5f9; }
+
+.crm-subfieldset { min-width: 0; margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+.crm-subfieldset > legend { padding: 0 6px; color: var(--ink); font: 700 12px Manrope, sans-serif; }
+.crm-subfieldset > p.crm-muted { margin: 0 0 10px; }
+.crm-subfieldset:disabled input, .crm-subfieldset:disabled textarea, .crm-subfieldset:disabled select { color: var(--slate); background: #f1f5f9; }
+.crm-resend-note { color: #1e3a5f; border-color: #c7d7ea; background: #f0f6fc; }
+
+.crm-notice-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.crm-notice-actions .crm-button { color: var(--ink); text-decoration: none; }
+.crm-test-stage { display: block; margin-top: 4px; font-size: 12px; opacity: .85; }
+.crm-test-stage code { padding: 1px 5px; border-radius: 4px; background: rgba(255,255,255,.6); font-size: 11px; }
+
+.crm-setup { display: grid; gap: 14px; margin-top: 14px; }
+.crm-setup-state { display: inline-flex; min-height: 22px; align-items: center; padding: 0 9px; border-radius: 999px; font: 700 11px Manrope, sans-serif; white-space: nowrap; }
+.crm-setup-ok { color: #047857; background: #d1fae5; }
+.crm-setup-missing { color: #9a5b00; background: #fef3c7; }
+.crm-setup-body > p { margin: 0 0 10px; font-size: 14px; }
+.crm-steps { display: grid; gap: 10px; margin: 0 0 14px; padding-left: 20px; font-size: 14px; line-height: 1.55; }
+.crm-steps code, .crm-setup-body code { padding: 1px 5px; border-radius: 4px; background: #eef2f6; font: 500 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+.crm-steps a { color: var(--amber-text); font-weight: 700; text-decoration: underline; }
+.crm-config-block { display: grid; gap: 8px; justify-items: start; margin-top: 8px; }
+.crm-config-block pre { width: 100%; max-width: 100%; margin: 0; padding: 12px 14px; overflow-x: auto; color: #e2e8f0; border-radius: 8px; background: var(--navy); font: 500 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.crm-config-block pre code { padding: 0; color: inherit; background: none; }
+.crm-config-block pre:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.crm-setup-tests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.crm-setup-tests h3, .crm-settings-tests h3 { margin: 0 0 4px; font-size: 15px; }
+.crm-setup-tests .crm-muted { margin: 0 0 10px; }
+.crm-setup-tests .crm-button { margin-top: 2px; }
+.crm-inline-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+.crm-inline-form .crm-field { flex: 1 1 220px; }
+.crm-inline-form .crm-button { min-height: 42px; }
+
+.crm-settings-mail { margin-top: 14px; scroll-margin-top: 90px; }
+.crm-settings-mail .crm-steps { padding: 12px 14px 12px 32px; border-radius: 8px; background: #f8fafc; }
+.crm-settings-tests { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.crm-switch { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.crm-switch input { flex: 0 0 auto; width: 40px; height: 22px; margin: 2px 0 0; appearance: none; border-radius: 999px; background: #cbd5e1; cursor: pointer; transition: background .15s; position: relative; }
+.crm-switch input::after { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); content: ""; transition: transform .15s; }
+.crm-switch input:checked { background: var(--green); }
+.crm-switch input:checked::after { transform: translateX(18px); }
+.crm-switch input:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.crm-switch input:disabled { cursor: not-allowed; opacity: .6; }
+.crm-switch span { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.crm-switch small { color: var(--muted); font-size: 12px; }
+.crm-saved-flags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+.crm-saved-flags span { padding: 2px 9px; color: #047857; border-radius: 999px; background: #d1fae5; font: 700 11px Manrope, sans-serif; }
+
+@media (max-width: 900px) {
+  .crm-setup-tests { grid-template-columns: 1fr; }
+}

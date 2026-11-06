@@ -7,6 +7,8 @@ dist-server/
 .env.test.local
 .env.*.local
 php/api/config.local.php
+omni-crm-config.php
+php/api/private/migrations/
 uploads/private/
 uploads/
 qa/

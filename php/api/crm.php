@@ -16,16 +16,24 @@ const CRM_PIPELINE = ['new', 'contacted', 'site_visit', 'quoted', 'won'];
 const CRM_STAGE_LABELS = ['new' => 'New', 'contacted' => 'Contacted', 'site_visit' => 'Site visit', 'quoted' => 'Quoted', 'won' => 'Won', 'lost' => 'Lost'];
 /** Staff account roles, matching the users.role enum in deploy/schema.sql. */
 const CRM_ROLES = ['owner', 'admin', 'staff'];
+/** crm_leads.contact_type: a lead becomes a customer when a quote is accepted or an invoice paid. */
+const CRM_CONTACT_TYPES = ['customer', 'prospect', 'supplier', 'other'];
 const CRM_COLUMNS = [
-    'crm_leads' => ['public_reference', 'source', 'source_detail', 'external_id', 'contact_enquiry_id', 'quote_request_id', 'name', 'email', 'phone', 'postcode', 'address', 'project_type', 'property_type', 'budget', 'desired_start', 'description', 'preferred_contact', 'stage', 'lost_reason', 'estimated_value_pence', 'assigned_user_id', 'raw_payload', 'stage_changed_at', 'created_at'],
+    'crm_leads' => ['public_reference', 'source', 'source_detail', 'external_id', 'contact_enquiry_id', 'quote_request_id', 'name', 'company_name', 'contact_type', 'email', 'phone', 'postcode', 'address', 'project_type', 'property_type', 'budget', 'desired_start', 'description', 'preferred_contact', 'stage', 'lost_reason', 'estimated_value_pence', 'assigned_user_id', 'raw_payload', 'stage_changed_at', 'created_at'],
     'crm_lead_activities' => ['lead_id', 'user_id', 'kind', 'body'],
     'crm_site_visits' => ['lead_id', 'scheduled_at', 'address', 'duration_minutes', 'assigned_user_id', 'status', 'notes'],
     'crm_tasks' => ['lead_id', 'assigned_user_id', 'title', 'notes', 'due_at', 'status', 'completed_at'],
-    'crm_quotes' => ['quote_reference', 'lead_id', 'title', 'amount_pence', 'status', 'valid_until', 'notes', 'sent_at', 'decided_at'],
-    'crm_invoices' => ['lead_id', 'quote_id', 'invoice_reference', 'customer_name', 'amount_pence', 'status', 'due_at', 'notes', 'issued_at', 'paid_at'],
+    'crm_quotes' => ['quote_reference', 'lead_id', 'title', 'customer_name', 'customer_company', 'customer_address', 'customer_email', 'quote_date', 'amount_pence', 'subtotal_pence', 'vat_rate_bp', 'vat_pence', 'version', 'parent_quote_id', 'revised_by_id', 'status', 'valid_until', 'notes', 'terms', 'signing_token', 'signed_name', 'signed_at', 'signed_ip', 'signed_user_agent', 'emailed_at', 'sent_at', 'decided_at'],
+    'crm_invoices' => ['lead_id', 'quote_id', 'invoice_reference', 'customer_name', 'customer_company', 'customer_address', 'customer_email', 'amount_pence', 'subtotal_pence', 'vat_rate_bp', 'vat_pence', 'stage_label', 'status', 'invoice_date', 'supply_date', 'po_number', 'payment_terms_days', 'due_at', 'notes', 'issued_at', 'paid_at', 'sent_at'],
+    'crm_quote_items' => ['quote_id', 'position', 'description', 'quantity', 'unit_price_pence', 'amount_pence'],
+    'crm_invoice_items' => ['invoice_id', 'position', 'description', 'quantity', 'unit_price_pence', 'amount_pence'],
+    'crm_emails' => ['direction', 'lead_id', 'template_key', 'related_type', 'related_id', 'from_address', 'to_address', 'subject', 'body', 'status', 'error', 'message_id', 'sent_at', 'received_at'],
+    'crm_followups' => ['document_type', 'document_id', 'lead_id', 'template_key', 'due_at', 'status', 'attempts', 'max_attempts', 'last_sent_at'],
 ];
 const CRM_GENERIC_INVALID = 'Please check the details entered.';
 const CRM_MAX_PENCE = 100000000000;
+
+require_once __DIR__ . '/crm_sales.php';
 
 /* ---------------------------------------------------------------------------
  * Pure helpers
@@ -284,6 +292,8 @@ function crmLeadSpec(): array
         'assignedUserId' => ['type' => 'id', 'nullable' => true],
         'stage' => ['type' => 'enum', 'values' => CRM_STAGES],
         'lostReason' => crmOptionalText(255),
+        'companyName' => crmOptionalText(190),
+        'contactType' => ['type' => 'enum', 'values' => CRM_CONTACT_TYPES, 'message' => 'Choose customer, prospect, supplier or other.'],
     ];
 }
 
@@ -409,6 +419,8 @@ function crmLeadOut(array $row, array $lookups): array
         'source' => crmText($row['source']),
         'sourceDetail' => crmText($row['source_detail']),
         'name' => crmText($row['name']),
+        'companyName' => crmText($row['company_name'] ?? null),
+        'contactType' => crmText($row['contact_type'] ?? null) !== '' ? crmText($row['contact_type']) : 'prospect',
         'email' => crmText($row['email']),
         'phone' => crmText($row['phone']),
         'postcode' => crmText($row['postcode']),
@@ -455,15 +467,7 @@ function crmTaskOut(array $row, array $lookups): array
     return ['id' => (int) $row['id'], ...crmLeadLink($row, $lookups), 'title' => crmText($row['title']), 'notes' => crmText($row['notes']), 'dueAt' => crmIso($row['due_at']), 'status' => crmText($row['status']), 'completedAt' => crmIso($row['completed_at']), 'assignedUserId' => $assigned, 'assignedName' => crmStaffName($lookups, $assigned), 'createdAt' => crmIso($row['created_at']), 'updatedAt' => crmIso($row['updated_at'])];
 }
 
-function crmQuoteOut(array $row, array $lookups): array
-{
-    return ['id' => (int) $row['id'], 'reference' => crmText($row['quote_reference']), ...crmLeadLink($row, $lookups), 'title' => crmText($row['title']), 'amountPence' => (int) $row['amount_pence'], 'status' => crmText($row['status']), 'validUntil' => crmDate($row['valid_until']), 'notes' => crmText($row['notes']), 'sentAt' => crmIso($row['sent_at']), 'decidedAt' => crmIso($row['decided_at']), 'createdAt' => crmIso($row['created_at']), 'updatedAt' => crmIso($row['updated_at'])];
-}
-
-function crmInvoiceOut(array $row, array $lookups): array
-{
-    return ['id' => (int) $row['id'], 'reference' => crmText($row['invoice_reference']), ...crmLeadLink($row, $lookups), 'quoteId' => crmNullableInt($row['quote_id']), 'customerName' => crmText($row['customer_name']), 'amountPence' => (int) $row['amount_pence'], 'status' => crmText($row['status']), 'dueAt' => crmDate($row['due_at']), 'notes' => crmText($row['notes']), 'issuedAt' => crmIso($row['issued_at']), 'paidAt' => crmIso($row['paid_at']), 'createdAt' => crmIso($row['created_at']), 'updatedAt' => crmIso($row['updated_at'])];
-}
+/* crmQuoteOut() and crmInvoiceOut() live in crm_sales.php (line items, VAT, signing). */
 
 function crmActivityOut(array $row, array $lookups): array
 {
@@ -522,14 +526,25 @@ function crmMoveStage(array $lead, string $target, ?int $userId, string $reason,
     crmLog((int) $lead['id'], 'stage', "Stage changed from $from to " . CRM_STAGE_LABELS[$next] . ($reason !== '' ? " ($reason)" : '') . '.', $userId);
 }
 
+/** Promotes a prospect (or "other") to customer; suppliers keep their type. */
+function crmMarkCustomer(array $lead): void
+{
+    if (in_array($lead['contact_type'] ?? 'prospect', ['prospect', 'other'], true)) {
+        crmUpdate('crm_leads', (int) $lead['id'], ['contact_type' => 'customer']);
+    }
+}
+
 function crmLeadColumns(array $input): array
 {
     $row = [];
-    $map = ['name' => 'name', 'email' => 'email', 'phone' => 'phone', 'postcode' => 'postcode', 'address' => 'address', 'projectType' => 'project_type', 'propertyType' => 'property_type', 'budget' => 'budget', 'desiredStart' => 'desired_start', 'description' => 'description', 'preferredContact' => 'preferred_contact', 'lostReason' => 'lost_reason'];
+    $map = ['name' => 'name', 'email' => 'email', 'phone' => 'phone', 'postcode' => 'postcode', 'address' => 'address', 'projectType' => 'project_type', 'propertyType' => 'property_type', 'budget' => 'budget', 'desiredStart' => 'desired_start', 'description' => 'description', 'preferredContact' => 'preferred_contact', 'lostReason' => 'lost_reason', 'companyName' => 'company_name'];
     foreach ($map as $key => $column) {
         if (array_key_exists($key, $input)) {
             $row[$column] = $key === 'name' ? $input[$key] : crmBlankToNull($input[$key]);
         }
+    }
+    if (isset($input['contactType'])) {
+        $row['contact_type'] = $input['contactType'];
     }
     if (array_key_exists('valuePence', $input)) {
         $row['estimated_value_pence'] = $input['valuePence'];
@@ -540,7 +555,7 @@ function crmLeadColumns(array $input): array
     return $row;
 }
 
-function crmListLeads(string $stage, string $query): array
+function crmListLeads(string $stage, string $query, string $type = ''): array
 {
     crmSyncWebsiteEnquiries();
     $lookups = crmLookups();
@@ -550,8 +565,11 @@ function crmListLeads(string $stage, string $query): array
         if ($stage !== '' && $row['stage'] !== $stage) {
             continue;
         }
+        if ($type !== '' && ($row['contact_type'] ?? 'prospect') !== $type) {
+            continue;
+        }
         $lead = crmLeadOut($row, $lookups);
-        if ($needle !== '' && !str_contains(mb_strtolower(implode(' ', [$lead['name'], $lead['email'], $lead['phone'], $lead['postcode'], $lead['reference'], $lead['projectType'], $lead['address']])), $needle)) {
+        if ($needle !== '' && !str_contains(mb_strtolower(implode(' ', [$lead['name'], $lead['companyName'], $lead['email'], $lead['phone'], $lead['postcode'], $lead['reference'], $lead['projectType'], $lead['address']])), $needle)) {
             continue;
         }
         $leads[] = $lead;
@@ -580,14 +598,19 @@ function crmLeadDetail(int $id): array
         }
     }
     $lead['submission'] = is_array($raw) && isset($raw['fields']) && is_array($raw['fields']) ? (object) $raw['fields'] : null;
+    $quoteRows = crmList('crm_quotes', ['lead_id' => $id], 200);
+    $invoiceRows = crmList('crm_invoices', ['lead_id' => $id], 200);
+    crmPrimeItems('quote', array_map(fn ($item) => (int) $item['id'], $quoteRows));
+    crmPrimeItems('invoice', array_map(fn ($item) => (int) $item['id'], $invoiceRows));
     return [
         'lead' => $lead,
         'activities' => array_map(fn ($item) => crmActivityOut($item, $lookups), crmList('crm_lead_activities', ['lead_id' => $id], 500)),
         'visits' => array_map(fn ($item) => crmVisitOut($item, $lookups), crmList('crm_site_visits', ['lead_id' => $id], 200)),
         'tasks' => array_map(fn ($item) => crmTaskOut($item, $lookups), crmList('crm_tasks', ['lead_id' => $id], 200)),
-        'quotes' => array_map(fn ($item) => crmQuoteOut($item, $lookups), crmList('crm_quotes', ['lead_id' => $id], 200)),
-        'invoices' => array_map(fn ($item) => crmInvoiceOut($item, $lookups), crmList('crm_invoices', ['lead_id' => $id], 200)),
+        'quotes' => array_map(fn ($item) => crmQuoteOut($item, $lookups), $quoteRows),
+        'invoices' => array_map(fn ($item) => crmInvoiceOut($item, $lookups), $invoiceRows),
         'files' => crmLeadFiles(crmNullableInt($row['quote_request_id'] ?? null)),
+        'emails' => array_map(fn ($item) => crmEmailOut($item, $lookups), crmList('crm_emails', ['lead_id' => $id], 200)),
     ];
 }
 
@@ -805,18 +828,6 @@ function crmUpdateTask(int $id, array $body, ?int $userId): array
     return crmTaskOut(crmGet('crm_tasks', $id), crmLookups());
 }
 
-function crmQuoteSpec(bool $create): array
-{
-    $spec = [
-        'title' => ['type' => 'text', 'min' => 1, 'max' => 190, 'required' => true, 'message' => 'Describe the quoted work.'],
-        'amountPence' => ['type' => 'pence', 'required' => true],
-        'status' => ['type' => 'enum', 'values' => ['draft', 'sent', 'accepted', 'declined']] + ($create ? ['default' => 'draft'] : []),
-        'validUntil' => ['type' => 'date', 'nullable' => true],
-        'notes' => crmOptionalText(8000),
-    ];
-    return $create ? ['leadId' => ['type' => 'id', 'positive' => true, 'required' => true, 'message' => 'Choose a lead.']] + $spec : $spec;
-}
-
 function crmQuoteStatusEffects(array $quote, string $status, ?int $userId): void
 {
     $lead = crmRequireLead((int) $quote['lead_id']);
@@ -827,139 +838,10 @@ function crmQuoteStatusEffects(array $quote, string $status, ?int $userId): void
     } elseif ($status === 'accepted') {
         crmLog((int) $lead['id'], 'quote', "Quote $label accepted.", $userId);
         crmMoveStage($lead, 'won', $userId, 'quote accepted', $lead['stage'] !== 'won');
+        crmMarkCustomer($lead);
     } elseif ($status === 'declined') {
         crmLog((int) $lead['id'], 'quote', "Quote $label declined.", $userId);
     }
-}
-
-function crmCreateQuote(array $body, ?int $userId): array
-{
-    $input = crmValidate($body, crmQuoteSpec(true));
-    crmRequireLead($input['leadId']);
-    $now = crmNow();
-    $id = crmInsert('crm_quotes', ['quote_reference' => 'TMP-' . bin2hex(random_bytes(8)), 'lead_id' => $input['leadId'], 'title' => $input['title'], 'amount_pence' => $input['amountPence'], 'status' => $input['status'], 'valid_until' => $input['validUntil'] ?? null, 'notes' => crmBlankToNull($input['notes'] ?? null), 'sent_at' => $input['status'] !== 'draft' ? $now : null, 'decided_at' => in_array($input['status'], ['accepted', 'declined'], true) ? $now : null]);
-    crmUpdate('crm_quotes', $id, ['quote_reference' => 'Q-' . str_pad((string) $id, 4, '0', STR_PAD_LEFT)]);
-    $quote = crmGet('crm_quotes', $id);
-    crmLog($input['leadId'], 'quote', 'Quote ' . $quote['quote_reference'] . ' created: ' . $input['title'] . ' (' . crmMoney($input['amountPence']) . ').', $userId);
-    if ($input['status'] !== 'draft') {
-        crmQuoteStatusEffects($quote, $input['status'], $userId);
-    }
-    return crmQuoteOut(crmGet('crm_quotes', $id), crmLookups());
-}
-
-function crmUpdateQuote(int $id, array $body, ?int $userId): array
-{
-    $quote = crmGet('crm_quotes', $id);
-    if ($quote === null) {
-        fail(404, 'Quote not found.');
-    }
-    $input = crmValidate($body, crmQuoteSpec(false), true);
-    $patch = [];
-    foreach (['title' => 'title', 'amountPence' => 'amount_pence', 'validUntil' => 'valid_until'] as $key => $column) {
-        if (array_key_exists($key, $input)) {
-            $patch[$column] = $input[$key];
-        }
-    }
-    if (array_key_exists('notes', $input)) {
-        $patch['notes'] = crmBlankToNull($input['notes']);
-    }
-    $changed = isset($input['status']) && $input['status'] !== $quote['status'];
-    if ($changed) {
-        $now = crmNow();
-        $patch['status'] = $input['status'];
-        if ($input['status'] === 'sent' && !$quote['sent_at']) {
-            $patch['sent_at'] = $now;
-        }
-        if (in_array($input['status'], ['accepted', 'declined'], true)) {
-            $patch['decided_at'] = $now;
-        }
-        if ($input['status'] === 'draft') {
-            $patch['sent_at'] = null;
-            $patch['decided_at'] = null;
-        }
-    }
-    crmUpdate('crm_quotes', $id, $patch);
-    $updated = crmGet('crm_quotes', $id);
-    if ($changed) {
-        crmQuoteStatusEffects($updated, $input['status'], $userId);
-    }
-    return crmQuoteOut($updated, crmLookups());
-}
-
-function crmInvoiceSpec(bool $create): array
-{
-    $spec = [
-        'customerName' => $create ? crmOptionalText(190) : ['type' => 'text', 'min' => 1, 'max' => 190],
-        'amountPence' => ['type' => 'pence', 'required' => true],
-        'status' => ['type' => 'enum', 'values' => ['draft', 'issued', 'paid', 'void']] + ($create ? ['default' => 'draft'] : []),
-        'dueAt' => ['type' => 'date', 'nullable' => true],
-        'notes' => crmOptionalText(8000),
-    ];
-    return $create ? ['leadId' => ['type' => 'id', 'positive' => true, 'nullable' => true], 'quoteId' => ['type' => 'id', 'positive' => true, 'nullable' => true]] + $spec : $spec;
-}
-
-function crmCreateInvoice(array $body, ?int $userId): array
-{
-    $input = crmValidate($body, crmInvoiceSpec(true));
-    $leadId = $input['leadId'] ?? null;
-    $quoteId = $input['quoteId'] ?? null;
-    if ($quoteId) {
-        $quote = crmGet('crm_quotes', $quoteId);
-        if ($quote === null) {
-            fail(400, 'That quote no longer exists.');
-        }
-        $leadId = $leadId ?? (int) $quote['lead_id'];
-        if ((int) $quote['lead_id'] !== $leadId) {
-            fail(400, 'The quote belongs to a different lead.');
-        }
-    }
-    $lead = $leadId ? crmRequireLead($leadId) : null;
-    $customer = ($input['customerName'] ?? '') !== '' ? $input['customerName'] : ($lead ? crmText($lead['name']) : '');
-    if ($customer === '') {
-        fail(400, 'Choose a lead or enter the customer name.');
-    }
-    $now = crmNow();
-    $id = crmInsert('crm_invoices', ['invoice_reference' => 'TMP-' . bin2hex(random_bytes(8)), 'lead_id' => $leadId, 'quote_id' => $quoteId, 'customer_name' => $customer, 'amount_pence' => $input['amountPence'], 'status' => $input['status'], 'due_at' => $input['dueAt'] ?? null, 'notes' => crmBlankToNull($input['notes'] ?? null), 'issued_at' => in_array($input['status'], ['issued', 'paid'], true) ? $now : null, 'paid_at' => $input['status'] === 'paid' ? $now : null]);
-    $reference = 'INV-' . str_pad((string) $id, 4, '0', STR_PAD_LEFT);
-    crmUpdate('crm_invoices', $id, ['invoice_reference' => $reference]);
-    crmLog($leadId, 'invoice', "Invoice $reference " . ($input['status'] === 'draft' ? 'drafted' : $input['status']) . ' for ' . crmMoney($input['amountPence']) . '.', $userId);
-    return crmInvoiceOut(crmGet('crm_invoices', $id), crmLookups());
-}
-
-function crmUpdateInvoice(int $id, array $body, ?int $userId): array
-{
-    $invoice = crmGet('crm_invoices', $id);
-    if ($invoice === null) {
-        fail(404, 'Invoice not found.');
-    }
-    $input = crmValidate($body, crmInvoiceSpec(false), true);
-    $patch = [];
-    foreach (['customerName' => 'customer_name', 'amountPence' => 'amount_pence', 'dueAt' => 'due_at'] as $key => $column) {
-        if (array_key_exists($key, $input)) {
-            $patch[$column] = $input[$key];
-        }
-    }
-    if (array_key_exists('notes', $input)) {
-        $patch['notes'] = crmBlankToNull($input['notes']);
-    }
-    $changed = isset($input['status']) && $input['status'] !== $invoice['status'];
-    if ($changed) {
-        $now = crmNow();
-        $patch['status'] = $input['status'];
-        if (in_array($input['status'], ['issued', 'paid'], true) && !$invoice['issued_at']) {
-            $patch['issued_at'] = $now;
-        }
-        $patch['paid_at'] = $input['status'] === 'paid' ? ($invoice['paid_at'] ?: $now) : null;
-        if ($input['status'] === 'draft') {
-            $patch['issued_at'] = null;
-        }
-    }
-    crmUpdate('crm_invoices', $id, $patch);
-    $updated = crmGet('crm_invoices', $id);
-    if ($changed) {
-        crmLog(crmNullableInt($updated['lead_id']), 'invoice', 'Invoice ' . $updated['invoice_reference'] . ' marked ' . $input['status'] . ' (' . crmMoney((int) $updated['amount_pence']) . ').', $userId);
-    }
-    return crmInvoiceOut($updated, crmLookups());
 }
 
 function crmSummary(): array
@@ -1138,11 +1020,11 @@ function crmCsvMoney(mixed $pence): string
 
 function crmExportLeads(): string
 {
-    $leads = crmListLeads(crmQueryText('stage'), crmQueryText('q'));
+    $leads = crmListLeads(crmQueryText('stage'), crmQueryText('q'), in_array(crmQueryText('type'), CRM_CONTACT_TYPES, true) ? crmQueryText('type') : '');
     return crmCsv(
-        ['Reference', 'Name', 'Email', 'Phone', 'Postcode', 'Address', 'Project', 'Property', 'Budget', 'Desired start', 'Stage', 'Estimated value (GBP)', 'Assigned to', 'Source', 'Source detail', 'Created', 'Last updated'],
+        ['Reference', 'Name', 'Company', 'Type', 'Email', 'Phone', 'Postcode', 'Address', 'Project', 'Property', 'Budget', 'Desired start', 'Stage', 'Estimated value (GBP)', 'Assigned to', 'Source', 'Source detail', 'Created', 'Last updated'],
         array_map(fn (array $lead) => [
-            $lead['reference'], $lead['name'], $lead['email'], $lead['phone'], $lead['postcode'], $lead['address'],
+            $lead['reference'], $lead['name'], $lead['companyName'], $lead['contactType'], $lead['email'], $lead['phone'], $lead['postcode'], $lead['address'],
             $lead['projectType'], $lead['propertyType'], $lead['budget'], $lead['desiredStart'],
             CRM_STAGE_LABELS[$lead['stage']] ?? $lead['stage'], crmCsvMoney($lead['valuePence']), $lead['assignedName'],
             $lead['source'], $lead['sourceDetail'], $lead['createdAt'], $lead['updatedAt'],
@@ -1186,6 +1068,8 @@ function crmEraseLead(int $id, ?int $userId): array
     }
     $hasCommercialRecords = crmList('crm_quotes', ['lead_id' => $id], 1) !== [] || crmList('crm_invoices', ['lead_id' => $id], 1) !== [];
     $pdo = database();
+    // Correspondence is personal data and is not an accounting record, so it goes either way.
+    $pdo->prepare('DELETE FROM crm_emails WHERE lead_id = ?')->execute([$id]);
     if (!$hasCommercialRecords) {
         $pdo->prepare('DELETE FROM crm_leads WHERE id = ?')->execute([$id]);
         return ['id' => $id, 'erased' => 'deleted'];
@@ -1243,10 +1127,10 @@ function crmTeamFind(int $id): array
 }
 
 /** Team management is owner/administrator only, matching the Express API. */
-function crmRequireManager(array $user): void
+function crmRequireManager(array $user, string $message = 'Only owners and administrators can manage the team.'): void
 {
     if (!in_array((string) $user['role'], ['owner', 'admin'], true)) {
-        fail(403, 'Only owners and administrators can manage the team.');
+        fail(403, $message);
     }
 }
 
@@ -1396,6 +1280,11 @@ function handleCrmRoute(string $method, string $route): void
     $userId = (int) $user['id'] ?: null;
     $path = substr($route, strlen('/admin/crm'));
     $body = in_array($method, ['POST', 'PATCH'], true) ? requestData() : [];
+    // Shared hosting has no migration runner or cron: apply pending schema changes on the first
+    // staff request and run due follow-ups (at most every 10 minutes) after the response.
+    crmEnsureMigrations();
+    crmScheduleLazyFollowups();
+    handleCrmSalesRoute($method, $path, $user, $userId, $body);
 
     if ($method === 'GET' && $path === '/summary') {
         crmRespond(crmSummary());
@@ -1429,7 +1318,11 @@ function handleCrmRoute(string $method, string $route): void
     }
     if ($path === '/leads') {
         if ($method === 'GET') {
-            crmRespond(['records' => crmListLeads(crmQueryText('stage'), crmQueryText('q'))]);
+            $type = crmQueryText('type');
+            if ($type !== '' && !in_array($type, CRM_CONTACT_TYPES, true)) {
+                fail(400, 'Choose customer, prospect, supplier or other.');
+            }
+            crmRespond(['records' => crmListLeads(crmQueryText('stage'), crmQueryText('q'), $type)]);
         }
         if ($method === 'POST') {
             crmRespond(['lead' => crmCreateLead($body, $userId)], 201);
@@ -1465,7 +1358,11 @@ function handleCrmRoute(string $method, string $route): void
         if ($method === 'GET' && $id === null) {
             $status = crmQueryText('status');
             $lookups = crmLookups();
-            $records = array_map(fn ($row) => $out($row, $lookups), crmList($table, $status !== '' ? ['status' => $status] : []));
+            $rows = crmList($table, $status !== '' ? ['status' => $status] : []);
+            if ($match[1] === 'quotes' || $match[1] === 'invoices') {
+                crmPrimeItems($match[1] === 'quotes' ? 'quote' : 'invoice', array_map(fn ($row) => (int) $row['id'], $rows));
+            }
+            $records = array_map(fn ($row) => $out($row, $lookups), $rows);
             if ($match[1] === 'visits') {
                 usort($records, fn ($a, $b) => strcmp((string) $a['scheduledAt'], (string) $b['scheduledAt']));
             } elseif ($match[1] === 'tasks') {

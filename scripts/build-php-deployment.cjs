@@ -23,6 +23,21 @@ fs.rmSync(path.join(output, 'api', 'config.local.php'), { force: true });
 // CLI tooling stays out of the web root; it is only for local or SSH access.
 fs.rmSync(path.join(output, 'tools'), { recursive: true, force: true });
 
+// Shared hosting has no migration runner, so the PHP API applies pending 005+ migrations itself
+// (crm_sales.php: crmEnsureMigrations). database/ is not shipped, so copy those files into the
+// web-denied api/private directory (php/api/private/.htaccess: Require all denied).
+const migrationSource = path.join(root, 'database', 'migrations');
+const migrationTarget = path.join(output, 'api', 'private', 'migrations');
+fs.rmSync(migrationTarget, { recursive: true, force: true });
+fs.mkdirSync(migrationTarget, { recursive: true });
+const shippedMigrations = fs.readdirSync(migrationSource)
+  .filter((file) => /^\d+_[A-Za-z0-9_]+\.sql$/.test(file) && Number.parseInt(file, 10) >= 5);
+if (shippedMigrations.length === 0) throw new Error('No 005+ migrations found to ship with the PHP package.');
+for (const file of shippedMigrations) fs.copyFileSync(path.join(migrationSource, file), path.join(migrationTarget, file));
+if (!fs.existsSync(path.join(output, 'api', 'private', '.htaccess'))) {
+  throw new Error('api/private/.htaccess is missing; the shipped migrations would be web-readable.');
+}
+
 if (crmProfile) {
   // Ship an inert template next to the package so the live config can be created by copy-and-fill.
   // It is derived from config.example.php (so new keys always flow through) with the CRM subdomain

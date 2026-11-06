@@ -67,26 +67,58 @@ CREATE TABLE IF NOT EXISTS crm_quotes (
   INDEX idx_crm_quotes_lead (lead_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE crm_site_visits
-  ADD COLUMN lead_id BIGINT UNSIGNED NULL AFTER id,
-  ADD COLUMN address VARCHAR(255) NULL AFTER scheduled_at,
-  ADD COLUMN duration_minutes SMALLINT UNSIGNED NOT NULL DEFAULT 60 AFTER address,
-  ADD COLUMN assigned_user_id BIGINT UNSIGNED NULL AFTER duration_minutes,
-  ADD CONSTRAINT fk_site_visits_lead FOREIGN KEY (lead_id) REFERENCES crm_leads(id) ON DELETE CASCADE,
-  ADD CONSTRAINT fk_site_visits_user FOREIGN KEY (assigned_user_id) REFERENCES users(id) ON DELETE SET NULL;
+-- Columns and foreign keys added to the 003 tables. Each change is guarded by an
+-- information_schema check so the migration can be applied more than once (MySQL 8 and MariaDB
+-- have no portable ADD COLUMN IF NOT EXISTS / ADD CONSTRAINT IF NOT EXISTS).
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_site_visits' AND COLUMN_NAME = 'lead_id') = 0,
+  'ALTER TABLE crm_site_visits ADD COLUMN lead_id BIGINT UNSIGNED NULL AFTER id', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_site_visits' AND COLUMN_NAME = 'address') = 0,
+  'ALTER TABLE crm_site_visits ADD COLUMN address VARCHAR(255) NULL AFTER scheduled_at', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_site_visits' AND COLUMN_NAME = 'duration_minutes') = 0,
+  'ALTER TABLE crm_site_visits ADD COLUMN duration_minutes SMALLINT UNSIGNED NOT NULL DEFAULT 60 AFTER address', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_site_visits' AND COLUMN_NAME = 'assigned_user_id') = 0,
+  'ALTER TABLE crm_site_visits ADD COLUMN assigned_user_id BIGINT UNSIGNED NULL AFTER duration_minutes', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_site_visits' AND CONSTRAINT_NAME = 'fk_site_visits_lead' AND CONSTRAINT_TYPE = 'FOREIGN KEY') = 0,
+  'ALTER TABLE crm_site_visits ADD CONSTRAINT fk_site_visits_lead FOREIGN KEY (lead_id) REFERENCES crm_leads(id) ON DELETE CASCADE', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_site_visits' AND CONSTRAINT_NAME = 'fk_site_visits_user' AND CONSTRAINT_TYPE = 'FOREIGN KEY') = 0,
+  'ALTER TABLE crm_site_visits ADD CONSTRAINT fk_site_visits_user FOREIGN KEY (assigned_user_id) REFERENCES users(id) ON DELETE SET NULL', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-ALTER TABLE crm_tasks
-  ADD COLUMN lead_id BIGINT UNSIGNED NULL AFTER id,
-  ADD COLUMN completed_at DATETIME NULL AFTER status,
-  ADD CONSTRAINT fk_tasks_lead FOREIGN KEY (lead_id) REFERENCES crm_leads(id) ON DELETE CASCADE;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_tasks' AND COLUMN_NAME = 'lead_id') = 0,
+  'ALTER TABLE crm_tasks ADD COLUMN lead_id BIGINT UNSIGNED NULL AFTER id', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_tasks' AND COLUMN_NAME = 'completed_at') = 0,
+  'ALTER TABLE crm_tasks ADD COLUMN completed_at DATETIME NULL AFTER status', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_tasks' AND CONSTRAINT_NAME = 'fk_tasks_lead' AND CONSTRAINT_TYPE = 'FOREIGN KEY') = 0,
+  'ALTER TABLE crm_tasks ADD CONSTRAINT fk_tasks_lead FOREIGN KEY (lead_id) REFERENCES crm_leads(id) ON DELETE CASCADE', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-ALTER TABLE crm_invoices
-  ADD COLUMN lead_id BIGINT UNSIGNED NULL AFTER id,
-  ADD COLUMN quote_id BIGINT UNSIGNED NULL AFTER lead_id,
-  ADD COLUMN notes TEXT NULL AFTER due_at,
-  ADD COLUMN issued_at DATETIME NULL AFTER notes,
-  ADD COLUMN paid_at DATETIME NULL AFTER issued_at,
-  ADD CONSTRAINT fk_invoices_lead FOREIGN KEY (lead_id) REFERENCES crm_leads(id) ON DELETE SET NULL,
-  ADD CONSTRAINT fk_invoices_quote FOREIGN KEY (quote_id) REFERENCES crm_quotes(id) ON DELETE SET NULL;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_invoices' AND COLUMN_NAME = 'lead_id') = 0,
+  'ALTER TABLE crm_invoices ADD COLUMN lead_id BIGINT UNSIGNED NULL AFTER id', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_invoices' AND COLUMN_NAME = 'quote_id') = 0,
+  'ALTER TABLE crm_invoices ADD COLUMN quote_id BIGINT UNSIGNED NULL AFTER lead_id', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_invoices' AND COLUMN_NAME = 'notes') = 0,
+  'ALTER TABLE crm_invoices ADD COLUMN notes TEXT NULL AFTER due_at', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_invoices' AND COLUMN_NAME = 'issued_at') = 0,
+  'ALTER TABLE crm_invoices ADD COLUMN issued_at DATETIME NULL AFTER notes', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_invoices' AND COLUMN_NAME = 'paid_at') = 0,
+  'ALTER TABLE crm_invoices ADD COLUMN paid_at DATETIME NULL AFTER issued_at', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_invoices' AND CONSTRAINT_NAME = 'fk_invoices_lead' AND CONSTRAINT_TYPE = 'FOREIGN KEY') = 0,
+  'ALTER TABLE crm_invoices ADD CONSTRAINT fk_invoices_lead FOREIGN KEY (lead_id) REFERENCES crm_leads(id) ON DELETE SET NULL', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @s = IF((SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = 'crm_invoices' AND CONSTRAINT_NAME = 'fk_invoices_quote' AND CONSTRAINT_TYPE = 'FOREIGN KEY') = 0,
+  'ALTER TABLE crm_invoices ADD CONSTRAINT fk_invoices_quote FOREIGN KEY (quote_id) REFERENCES crm_quotes(id) ON DELETE SET NULL', 'SELECT 1');
+PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 INSERT IGNORE INTO schema_migrations (version) VALUES ('004_crm_pipeline');

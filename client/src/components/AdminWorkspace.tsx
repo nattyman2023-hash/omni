@@ -1,8 +1,8 @@
 import { FormEvent, KeyboardEvent, ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  AlertTriangle, ArrowLeft, ArrowRight, BriefcaseBusiness, CalendarDays, Check, ClipboardList,
-  Eye, EyeOff, FileText, LayoutDashboard, LockKeyhole, LogOut, MapPin, Menu, Quote, Search, ShieldCheck, Users, X,
+  AlertTriangle, ArrowLeft, ArrowRight, BriefcaseBusiness, CalendarDays, Check, ClipboardList, Contact,
+  Eye, EyeOff, FileText, LayoutDashboard, LockKeyhole, LogOut, Mail, MapPin, Menu, Quote, Search, Settings, ShieldCheck, Users, X,
 } from 'lucide-react';
 import StagingMarker from './StagingMarker';
 import { CRM_ONLY } from '../crmMode';
@@ -73,13 +73,16 @@ function AuthGate({ children }: { children: ReactNode }) {
 const NAV: Array<[string, string, ReactNode, string[]?]> = [
   ['Dashboard', '/staff', <LayoutDashboard size={17} />],
   ['Leads', '/staff/leads', <ClipboardList size={17} />],
+  ['Contacts', '/staff/contacts', <Contact size={17} />],
   ['Site visits', '/staff/site-visits', <MapPin size={17} />],
   ['Tasks', '/staff/tasks', <Check size={17} />],
   ['Quotes', '/staff/quotes', <Quote size={17} />],
   ['Invoices', '/staff/invoices', <FileText size={17} />],
+  ['Email', '/staff/email', <Mail size={17} />],
   ['Calendar', '/staff/calendar', <CalendarDays size={17} />],
   ['Projects', '/staff/projects', <BriefcaseBusiness size={17} />],
   ['Team', '/staff/team', <Users size={17} />, ['owner', 'admin']],
+  ['Settings', '/staff/settings', <Settings size={17} />],
 ];
 
 const isActive = (pathname: string, href: string) => (href === '/staff' ? pathname === href : pathname === href || pathname.startsWith(`${href}/`));

@@ -11,19 +11,107 @@ export type Lead = {
   stage: Stage; lostReason: string; valuePence: number | null; assignedUserId: number | null; assignedName: string;
   stageChangedAt: string | null; createdAt: string | null; updatedAt: string | null; submission?: Record<string, unknown> | null;
   possibleDuplicates: Array<{ id: number; name: string; reference: string }>;
+  /** Optional company the contact belongs to (contract v2). */
+  companyName: string;
+  contactType: ContactType;
 };
+export type ContactType = 'customer' | 'prospect' | 'supplier' | 'other';
+export const CONTACT_TYPES: ContactType[] = ['customer', 'prospect', 'supplier', 'other'];
+export const CONTACT_TYPE_LABELS: Record<ContactType, string> = { customer: 'Customer', prospect: 'Prospect', supplier: 'Supplier', other: 'Other' };
 type LeadLink = { leadId: number | null; leadName: string; leadReference: string };
 export type Visit = LeadLink & { id: number; scheduledAt: string | null; durationMinutes: number; address: string; status: 'scheduled' | 'completed' | 'cancelled'; notes: string; assignedUserId: number | null; assignedName: string };
 export type Task = LeadLink & { id: number; title: string; notes: string; dueAt: string | null; status: 'open' | 'completed' | 'cancelled'; completedAt: string | null; assignedUserId: number | null; assignedName: string };
-export type Quote = LeadLink & { id: number; reference: string; title: string; amountPence: number; status: 'draft' | 'sent' | 'accepted' | 'declined'; validUntil: string | null; notes: string; sentAt: string | null; decidedAt: string | null; createdAt: string | null };
-export type Invoice = LeadLink & { id: number; reference: string; quoteId: number | null; customerName: string; amountPence: number; status: 'draft' | 'issued' | 'paid' | 'void'; dueAt: string | null; notes: string; issuedAt: string | null; paidAt: string | null; createdAt: string | null };
+/** A priced line on a quote or invoice. On input `amountPence` is ignored; the server computes round(quantity × unitPricePence). */
+export type LineItem = { id?: number; description: string; quantity: number; unitPricePence: number; amountPence: number };
+export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'amended';
+export type Quote = LeadLink & {
+  id: number; reference: string; title: string;
+  /** Customer block printed on the PDF; defaults from the lead when created. */
+  customerName: string; customerCompany: string; customerAddress: string; customerEmail: string;
+  /** YYYY-MM-DD, defaults to today. */
+  quoteDate: string | null;
+  status: QuoteStatus;
+  items: LineItem[]; subtotalPence: number; vatRatePercent: number; vatPence: number;
+  /** Total including VAT (kept for the existing UI and dashboard). */
+  amountPence: number;
+  validUntil: string | null; notes: string; terms: string;
+  version: number; parentQuoteId: number | null; revisedById: number | null;
+  /** Set once emailed; null when amended/declined. */
+  signingUrl: string | null;
+  signedName: string; signedAt: string | null;
+  sentAt: string | null; decidedAt: string | null; emailedAt: string | null; createdAt: string | null;
+};
+export type InvoiceStatus = 'draft' | 'issued' | 'paid' | 'void';
+export type Invoice = LeadLink & {
+  id: number; reference: string; quoteId: number | null;
+  customerName: string; customerCompany: string; customerAddress: string; customerEmail: string;
+  /** YYYY-MM-DD; defaults to today when issued. */
+  invoiceDate: string | null;
+  /** Optional tax point (YYYY-MM-DD). */
+  supplyDate: string | null;
+  poNumber: string; paymentTermsDays: number | null;
+  status: InvoiceStatus;
+  items: LineItem[]; subtotalPence: number; vatRatePercent: number; vatPence: number;
+  /** Total including VAT. */
+  amountPence: number;
+  /** e.g. "Deposit" for a stage payment raised from a quote. */
+  stageLabel: string;
+  dueAt: string | null; notes: string; issuedAt: string | null; paidAt: string | null; sentAt: string | null; createdAt: string | null;
+};
+export type EmailStatus = 'queued' | 'sent' | 'failed' | 'received';
+export type Email = LeadLink & {
+  id: number; direction: 'outbound' | 'inbound';
+  templateKey: string; relatedType: '' | 'quote' | 'invoice'; relatedId: number | null;
+  from: string; to: string; subject: string;
+  /** HTML. Never render it as markup — use htmlToText. */
+  body: string;
+  status: EmailStatus; error: string;
+  sentAt: string | null; receivedAt: string | null; createdAt: string | null;
+};
+export type EmailTemplate = { key: string; name: string; subject: string; body: string; isActive: boolean; placeholders: string[] };
+export type Followup = {
+  id: number; documentType: 'quote' | 'invoice'; documentId: number; documentReference: string;
+  leadId: number | null; leadName: string; templateKey: string;
+  dueAt: string | null; status: 'pending' | 'sent' | 'cancelled'; attempts: number; maxAttempts: number; lastSentAt: string | null;
+};
+export type CompanySettings = {
+  companyName: string; companyAddress: string; companyEmail: string; companyPhone: string; companyVatNumber: string;
+  companyNumber: string; companyWebsite: string;
+  bankAccountName: string; bankName: string; bankSortCode: string; bankAccountNumber: string;
+  paymentTermsDays: number; defaultVatRatePercent: number; quoteTerms: string;
+};
+export type MailStatus = { outboundEnabled: boolean; smtpConfigured: boolean; imapConfigured: boolean; imapAvailable: boolean; cronConfigured: boolean };
+/** Where a mail setting comes from: the server config file wins and cannot be changed in the CRM. */
+export type SettingSource = 'config' | 'database' | 'default';
+/** GET/PATCH /mail-settings (owner/admin). Passwords are write-only: PATCH `smtpPassword` / `imapPassword` ('' keeps the saved one). */
+export type MailSettings = {
+  outboundEnabled: boolean;
+  smtpHost: string; smtpPort: number; smtpSecure: 'ssl' | 'tls' | 'none'; smtpUser: string; smtpPasswordSet: boolean;
+  emailFrom: string; emailFromName: string; emailReplyTo: string;
+  imapHost: string; imapPort: number; imapUser: string; imapPasswordSet: boolean; imapMailbox: string;
+  signingBaseUrl: string;
+  source: Record<string, SettingSource>;
+};
+export type MailSettingsInput = Partial<Omit<MailSettings, 'smtpPasswordSet' | 'imapPasswordSet' | 'source'>> & { smtpPassword?: string; imapPassword?: string };
+
+/** Result of POST /mail-test and /imap-test: where the check stopped and why. */
+export type MailTestResult = { ok: boolean; stage: 'config' | 'connect' | 'tls' | 'auth' | 'send' | 'done'; message: string };
+export type SyncResult = { status: 'ok' | 'not-configured' | 'unavailable' | 'failed'; imported: number; message: string };
+export type FollowupRunResult = { sent: number; failed: number; cancelled: number };
+/** The customer-facing view of a quote served by the public signing API. */
+export type SignDocument = {
+  reference: string; title: string; version: number; status: QuoteStatus;
+  customerName: string; items: LineItem[]; subtotalPence: number; vatRatePercent: number; vatPence: number; totalPence: number;
+  validUntil: string | null; notes: string; terms: string; signedName: string; signedAt: string | null;
+  company: { name: string; address: string; email: string; phone: string };
+};
 export type Activity = LeadLink & { id: number; kind: string; body: string; userName: string; createdAt: string | null };
 export type StaffMember = { id: number; name: string; role: string };
 export type LeadFile = { id: number; originalFilename: string; mimeType: string; sizeBytes: number; createdAt: string | null };
 export type TeamRole = 'owner' | 'admin' | 'staff';
 export const ROLE_LABELS: Record<TeamRole, string> = { owner: 'Owner', admin: 'Administrator', staff: 'Staff' };
 export type TeamMember = { id: number; name: string; email: string; role: TeamRole; isActive: boolean; createdAt: string | null; lastSeenAt: string | null };
-export type LeadDetail = { lead: Lead; activities: Activity[]; visits: Visit[]; tasks: Task[]; quotes: Quote[]; invoices: Invoice[]; files: LeadFile[] };
+export type LeadDetail = { lead: Lead; activities: Activity[]; visits: Visit[]; tasks: Task[]; quotes: Quote[]; invoices: Invoice[]; files: LeadFile[]; emails: Email[] };
 export type Summary = {
   stages: Record<Stage, number>; totalLeads: number; openLeads: number; newThisWeek: number; conversionRate: number | null; pipelineValuePence: number;
   quotesSentPence: number; quotesAcceptedPence: number; invoicesOutstandingPence: number; invoicesPaidPence: number; overdueInvoices: number;
@@ -116,3 +204,51 @@ export const formatBytes = (bytes: number | null | undefined) => {
   if (value >= 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(1)} MB`;
   return `${Math.max(1, Math.round(value / 1024))} KB`;
 };
+
+/** YYYY-MM-DD + days → YYYY-MM-DD (calendar arithmetic, no time zones); '' when invalid. */
+export function addDays(date: string, days: number) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(days)) return '';
+  const [year, month, day] = date.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
+}
+
+/** Today as YYYY-MM-DD in the browser zone. */
+export function todayIso() {
+  const now = new Date();
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+/** Lead address + postcode as a multi-line customer address. */
+export const leadAddress = (lead: Pick<Lead, 'address' | 'postcode'>) => [lead.address, lead.postcode].map(part => (part || '').trim()).filter(Boolean).join('\n');
+
+/** Line totals exactly as the server computes them (amount = round(qty × unit), VAT on the subtotal). */
+export function lineTotals(items: Array<Pick<LineItem, 'quantity' | 'unitPricePence'>>, vatRatePercent: number) {
+  const subtotalPence = items.reduce((sum, item) => sum + Math.round(item.quantity * item.unitPricePence), 0);
+  const vatPence = Math.round(subtotalPence * (Number.isFinite(vatRatePercent) ? vatRatePercent : 0) / 100);
+  return { subtotalPence, vatPence, totalPence: subtotalPence + vatPence };
+}
+
+/** 20 → "20%", 12.5 → "12.5%". */
+export const formatPercent = (value: number | null | undefined) => (value === null || value === undefined || !Number.isFinite(value) ? '' : `${Number(value.toFixed(2))}%`);
+
+/** 1 → "1", 2.5 → "2.5". */
+export const formatQuantity = (value: number) => String(Number(value.toFixed(2)));
+
+/** Email HTML → readable plain text without ever rendering or executing the markup. */
+export function htmlToText(html: string) {
+  if (!html) return '';
+  const prepared = html.replace(/<\s*br\s*\/?>/gi, '\n').replace(/<\/\s*(p|div|li|tr|h[1-6])\s*>/gi, '\n');
+  const text = typeof DOMParser !== 'undefined'
+    ? new DOMParser().parseFromString(prepared, 'text/html').body.textContent || ''
+    : prepared.replace(/<[^>]*>/g, '');
+  return text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/** Plain-English outcome of an email the server tried to send. */
+export function emailOutcome(email: Pick<Email, 'status' | 'error' | 'to'>): { tone: 'success' | 'warning' | 'error'; message: string } {
+  if (email.status === 'sent') return { tone: 'success', message: `Sent to ${email.to}.` };
+  if (email.status === 'queued') return { tone: 'warning', message: email.error ? `Saved but not sent: ${email.error}` : 'Saved but not sent — email sending isn’t set up yet, so the message is waiting in the queue.' };
+  if (email.status === 'failed') return { tone: 'error', message: email.error ? `Sending failed: ${email.error}` : 'Sending failed.' };
+  return { tone: 'success', message: 'Received.' };
+}

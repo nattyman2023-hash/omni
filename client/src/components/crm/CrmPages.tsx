@@ -6,43 +6,25 @@ import {
 } from 'lucide-react';
 import { AdminWorkspaceShell } from '../AdminWorkspace';
 import {
-  Activity, Invoice, Lead, LeadDetail, Quote, ROLE_LABELS, SOURCE_LABELS, STAGE_LABELS, STAGES, Stage, Summary, Task, TeamMember, TeamRole, Visit,
+  Activity, CONTACT_TYPE_LABELS, Invoice, Lead, LeadDetail, Quote, ROLE_LABELS, SOURCE_LABELS, STAGE_LABELS, STAGES, Stage, Summary, Task, TeamMember, TeamRole, Visit,
   crm, formatAgo, formatBytes, formatDay, formatMoney, formatWhen, useCrm,
 } from './crmApi';
 import { Field, InvoiceForm, LeadForm, Modal, QuoteForm, TaskForm, VisitForm } from './CrmForms';
+import { Empty, ErrorNote, LeadLinkText, Loading, Notice, PageTitle, StatusBadge } from './CrmUi';
+import { ComposeEmailForm, EmailItem, InvoiceActions, InvoiceMeta, NoticeState, QuoteActions, QuoteMeta } from './CrmSales';
 
 /* ---------- shared bits ---------- */
-function PageTitle({ eyebrow, title, intro, actions }: { eyebrow: string; title: string; intro?: string; actions?: ReactNode }) {
-  return <div className="admin-title crm-title"><div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1>{intro && <p>{intro}</p>}</div>{actions && <div className="crm-title-actions">{actions}</div>}</div>;
-}
+/** After editing an invoice that was already emailed, remind staff to send the corrected copy. */
+const resendNotice = (before?: Invoice): NoticeState => (before && before.status === 'issued' && before.sentAt
+  ? { tone: 'info', message: `${before.reference} was changed after it had been emailed. Use “Email invoice” to send the corrected copy to the customer.` }
+  : null);
 
 export function StageBadge({ stage }: { stage: Stage }) {
   return <span className={`crm-badge crm-stage-${stage}`}>{STAGE_LABELS[stage] || stage}</span>;
 }
 
-function StatusBadge({ status }: { status: string }) {
-  return <span className={`crm-badge crm-status-${status}`}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>;
-}
-
-function ErrorNote({ message }: { message: string }) {
-  return message ? <div className="form-status error crm-error" role="alert">{message}</div> : null;
-}
-
-function Empty({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
-  return <div className="admin-empty crm-empty">{icon}<h3>{title}</h3><p>{children}</p></div>;
-}
-
-function Loading() {
-  return <div className="admin-empty crm-empty" aria-live="polite"><p>Loading…</p></div>;
-}
-
 const isOverdue = (task: Task) => task.status === 'open' && Boolean(task.dueAt) && new Date(String(task.dueAt)).getTime() < Date.now();
 const isInvoiceOverdue = (invoice: Invoice) => invoice.status === 'issued' && Boolean(invoice.dueAt) && String(invoice.dueAt) < new Date().toISOString().slice(0, 10);
-
-function LeadLinkText({ id, name, reference }: { id: number | null; name: string; reference?: string }) {
-  if (!id) return <span className="crm-muted">No lead</span>;
-  return <Link className="crm-lead-link" to={`/staff/leads/${id}`}>{name || reference || 'Lead'}</Link>;
-}
 
 /** Signed-in CSV download link that keeps the current filters. */
 function csvLink(path: 'leads.csv' | 'invoices.csv', params: Record<string, string>) {
@@ -151,6 +133,7 @@ function BoardColumn({ stage, leads, onDrop }: { stage: Stage; leads: Lead[]; on
     <div className="crm-column-cards">
       {leads.map(lead => <Link key={lead.id} to={`/staff/leads/${lead.id}`} className="crm-card" draggable onDragStart={event => { event.dataTransfer.setData('text/x-omni-lead', String(lead.id)); event.dataTransfer.effectAllowed = 'move'; }}>
         <strong>{lead.name}</strong>
+        {lead.companyName && <span className="crm-card-company">{lead.companyName}</span>}
         {(lead.projectType || lead.postcode) && <span>{[lead.projectType, lead.postcode].filter(Boolean).join(' · ')}</span>}
         <small>{formatAgo(lead.createdAt)}{lead.valuePence ? ` · ${formatMoney(lead.valuePence)}` : ''}{lead.assignedName ? ` · ${lead.assignedName}` : ''}{lead.possibleDuplicates.length ? ' · Possible duplicate' : ''}</small>
       </Link>)}
@@ -160,7 +143,7 @@ function BoardColumn({ stage, leads, onDrop }: { stage: Stage; leads: Lead[]; on
 }
 
 /* ---------- Lead detail ---------- */
-type Dialog = null | { kind: 'edit' } | { kind: 'visit'; visit?: Visit } | { kind: 'task'; task?: Task } | { kind: 'quote'; quote?: Quote } | { kind: 'invoice'; invoice?: Invoice } | { kind: 'lost' };
+type Dialog = null | { kind: 'edit' } | { kind: 'visit'; visit?: Visit } | { kind: 'task'; task?: Task } | { kind: 'quote'; quote?: Quote } | { kind: 'invoice'; invoice?: Invoice } | { kind: 'lost' } | { kind: 'email' };
 
 export function LeadDetailPage() {
   const { id } = useParams();
@@ -168,6 +151,7 @@ export function LeadDetailPage() {
   const { data, error, loading, reload } = useCrm<LeadDetail>(`/leads/${Number(id) || 0}`);
   const [dialog, setDialog] = useState<Dialog>(null);
   const [actionError, setActionError] = useState('');
+  const [notice, setNotice] = useState<NoticeState>(null);
   const close = () => setDialog(null);
   const saved = () => { setDialog(null); reload(); };
 
@@ -195,6 +179,7 @@ export function LeadDetailPage() {
   if (!data) return <AdminWorkspaceShell><div className="admin-content"><Link className="crm-back" to="/staff/leads"><ArrowLeft size={15} /> All leads</Link><ErrorNote message={error || 'Lead not found.'} /></div></AdminWorkspaceShell>;
 
   const { lead, activities, visits, tasks, quotes, invoices, files } = data;
+  const emails = data.emails || [];
   const digits = lead.phone.replace(/[^\d+]/g, '');
   const whatsapp = digits ? `https://wa.me/${digits.replace(/^\+/, '').replace(/^0/, '44')}` : '';
   const details: Array<[string, string]> = [['Phone', lead.phone], ['Email', lead.email], ['Preferred contact', lead.preferredContact], ['Postcode', lead.postcode], ['Address', lead.address], ['Project', lead.projectType], ['Property', lead.propertyType], ['Budget', lead.budget], ['Desired start', lead.desiredStart], ['Estimated value', formatMoney(lead.valuePence)], ['Assigned to', lead.assignedName], ['Source', [SOURCE_LABELS[lead.source] || lead.source, lead.sourceDetail].filter(Boolean).join(' · ')], ['Received', formatWhen(lead.createdAt)]];
@@ -202,7 +187,7 @@ export function LeadDetailPage() {
   return <AdminWorkspaceShell><div className="admin-content crm-lead-page">
     <Link className="crm-back" to="/staff/leads"><ArrowLeft size={15} /> All leads</Link>
     <div className="crm-lead-head">
-      <div><span className="eyebrow">{lead.reference}</span><h1>{lead.name}</h1><p>{[lead.projectType, lead.postcode].filter(Boolean).join(' · ') || 'No project details yet'}</p></div>
+      <div><span className="eyebrow">{lead.reference}</span><h1>{lead.name}</h1><p>{[lead.companyName, CONTACT_TYPE_LABELS[lead.contactType], lead.projectType, lead.postcode].filter(Boolean).join(' · ') || 'No project details yet'}</p></div>
       <div className="crm-lead-actions">
         {lead.phone && <a className="crm-button crm-button-ghost" href={`tel:${digits}`}><Phone size={15} /> Call</a>}
         {whatsapp && <a className="crm-button crm-button-ghost" href={whatsapp} target="_blank" rel="noreferrer"><MessageCircle size={15} /> WhatsApp</a>}
@@ -220,6 +205,7 @@ export function LeadDetailPage() {
     {lead.stage === 'lost' && lead.lostReason && <p className="crm-lost-reason">Lost: {lead.lostReason}</p>}
     {lead.possibleDuplicates.length > 0 && <p className="crm-lost-reason">Possible duplicate of {lead.possibleDuplicates.map((duplicate, index) => <span key={duplicate.id}>{index ? ', ' : ''}<Link to={`/staff/leads/${duplicate.id}`}>{duplicate.name} ({duplicate.reference})</Link></span>)} — the same email address or phone number.</p>}
     <ErrorNote message={actionError} />
+    {notice && <Notice tone={notice.tone} onDismiss={() => setNotice(null)}>{notice.message}</Notice>}
 
     <div className="crm-lead-grid">
       <div className="crm-lead-main">
@@ -243,11 +229,15 @@ export function LeadDetailPage() {
         </RelatedPanel>
 
         <RelatedPanel title="Quotes" icon={<QuoteIcon size={20} />} empty="No quotes yet." onAdd={() => setDialog({ kind: 'quote' })} addLabel="New quote">
-          {quotes.map(quote => <li key={quote.id}><div><strong>{quote.reference} · {formatMoney(quote.amountPence)}</strong><span>{quote.title}{quote.validUntil ? ` · valid until ${formatDay(quote.validUntil)}` : ''}</span></div><div className="crm-row-actions"><QuoteStatusSelect quote={quote} onChange={status => patch(`/quotes/${quote.id}`, { status })} /><button type="button" className="crm-link-button" onClick={() => setDialog({ kind: 'quote', quote })}>Edit</button></div></li>)}
+          {quotes.map(quote => <li key={quote.id}><div><strong>{quote.reference} · {formatMoney(quote.amountPence)}</strong><span>{quote.title}{quote.validUntil ? ` · valid until ${formatDay(quote.validUntil)}` : ''}</span><QuoteMeta quote={quote} /><QuoteActions quote={quote} onEdit={() => setDialog({ kind: 'quote', quote })} onChanged={reload} onRevised={revised => { reload(); setDialog({ kind: 'quote', quote: revised }); }} onNotice={setNotice} /></div><div className="crm-row-actions"><QuoteStatusSelect quote={quote} onChange={status => patch(`/quotes/${quote.id}`, { status })} /></div></li>)}
         </RelatedPanel>
 
         <RelatedPanel title="Invoices" icon={<FileText size={20} />} empty="No invoices yet." onAdd={() => setDialog({ kind: 'invoice' })} addLabel="New invoice">
-          {invoices.map(invoice => <li key={invoice.id} className={isInvoiceOverdue(invoice) ? 'crm-overdue' : ''}><div><strong>{invoice.reference} · {formatMoney(invoice.amountPence)}</strong><span>{[invoice.dueAt ? `Due ${formatDay(invoice.dueAt)}` : '', invoice.paidAt ? `Paid ${formatDay(invoice.paidAt)}` : '', invoice.notes].filter(Boolean).join(' · ')}</span></div><div className="crm-row-actions"><InvoiceStatusSelect invoice={invoice} onChange={status => patch(`/invoices/${invoice.id}`, { status })} /><button type="button" className="crm-link-button" onClick={() => setDialog({ kind: 'invoice', invoice })}>Edit</button></div></li>)}
+          {invoices.map(invoice => <li key={invoice.id} className={isInvoiceOverdue(invoice) ? 'crm-overdue' : ''}><div><strong>{invoice.reference} · {formatMoney(invoice.amountPence)}</strong><span>{[invoice.dueAt ? `Due ${formatDay(invoice.dueAt)}` : '', invoice.paidAt ? `Paid ${formatDay(invoice.paidAt)}` : '', invoice.notes].filter(Boolean).join(' · ')}</span><InvoiceMeta invoice={invoice} /><InvoiceActions invoice={invoice} onEdit={() => setDialog({ kind: 'invoice', invoice })} onChanged={reload} onNotice={setNotice} /></div><div className="crm-row-actions"><InvoiceStatusSelect invoice={invoice} onChange={status => patch(`/invoices/${invoice.id}`, { status })} /></div></li>)}
+        </RelatedPanel>
+
+        <RelatedPanel title="Emails" icon={<Mail size={20} />} empty={lead.email ? 'No emails with this customer yet.' : 'No emails yet. Add an email address to the lead to email them from here.'} onAdd={() => setDialog({ kind: 'email' })} addLabel="Email this lead">
+          {emails.map(email => <EmailItem key={email.id} email={email} />)}
         </RelatedPanel>
 
         <section className="admin-panel crm-panel"><div className="panel-heading"><h2>Privacy</h2></div>
@@ -269,9 +259,10 @@ export function LeadDetailPage() {
     {dialog?.kind === 'edit' && <Modal title="Edit lead" wide onClose={close}><LeadForm lead={lead} onCancel={close} onSaved={saved} /></Modal>}
     {dialog?.kind === 'visit' && <Modal title={dialog.visit ? 'Edit site visit' : 'Book a site visit'} onClose={close}><VisitForm visit={dialog.visit} leadId={lead.id} defaultAddress={lead.address || lead.postcode} onCancel={close} onSaved={saved} /></Modal>}
     {dialog?.kind === 'task' && <Modal title={dialog.task ? 'Edit task' : 'Add a task'} onClose={close}><TaskForm task={dialog.task} leadId={lead.id} onCancel={close} onSaved={saved} /></Modal>}
-    {dialog?.kind === 'quote' && <Modal title={dialog.quote ? `Edit ${dialog.quote.reference}` : 'New quote'} onClose={close}><QuoteForm quote={dialog.quote} leadId={lead.id} onCancel={close} onSaved={saved} /></Modal>}
-    {dialog?.kind === 'invoice' && <Modal title={dialog.invoice ? `Edit ${dialog.invoice.reference}` : 'New invoice'} onClose={close}><InvoiceForm invoice={dialog.invoice} leadId={lead.id} quotes={quotes.filter(quote => quote.status === 'accepted')} onCancel={close} onSaved={saved} /></Modal>}
-    {dialog?.kind === 'lost' && <Modal title="Mark lead as lost" onClose={close}><LostForm onCancel={close} onSubmit={async reason => { await patch(`/leads/${lead.id}`, { stage: 'lost', lostReason: reason }); close(); }} /></Modal>}
+    {dialog?.kind === 'quote' && <Modal title={dialog.quote ? `Edit ${dialog.quote.reference}` : 'New quote'} onClose={close}><QuoteForm quote={dialog.quote} leadId={lead.id} lead={lead} onCancel={close} onSaved={saved} /></Modal>}
+    {dialog?.kind === 'invoice' && <Modal title={dialog.invoice ? `Edit ${dialog.invoice.reference}` : 'New invoice'} onClose={close}><InvoiceForm invoice={dialog.invoice} leadId={lead.id} lead={lead} quotes={quotes.filter(quote => quote.status === 'accepted')} onCancel={close} onSaved={() => { setNotice(resendNotice(dialog.invoice)); saved(); }} /></Modal>}
+    {dialog?.kind === 'email' && <Modal title={`Email ${lead.name}`} wide onClose={() => { close(); reload(); }}><ComposeEmailForm leadId={lead.id} defaultTo={lead.email} onSent={() => reload()} onCancel={() => { close(); reload(); }} /></Modal>}
+    {dialog?.kind === 'lost' &&<Modal title="Mark lead as lost" onClose={close}><LostForm onCancel={close} onSubmit={async reason => { await patch(`/leads/${lead.id}`, { stage: 'lost', lostReason: reason }); close(); }} /></Modal>}
   </div></AdminWorkspaceShell>;
 }
 
@@ -287,6 +278,8 @@ function TaskCheck({ task, onToggle }: { task: Task; onToggle: (status: Task['st
 }
 
 function QuoteStatusSelect({ quote, onChange }: { quote: Quote; onChange: (status: Quote['status']) => void }) {
+  // An amended quote has been replaced by a revision; its status is final.
+  if (quote.status === 'amended') return <StatusBadge status="amended" label="Amended" />;
   return <select className={`crm-status-select crm-status-${quote.status}`} aria-label={`Status of ${quote.reference}`} value={quote.status} onChange={event => onChange(event.target.value as Quote['status'])}><option value="draft">Draft</option><option value="sent">Sent</option><option value="accepted">Accepted</option><option value="declined">Declined</option></select>;
 }
 
@@ -381,6 +374,7 @@ export function QuotesPage() {
   const [filter, setFilter] = useState<'' | Quote['status']>('');
   const [dialog, setDialog] = useState<null | { quote?: Quote }>(null);
   const [actionError, setActionError] = useState('');
+  const [notice, setNotice] = useState<NoticeState>(null);
   const all = data?.records || [];
   const records = filter ? all.filter(quote => quote.status === filter) : all;
   const total = (status: Quote['status']) => all.filter(quote => quote.status === status).reduce((sum, quote) => sum + quote.amountPence, 0);
@@ -388,11 +382,12 @@ export function QuotesPage() {
   return <AdminWorkspaceShell><div className="admin-content">
     <PageTitle eyebrow="Quotes" title="Quotes" intro="Marking a quote Sent moves the lead to Quoted. Accepted moves it to Won." actions={<button type="button" className="crm-button" onClick={() => setDialog({})}><Plus size={16} /> New quote</button>} />
     <ErrorNote message={error || actionError} />
+    {notice && <Notice tone={notice.tone} onDismiss={() => setNotice(null)}>{notice.message}</Notice>}
     <div className="crm-money-row"><div><span>Awaiting answer</span><strong>{formatMoney(total('sent'))}</strong></div><div><span>Accepted</span><strong>{formatMoney(total('accepted'))}</strong></div><div><span>Drafts</span><strong>{formatMoney(total('draft'))}</strong></div></div>
-    <div className="crm-tabs" role="tablist">{(['', 'draft', 'sent', 'accepted', 'declined'] as const).map(option => <button type="button" role="tab" key={option || 'all'} aria-selected={filter === option} onClick={() => setFilter(option)}>{option ? option.charAt(0).toUpperCase() + option.slice(1) : 'All'}</button>)}</div>
+    <div className="crm-tabs" role="tablist">{(['', 'draft', 'sent', 'accepted', 'declined', 'amended'] as const).map(option => <button type="button" role="tab" key={option || 'all'} aria-selected={filter === option} onClick={() => setFilter(option)}>{option ? option.charAt(0).toUpperCase() + option.slice(1) : 'All'}</button>)}</div>
     <section className="admin-panel crm-panel">{loading && !data ? <Loading /> : !records.length ? <Empty icon={<QuoteIcon size={22} />} title="No quotes">Create a quote from a lead's page, or with New quote above.</Empty>
       : <div className="crm-table-wrap"><table className="crm-table"><thead><tr><th>Quote</th><th>Customer</th><th>Amount</th><th>Status</th><th>Valid until</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>
-        {records.map(quote => <tr key={quote.id}><td><strong>{quote.reference}</strong><small>{quote.title}</small></td><td><LeadLinkText id={quote.leadId} name={quote.leadName} /></td><td>{formatMoney(quote.amountPence)}</td><td><QuoteStatusSelect quote={quote} onChange={status => setStatus(quote, status)} /></td><td>{formatDay(quote.validUntil) || '—'}</td><td className="crm-cell-actions"><button type="button" className="crm-link-button" onClick={() => setDialog({ quote })}>Edit</button></td></tr>)}
+        {records.map(quote => <tr key={quote.id}><td><strong>{quote.reference}</strong><small>{quote.title}</small><QuoteMeta quote={quote} /></td><td><LeadLinkText id={quote.leadId} name={quote.leadName} /></td><td>{formatMoney(quote.amountPence)}</td><td><QuoteStatusSelect quote={quote} onChange={status => setStatus(quote, status)} /></td><td>{formatDay(quote.validUntil) || '—'}</td><td className="crm-cell-actions crm-cell-doc-actions"><QuoteActions quote={quote} onEdit={() => setDialog({ quote })} onChanged={reload} onRevised={revised => { reload(); setDialog({ quote: revised }); }} onNotice={setNotice} /></td></tr>)}
       </tbody></table></div>}</section>
     {dialog && <Modal title={dialog.quote ? `Edit ${dialog.quote.reference}` : 'New quote'} onClose={() => setDialog(null)}><QuoteForm quote={dialog.quote} onCancel={() => setDialog(null)} onSaved={() => { setDialog(null); reload(); }} /></Modal>}
   </div></AdminWorkspaceShell>;
@@ -404,6 +399,7 @@ export function InvoicesPage() {
   const [filter, setFilter] = useState<'' | Invoice['status'] | 'overdue'>('');
   const [dialog, setDialog] = useState<null | { invoice?: Invoice }>(null);
   const [actionError, setActionError] = useState('');
+  const [notice, setNotice] = useState<NoticeState>(null);
   const all = data?.records || [];
   const records = filter === 'overdue' ? all.filter(isInvoiceOverdue) : filter ? all.filter(invoice => invoice.status === filter) : all;
   const sum = (rows: Invoice[]) => rows.reduce((total, invoice) => total + invoice.amountPence, 0);
@@ -414,13 +410,14 @@ export function InvoicesPage() {
       <button type="button" className="crm-button" onClick={() => setDialog({})}><Plus size={16} /> New invoice</button>
     </>} />
     <ErrorNote message={error || actionError} />
+    {notice && <Notice tone={notice.tone} onDismiss={() => setNotice(null)}>{notice.message}</Notice>}
     <div className="crm-money-row"><div><span>Outstanding</span><strong>{formatMoney(sum(all.filter(invoice => invoice.status === 'issued')))}</strong></div><div className={all.some(isInvoiceOverdue) ? 'crm-money-warn' : ''}><span>Overdue</span><strong>{formatMoney(sum(all.filter(isInvoiceOverdue)))}</strong></div><div><span>Paid</span><strong>{formatMoney(sum(all.filter(invoice => invoice.status === 'paid')))}</strong></div></div>
     <div className="crm-tabs" role="tablist">{(['', 'draft', 'issued', 'overdue', 'paid', 'void'] as const).map(option => <button type="button" role="tab" key={option || 'all'} aria-selected={filter === option} onClick={() => setFilter(option)}>{option ? option.charAt(0).toUpperCase() + option.slice(1) : 'All'}</button>)}</div>
     <section className="admin-panel crm-panel">{loading && !data ? <Loading /> : !records.length ? <Empty icon={<FileText size={22} />} title="No invoices">Create an invoice from an accepted quote on the lead's page, or with New invoice above.</Empty>
       : <div className="crm-table-wrap"><table className="crm-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th><th>Status</th><th>Due</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>
-        {records.map(invoice => <tr key={invoice.id} className={isInvoiceOverdue(invoice) ? 'crm-overdue' : ''}><td><strong>{invoice.reference}</strong>{invoice.notes && <small>{invoice.notes}</small>}</td><td>{invoice.leadId ? <LeadLinkText id={invoice.leadId} name={invoice.customerName || invoice.leadName} /> : invoice.customerName}</td><td>{formatMoney(invoice.amountPence)}</td><td><InvoiceStatusSelect invoice={invoice} onChange={status => setStatus(invoice, status)} /></td><td>{formatDay(invoice.dueAt) || '—'}{invoice.paidAt && <small>Paid {formatDay(invoice.paidAt)}</small>}</td><td className="crm-cell-actions"><button type="button" className="crm-link-button" onClick={() => setDialog({ invoice })}>Edit</button></td></tr>)}
+        {records.map(invoice => <tr key={invoice.id} className={isInvoiceOverdue(invoice) ? 'crm-overdue' : ''}><td><strong>{invoice.reference}</strong>{invoice.notes && <small>{invoice.notes}</small>}<InvoiceMeta invoice={invoice} /></td><td>{invoice.leadId ? <LeadLinkText id={invoice.leadId} name={invoice.customerName || invoice.leadName} /> : invoice.customerName}</td><td>{formatMoney(invoice.amountPence)}</td><td><InvoiceStatusSelect invoice={invoice} onChange={status => setStatus(invoice, status)} /></td><td>{formatDay(invoice.dueAt) || '—'}{invoice.paidAt && <small>Paid {formatDay(invoice.paidAt)}</small>}</td><td className="crm-cell-actions crm-cell-doc-actions"><InvoiceActions invoice={invoice} onEdit={() => setDialog({ invoice })} onChanged={reload} onNotice={setNotice} /></td></tr>)}
       </tbody></table></div>}</section>
-    {dialog && <Modal title={dialog.invoice ? `Edit ${dialog.invoice.reference}` : 'New invoice'} onClose={() => setDialog(null)}><InvoiceForm invoice={dialog.invoice} onCancel={() => setDialog(null)} onSaved={() => { setDialog(null); reload(); }} /></Modal>}
+    {dialog && <Modal title={dialog.invoice ? `Edit ${dialog.invoice.reference}` : 'New invoice'} onClose={() => setDialog(null)}><InvoiceForm invoice={dialog.invoice} onCancel={() => setDialog(null)} onSaved={() => { setNotice(resendNotice(dialog.invoice)); setDialog(null); reload(); }} /></Modal>}
   </div></AdminWorkspaceShell>;
 }
 
