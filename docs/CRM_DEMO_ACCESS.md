@@ -66,10 +66,33 @@ npm run package:crm
   That file lives in `client/` because that is the Vite project root.
 * Writes the package to `deployment/crm-public-html` (the marketing package keeps
   `deployment/php-public-html`, so the two can never overwrite each other).
-* Adds `api/config.local.php.TEMPLATE.php` and removes `api/config.local.php` plus `api/tools/`.
+* Adds `api/config.local.php.TEMPLATE.php` and removes `api/config.local.php` plus `tools/`.
+  The template is generated from `php/api/config.example.php`, so every new config key flows
+  through automatically, with the CRM values already applied: `APP_URL` set to the subdomain,
+  `STAGING_MODE=true`, `DEMO_MODE=true` and the owner bootstrap credentials filled in. Only the
+  database values still need typing. If a replacement ever stops matching the example file the
+  build fails instead of shipping a half-configured template.
 
 `npm run build:php` still produces the marketing site unchanged: with `VITE_CRM_ONLY` unset the
 `/` route renders the homepage as before.
+
+## Deploying the package to crm.omnidevelopment.co.uk
+
+1. In hPanel add the subdomain `crm` (document root `public_html/crm` or a separate folder),
+   attach the free SSL certificate, and create a MySQL database plus user.
+2. Zip `deployment/crm-public-html`, upload it through File Manager into the subdomain folder and
+   extract it. The archive already contains only web-reachable files.
+3. Import the schema: phpMyAdmin → the new database → **Import** → `deploy/schema.sql`.
+4. Copy `api/config.local.php.TEMPLATE.php` to `api/config.local.php` and fill in
+   `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD` (leave `APP_URL`, `STAGING_MODE` and
+   `DEMO_MODE` as shipped for the review build).
+5. Open `https://crm.omnidevelopment.co.uk/staff/login`. The first request bootstraps the owner
+   account, and the Demo access card should list both accounts.
+6. Sign in, then delete `BOOTSTRAP_ADMIN_PASSWORD` (or blank it) from `api/config.local.php` so the
+   password no longer lives in the config file.
+
+`DEMO_MODE` only publishes what `DEMO_LOGIN_*`/`DEMO_STAFF_*` hold, so turning it off is enough to
+hide the card. Do that, and reset both passwords, before real customer data is entered.
 
 ## Rotating a password without SQL
 

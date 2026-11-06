@@ -19,6 +19,11 @@ describe('CRM subdomain profile', () => {
     expect(packager).toContain("'crm-public-html'");
     expect(packager).toContain('config.local.php.TEMPLATE.php');
     expect(packager).toContain("path.join(output, 'tools')");
+    // The CRM template must arrive pre-wired for the demo subdomain, not the example.com default.
+    expect(packager).toContain("https://crm.omnidevelopment.co.uk");
+    expect(packager).toContain("'STAGING_MODE' => 'true'");
+    expect(packager).toContain("'DEMO_MODE' => 'true'");
+    expect(packager).toContain("'BOOTSTRAP_ADMIN_PASSWORD' => 'OmniDemo2026!'");
     // The marketing package must keep its own folder so the two can never overwrite each other.
     expect(packager).toContain("'php-public-html'");
   });

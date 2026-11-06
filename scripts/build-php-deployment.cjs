@@ -25,7 +25,26 @@ fs.rmSync(path.join(output, 'tools'), { recursive: true, force: true });
 
 if (crmProfile) {
   // Ship an inert template next to the package so the live config can be created by copy-and-fill.
-  fs.copyFileSync(path.join(php, 'api', 'config.example.php'), path.join(output, 'api', 'config.local.php.TEMPLATE.php'));
+  // It is derived from config.example.php (so new keys always flow through) with the CRM subdomain
+  // defaults applied; only the database credentials still need typing in.
+  const example = fs.readFileSync(path.join(php, 'api', 'config.example.php'), 'utf8');
+  const template = example
+    .replace("'APP_URL' => 'https://example.com'", "'APP_URL' => 'https://crm.omnidevelopment.co.uk'")
+    .replace("'STAGING_MODE' => 'false'", "'STAGING_MODE' => 'true'")
+    .replace("'DEMO_MODE' => 'false'", "'DEMO_MODE' => 'true'")
+    .replace("'BOOTSTRAP_ADMIN_EMAIL' => ''", "'BOOTSTRAP_ADMIN_EMAIL' => 'admin@omnidevelopment.co.uk'")
+    .replace("'BOOTSTRAP_ADMIN_PASSWORD' => ''", "'BOOTSTRAP_ADMIN_PASSWORD' => 'OmniDemo2026!'");
+  const expected = [
+    "'APP_URL' => 'https://crm.omnidevelopment.co.uk'",
+    "'STAGING_MODE' => 'true'",
+    "'DEMO_MODE' => 'true'",
+    "'BOOTSTRAP_ADMIN_PASSWORD' => 'OmniDemo2026!'",
+  ];
+  const missing = expected.filter((line) => !template.includes(line));
+  if (missing.length > 0) {
+    throw new Error(`config.example.php no longer contains ${missing.join(', ')}; update the CRM template replacements.`);
+  }
+  fs.writeFileSync(path.join(output, 'api', 'config.local.php.TEMPLATE.php'), template);
 }
 
 console.log(`PHP deployment package created at ${path.relative(root, output)}${crmProfile ? ' (CRM profile, login-first)' : ''}`);
