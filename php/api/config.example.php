@@ -28,6 +28,6 @@ return [
     'PROJECT_UPLOAD_DIR' => '',
     // Google reCAPTCHA v2 tickbox on the contact and quote forms. Enforced only when both keys are set.
     // The site key is public; the secret key must only ever live in config.local.php on the server.
-    'RECAPTCHA_SITE_KEY' => '6LfxZAYuAAAAAEJXtMtdUpUuDmlgPdR82bH11FS9',
+    'RECAPTCHA_SITE_KEY' => '6Lcl5BMuAAAAANdOrxtd9fTWj3vb28Zdm6tD98ah',
     'RECAPTCHA_SECRET_KEY' => '',
 ];

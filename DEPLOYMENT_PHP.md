@@ -76,7 +76,7 @@ application. Put the settings in `public_html/api/config.local.php`:
 'BOOTSTRAP_ADMIN_NAME' => 'Owner name',
 'BOOTSTRAP_ADMIN_EMAIL' => 'owner@...',
 'BOOTSTRAP_ADMIN_PASSWORD' => 'a long unique password (12+ characters)',
-'RECAPTCHA_SITE_KEY' => '6LfxZAYuAAAAAEJXtMtdUpUuDmlgPdR82bH11FS9',
+'RECAPTCHA_SITE_KEY' => '6Lcl5BMuAAAAANdOrxtd9fTWj3vb28Zdm6tD98ah',
 'RECAPTCHA_SECRET_KEY' => '...',          // from the reCAPTCHA admin console; never commit
 ```
 

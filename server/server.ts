@@ -2,7 +2,8 @@ import 'dotenv/config';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import express, { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -15,6 +16,7 @@ import { sendNotification } from './services/emailService';
 import { registerCrmRoutes } from './crmRoutes';
 import { startCrmJobs } from './services/crmService';
 
+const execFileAsync = promisify(execFile);
 const projectRoot = path.resolve(__dirname, '..');
 const distPath = path.join(projectRoot, 'dist');
 const uploadRoot = path.resolve(process.env.UPLOAD_DIR || path.join(projectRoot, 'uploads', 'private'));
@@ -810,18 +812,22 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // Opt-in: hosts without shell/SQL access (Hostinger Node.js apps) can apply the
 // ordered migrations at boot. Off by default; migrations that drop tables must
 // only ever run against a database that has been backed up.
-function runMigrationsOnStart() {
+async function runMigrationsOnStart() {
   if (!['1', 'true', 'yes'].includes(String(process.env.MIGRATE_ON_START || '').trim().toLowerCase())) return;
   if (!databaseConfigured) return;
   try {
-    execFileSync(process.execPath, [path.join(projectRoot, 'scripts', 'migrate.js')], { stdio: 'inherit', env: process.env, cwd: projectRoot });
-  } catch {
-    console.error('[database] Startup migrations failed; see the migration log above.');
+    const { stdout } = await execFileAsync(process.execPath, [path.join(projectRoot, 'scripts', 'migrate.js')], { env: process.env, cwd: projectRoot });
+    if (stdout) process.stdout.write(stdout);
+  } catch (error) {
+    const stderr = error && typeof error === 'object' && 'stderr' in error ? String((error as { stderr?: unknown }).stderr || '') : '';
+    console.error(`[database] Startup migrations failed. ${stderr.trim()}`);
   }
 }
 
-async function startServer() {
-  runMigrationsOnStart();
+// Database preparation runs after listen(): Hostinger's Node.js runtime
+// requires the app to bind within a few seconds of starting.
+async function prepareDatabase() {
+  await runMigrationsOnStart();
   if (productionMode) {
     try {
       await verifyProductionDatabase();
@@ -837,8 +843,11 @@ async function startServer() {
       reportDatabaseFailure('Development administrator bootstrap could not be completed', error);
     }
   }
+}
+
+function startServer() {
   const server = app.listen(port, '0.0.0.0', () => process.stdout.write(`Omni Development server listening on port ${port}${stagingMode ? ' (temporary review mode)' : ''}\n`));
-  startCrmJobs(() => pool, signingBaseUrl);
+  void prepareDatabase().finally(() => startCrmJobs(() => pool, signingBaseUrl));
   let shuttingDown = false;
   const shutdown = (signal: string) => {
     if (shuttingDown) return;
@@ -853,5 +862,7 @@ async function startServer() {
   process.once('SIGINT', () => shutdown('SIGINT'));
 }
 
-if (require.main === module) void startServer();
+// Hostinger's Node.js loader require()s the entry file, so require.main is not
+// this module there. Start unless the module is imported by the test runner.
+if (require.main === module || !process.env.VITEST) startServer();
 export default app;
