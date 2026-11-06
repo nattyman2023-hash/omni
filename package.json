@@ -20,7 +20,14 @@
     "db:schema:check": "node scripts/generate-schema.cjs --check"
   },
   "dependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/mailparser": "^3.9.0",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.4.1",
+    "@types/nodemailer": "^8.0.2",
     "@vitejs/plugin-react": "^6.1.1",
+    "autoprefixer": "^10.5.4",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
@@ -37,29 +44,21 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.3",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
     "zod": "^4.5.4"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/express": "^5.0.6",
-    "@types/mailparser": "^3.9.0",
-    "@types/multer": "^2.2.0",
-    "@types/node": "^26.4.1",
-    "@types/nodemailer": "^8.0.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "autoprefixer": "^10.5.4",
     "concurrently": "^10.0.5",
     "jsdom": "^30.0.1",
     "lighthouse": "^13.4.1",
     "playwright": "^1.62.1",
     "sharp": "^0.35.4",
-    "tailwindcss": "^3.4.19",
     "tsx": "^4.23.13",
-    "typescript": "^7.0.2",
-    "vite": "^8.2.2",
     "vitest": "^5.0.0"
   }
 }
