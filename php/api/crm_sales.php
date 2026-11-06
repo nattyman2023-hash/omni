@@ -2223,6 +2223,8 @@ function handleCrmSalesPublicRoute(string $method, string $route): void
     if (preg_match('#^/sign/([^/]+)(/pdf)?$#', $route, $match)) {
         $token = strtolower($match[1]);
         $isPdf = ($match[2] ?? '') !== '';
+        // A customer can open a signing link before any staff request has applied pending migrations.
+        crmEnsureMigrations();
         if ($method === 'GET') {
             rateLimit('crm-sign-view', 60, 600);
             $quote = crmQuoteByToken($token);
