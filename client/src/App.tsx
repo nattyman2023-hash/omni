@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import {
   ArrowLeft, ArrowRight, Bath, BriefcaseBusiness, Building2, CalendarDays, Check, ChevronDown,
   ChevronRight, CircleUserRound, ClipboardList, Clock3, Compass, CookingPot, FileText, Hammer, Home,
@@ -10,7 +10,6 @@ import { areas, guides, journey, projects, quoteTypes, services, site, Project, 
 import Header from './components/Header';
 import Footer from './components/Footer';
 import MobileQuickActions from './components/MobileQuickActions';
-import StagingMarker from './components/StagingMarker';
 import SafeImage from './components/SafeImage';
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
@@ -23,6 +22,9 @@ import BathroomRenovationsPage from './pages/BathroomRenovationsPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ReviewsPage from './pages/ReviewsPage';
 import ProjectManagerPage from './pages/ProjectManagerPage';
+import { AdminWorkspaceShell, OperationalAdminLoginPage } from './components/AdminWorkspace';
+import { CalendarPage, CrmDashboardPage, InvoicesPage, LeadDetailPage, LeadsPage, QuotesPage, TasksPage, TeamPage, VisitsPage } from './components/crm/CrmPages';
+import './components/crm/crm.css';
 import './tailwind.css';
 import './styles.css';
 
@@ -245,47 +247,6 @@ function NotFound() {
   return <section className="not-found"><div className="container"><Eyebrow>404 / Page not found</Eyebrow><h1>That page has <em>moved on.</em></h1><p>The link you followed does not match a page in this site.</p><ButtonLink to="/" variant="dark">Back to the homepage</ButtonLink></div></section>;
 }
 
-function StaffAuthGate({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate();
-  const [checking, setChecking] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    void fetch('/api/admin/summary', { credentials: 'include' })
-      .then((response) => {
-        if (!response.ok) {
-          navigate('/staff/login', { replace: true });
-          return;
-        }
-        if (active) setChecking(false);
-      })
-      .catch(() => navigate('/staff/login', { replace: true }));
-    return () => { active = false; };
-  }, [navigate]);
-
-  if (checking) return <main className="admin-auth-check" aria-live="polite">Checking staff access…</main>;
-  return <>{children}</>;
-}
-
-function AdminShell({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
-  const logout = async () => { await fetch('/api/admin/logout', { method: 'POST' }); navigate('/staff/login'); };
-  const nav = [['Dashboard', '/staff', <LayoutDashboard size={17} />], ['Leads', '/staff/leads', <ClipboardList size={17} />], ['Site visits', '/staff/site-visits', <MapPin size={17} />], ['Quotes', '/staff/quotes', <Quote size={17} />], ['Projects', '/staff/projects', <BriefcaseBusiness size={17} />], ['Calendar', '/staff/calendar', <CalendarDays size={17} />], ['Tasks', '/staff/tasks', <Check size={17} />], ['Invoices', '/staff/invoices', <FileText size={17} />]];
-  return <StaffAuthGate><div className="admin-shell"><aside className={open ? 'open' : ''}><div className="admin-brand"><Logo dark /><span className="admin-pill">STAFF PORTAL</span></div><nav>{nav.map(([label, href, icon]) => <Link key={href as string} to={href as string} onClick={() => setOpen(false)}>{icon}<span>{label}</span></Link>)}</nav><div className="admin-aside-footer"><ShieldCheck size={16} /><span>Live content only<br /><small>No demo records seeded</small></span></div></aside><div className="admin-main"><header className="admin-header"><button type="button" className="admin-menu" onClick={() => setOpen(!open)} aria-label="Toggle staff navigation"><Menu size={20} /></button><div className="admin-search"><Search size={17} /><input placeholder="Search live records…" /></div><span className="admin-status"><span /> Content workspace</span><StagingMarker /><Link to="/" className="admin-exit">View website <ArrowRight size={15} /></Link><button type="button" className="admin-exit admin-signout" onClick={logout}>Sign out <ArrowRight size={15} /></button></header><main>{children}</main></div></div></StaffAuthGate>;
-}
-
-function AdminLoginPage() {
-  const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [message, setMessage] = useState('');
-  const submit = async (event: FormEvent) => { event.preventDefault(); setMessage(''); try { const response = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) }); const data = await response.json(); if (!response.ok) throw new Error(data.message); window.location.href = '/staff'; } catch (error) { setMessage(error instanceof Error ? error.message : 'Unable to sign in.'); } };
-  return <><a className="skip-link" href="#main-content">Skip to content</a><main id="main-content" className="admin-login"><div className="admin-login-card"><Logo /><Eyebrow>Secure staff portal</Eyebrow><h1>Sign in to the <em>workspace.</em></h1><p>Owner access is protected and requires configured credentials.</p><form onSubmit={submit}><label>Email<input type="email" required value={email} onChange={event => setEmail(event.target.value)} /></label><label>Password<input type="password" required value={password} onChange={event => setPassword(event.target.value)} /></label>{message && <div className="form-status error" role="alert">{message}</div>}<button className="button button-dark" type="submit">Sign in <ArrowRight size={16} /></button></form><Link to="/">← Return to public website</Link></div></main></>;
-}
-
-function AdminPage({ active = 'Dashboard' }: { active?: string }) {
-  const labels: Record<string, string> = { Dashboard: 'Content workspace', Leads: 'Lead pipeline', 'Site visits': 'Site visits', Quotes: 'Quote requests', Projects: 'Project workspace', Calendar: 'Calendar', Tasks: 'Tasks', Invoices: 'Invoices' };
-  return <AdminShell><div className="admin-content"><div className="admin-title"><div><Eyebrow>{active}</Eyebrow><h1>{labels[active] || active}</h1><p>Manage approved content and live enquiries from one place.</p></div><button className="button button-outline" type="button" disabled>Database required <ShieldCheck size={16} /></button></div><div className="admin-notice"><ShieldCheck size={18} /><span><strong>Development workspace</strong> Real operational records are not seeded. Connect MySQL and configure staff credentials to enable live management.</span></div><div className="admin-empty-grid"><div className="admin-panel"><div className="panel-heading"><h2>Live records</h2><span>Database connection required</span></div><div className="admin-empty"><ClipboardList size={24} /><h3>No live records to show</h3><p>When the database is configured, this view will show verified {active.toLowerCase()} records.</p></div></div><div className="admin-panel"><div className="panel-heading"><h2>Quick actions</h2><span>Content-safe workflow</span></div><div className="quick-actions"><Link to="/services">Review public services <ArrowRight size={15} /></Link><Link to="/projects">Review project photography <ArrowRight size={15} /></Link><Link to="/contact">Open public contact page <ArrowRight size={15} /></Link><Link to="/quote">Preview quote wizard <ArrowRight size={15} /></Link></div></div></div></div></AdminShell>;
-}
-
 function AppRoutes() {
   const location = useLocation();
   useEffect(() => {
@@ -317,7 +278,7 @@ function AppRoutes() {
       } else if (existingRobots) existingRobots.remove();
     }).catch(() => undefined);
   }, [location.pathname]);
-  return <Routes><Route path="/" element={<RebuiltLayout><HomePage /></RebuiltLayout>} /><Route path="/services" element={<RebuiltLayout><ServicesPage /></RebuiltLayout>} /><Route path="/services/bathroom-renovations" element={<RebuiltLayout><BathroomRenovationsPage /></RebuiltLayout>} /><Route path="/services/home-extensions" element={<RebuiltLayout><HomeExtensionsPage /></RebuiltLayout>} /><Route path="/services/:slug" element={<RebuiltLayout><ServiceDetailPage /></RebuiltLayout>} /><Route path="/projects" element={<RebuiltLayout><ProjectsPage /></RebuiltLayout>} /><Route path="/projects/:slug" element={<RebuiltLayout><ProjectCaseStudyPage /></RebuiltLayout>} /><Route path="/how-it-works" element={<RebuiltLayout><HowItWorksPage /></RebuiltLayout>} /><Route path="/about" element={<RebuiltLayout><AboutPage /></RebuiltLayout>} /><Route path="/reviews" element={<RebuiltLayout><ReviewsPage /></RebuiltLayout>} /><Route path="/areas" element={<RebuiltLayout><AreasPage /></RebuiltLayout>} /><Route path="/areas/:slug" element={<RebuiltLayout><AreaDetailPage /></RebuiltLayout>} /><Route path="/guides" element={<RebuiltLayout><GuidesPage /></RebuiltLayout>} /><Route path="/guides/:slug" element={<RebuiltLayout><GuideDetailPage /></RebuiltLayout>} /><Route path="/contact" element={<RebuiltLayout><ContactPage /></RebuiltLayout>} /><Route path="/quote" element={<RebuiltLayout><QuotePage /></RebuiltLayout>} /><Route path="/quote/thank-you" element={<QuoteThankYouPage />} /><Route path="/privacy" element={<RebuiltLayout><PolicyPage type="privacy" /></RebuiltLayout>} /><Route path="/cookies" element={<RebuiltLayout><PolicyPage type="cookies" /></RebuiltLayout>} /><Route path="/terms" element={<RebuiltLayout><PolicyPage type="terms" /></RebuiltLayout>} /><Route path="/staff/login" element={<AdminLoginPage />} /><Route path="/staff" element={<AdminPage />} /><Route path="/staff/leads" element={<AdminPage active="Leads" />} /><Route path="/staff/site-visits" element={<AdminPage active="Site visits" />} /><Route path="/staff/quotes" element={<AdminPage active="Quotes" />} /><Route path="/staff/projects" element={<ProjectManagerPage />} /><Route path="/staff/calendar" element={<AdminPage active="Calendar" />} /><Route path="/staff/tasks" element={<AdminPage active="Tasks" />} /><Route path="/staff/invoices" element={<AdminPage active="Invoices" />} /><Route path="*" element={<RebuiltLayout><NotFound /></RebuiltLayout>} /></Routes>;
+  return <Routes><Route path="/" element={<RebuiltLayout><HomePage /></RebuiltLayout>} /><Route path="/services" element={<RebuiltLayout><ServicesPage /></RebuiltLayout>} /><Route path="/services/bathroom-renovations" element={<RebuiltLayout><BathroomRenovationsPage /></RebuiltLayout>} /><Route path="/services/home-extensions" element={<RebuiltLayout><HomeExtensionsPage /></RebuiltLayout>} /><Route path="/services/:slug" element={<RebuiltLayout><ServiceDetailPage /></RebuiltLayout>} /><Route path="/projects" element={<RebuiltLayout><ProjectsPage /></RebuiltLayout>} /><Route path="/projects/:slug" element={<RebuiltLayout><ProjectCaseStudyPage /></RebuiltLayout>} /><Route path="/how-it-works" element={<RebuiltLayout><HowItWorksPage /></RebuiltLayout>} /><Route path="/about" element={<RebuiltLayout><AboutPage /></RebuiltLayout>} /><Route path="/reviews" element={<RebuiltLayout><ReviewsPage /></RebuiltLayout>} /><Route path="/areas" element={<RebuiltLayout><AreasPage /></RebuiltLayout>} /><Route path="/areas/:slug" element={<RebuiltLayout><AreaDetailPage /></RebuiltLayout>} /><Route path="/guides" element={<RebuiltLayout><GuidesPage /></RebuiltLayout>} /><Route path="/guides/:slug" element={<RebuiltLayout><GuideDetailPage /></RebuiltLayout>} /><Route path="/contact" element={<RebuiltLayout><ContactPage /></RebuiltLayout>} /><Route path="/quote" element={<RebuiltLayout><QuotePage /></RebuiltLayout>} /><Route path="/quote/thank-you" element={<QuoteThankYouPage />} /><Route path="/privacy" element={<RebuiltLayout><PolicyPage type="privacy" /></RebuiltLayout>} /><Route path="/cookies" element={<RebuiltLayout><PolicyPage type="cookies" /></RebuiltLayout>} /><Route path="/terms" element={<RebuiltLayout><PolicyPage type="terms" /></RebuiltLayout>} /><Route path="/staff/login" element={<OperationalAdminLoginPage />} /><Route path="/staff" element={<CrmDashboardPage />} /><Route path="/staff/leads" element={<LeadsPage />} /><Route path="/staff/leads/:id" element={<LeadDetailPage />} /><Route path="/staff/site-visits" element={<VisitsPage />} /><Route path="/staff/quotes" element={<QuotesPage />} /><Route path="/staff/projects" element={<AdminWorkspaceShell><ProjectManagerPage /></AdminWorkspaceShell>} /><Route path="/staff/calendar" element={<CalendarPage />} /><Route path="/staff/tasks" element={<TasksPage />} /><Route path="/staff/invoices" element={<InvoicesPage />} /><Route path="/staff/team" element={<TeamPage />} /><Route path="*" element={<RebuiltLayout><NotFound /></RebuiltLayout>} /></Routes>;
 }
 
 export default function App() { return <BrowserRouter><AppRoutes /></BrowserRouter>; }
