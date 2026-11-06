@@ -107,6 +107,13 @@ function smtpBuildMessage(array $message): string
     }
     $headers[] = 'Subject: ' . smtpEncodeHeader((string) $message['subject']);
     $headers[] = 'Message-ID: ' . smtpHeaderValue((string) $message['messageId']);
+    // Replies: thread the message under the original in the customer's mail app.
+    $inReplyTo = smtpHeaderValue((string) ($message['inReplyTo'] ?? ''));
+    if (preg_match('/^<[^<>\s]+>$/', $inReplyTo)) {
+        $references = trim(smtpHeaderValue((string) ($message['references'] ?? '')) . ' ' . $inReplyTo);
+        $headers[] = 'In-Reply-To: ' . $inReplyTo;
+        $headers[] = 'References: ' . $references;
+    }
     $headers[] = 'MIME-Version: 1.0';
     $headers[] = 'X-Mailer: Omni CRM';
 

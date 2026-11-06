@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { AdminWorkspaceShell } from '../AdminWorkspace';
 import {
-  Activity, CONTACT_TYPE_LABELS, Invoice, Lead, LeadDetail, Quote, ROLE_LABELS, SOURCE_LABELS, STAGE_LABELS, STAGES, Stage, Summary, Task, TeamMember, TeamRole, Visit,
+  Activity, CONTACT_TYPE_LABELS, Email, Invoice, Lead, LeadDetail, Quote, ROLE_LABELS, SOURCE_LABELS, STAGE_LABELS, STAGES, Stage, Summary, Task, TeamMember, TeamRole, Visit,
   crm, formatAgo, formatBytes, formatDay, formatMoney, formatWhen, useCrm,
 } from './crmApi';
 import { Field, InvoiceForm, LeadForm, Modal, QuoteForm, TaskForm, VisitForm } from './CrmForms';
@@ -143,7 +143,7 @@ function BoardColumn({ stage, leads, onDrop }: { stage: Stage; leads: Lead[]; on
 }
 
 /* ---------- Lead detail ---------- */
-type Dialog = null | { kind: 'edit' } | { kind: 'visit'; visit?: Visit } | { kind: 'task'; task?: Task } | { kind: 'quote'; quote?: Quote } | { kind: 'invoice'; invoice?: Invoice } | { kind: 'lost' } | { kind: 'email' };
+type Dialog = null | { kind: 'edit' } | { kind: 'visit'; visit?: Visit } | { kind: 'task'; task?: Task } | { kind: 'quote'; quote?: Quote } | { kind: 'invoice'; invoice?: Invoice } | { kind: 'lost' } | { kind: 'email'; replyTo?: Email };
 
 export function LeadDetailPage() {
   const { id } = useParams();
@@ -237,7 +237,7 @@ export function LeadDetailPage() {
         </RelatedPanel>
 
         <RelatedPanel title="Emails" icon={<Mail size={20} />} empty={lead.email ? 'No emails with this customer yet.' : 'No emails yet. Add an email address to the lead to email them from here.'} onAdd={() => setDialog({ kind: 'email' })} addLabel="Email this lead">
-          {emails.map(email => <EmailItem key={email.id} email={email} />)}
+          {emails.map(email => <EmailItem key={email.id} email={email} onReply={replyTo => setDialog({ kind: 'email', replyTo })} />)}
         </RelatedPanel>
 
         <section className="admin-panel crm-panel"><div className="panel-heading"><h2>Privacy</h2></div>
@@ -261,7 +261,7 @@ export function LeadDetailPage() {
     {dialog?.kind === 'task' && <Modal title={dialog.task ? 'Edit task' : 'Add a task'} onClose={close}><TaskForm task={dialog.task} leadId={lead.id} onCancel={close} onSaved={saved} /></Modal>}
     {dialog?.kind === 'quote' && <Modal title={dialog.quote ? `Edit ${dialog.quote.reference}` : 'New quote'} onClose={close}><QuoteForm quote={dialog.quote} leadId={lead.id} lead={lead} onCancel={close} onSaved={saved} /></Modal>}
     {dialog?.kind === 'invoice' && <Modal title={dialog.invoice ? `Edit ${dialog.invoice.reference}` : 'New invoice'} onClose={close}><InvoiceForm invoice={dialog.invoice} leadId={lead.id} lead={lead} quotes={quotes.filter(quote => quote.status === 'accepted')} onCancel={close} onSaved={() => { setNotice(resendNotice(dialog.invoice)); saved(); }} /></Modal>}
-    {dialog?.kind === 'email' && <Modal title={`Email ${lead.name}`} wide onClose={() => { close(); reload(); }}><ComposeEmailForm leadId={lead.id} defaultTo={lead.email} onSent={() => reload()} onCancel={() => { close(); reload(); }} /></Modal>}
+    {dialog?.kind === 'email' && <Modal title={dialog.replyTo ? `Reply to ${lead.name}` : `Email ${lead.name}`} wide onClose={() => { close(); reload(); }}><ComposeEmailForm leadId={lead.id} defaultTo={lead.email} replyTo={dialog.replyTo} onSent={() => reload()} onCancel={() => { close(); reload(); }} /></Modal>}
     {dialog?.kind === 'lost' &&<Modal title="Mark lead as lost" onClose={close}><LostForm onCancel={close} onSubmit={async reason => { await patch(`/leads/${lead.id}`, { stage: 'lost', lostReason: reason }); close(); }} /></Modal>}
   </div></AdminWorkspaceShell>;
 }

@@ -1,6 +1,6 @@
 import { FormEvent, ReactNode, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDownLeft, ArrowUpRight, Inbox, Mail, RefreshCw, Send, Settings as SettingsIcon, Timer } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Inbox, Mail, RefreshCw, Reply, Send, Settings as SettingsIcon, Timer } from 'lucide-react';
 import { AdminWorkspaceShell, useStaffUser } from '../AdminWorkspace';
 import {
   CompanySettings, CrmRequestError, Email, EmailTemplate, Followup, FollowupRunResult, Invoice, Lead, MailSettings, MailSettingsInput, MailStatus, MailTestResult, Quote, SyncResult,
@@ -211,7 +211,17 @@ export function InvoiceActions({ invoice, onEdit, onChanged, onNotice }: { invoi
 }
 
 /* ---------- Emails ---------- */
-export function EmailItem({ email, showLead = false }: { email: Email; showLead?: boolean }) {
+/** Subject, recipient and quoted text for replying to (or following up) an email. */
+export function replyDraft(email: Email) {
+  const inbound = email.direction === 'inbound';
+  const subject = /^re:/i.test(email.subject.trim()) ? email.subject.trim() : `Re: ${email.subject.trim() || '(no subject)'}`;
+  const when = email.receivedAt || email.sentAt || email.createdAt;
+  const quoted = htmlToText(email.body).split('\n').map(line => `> ${line}`).join('\n');
+  const intro = `${when ? `On ${formatWhen(when)}, ` : ''}${inbound ? email.from : 'we'} wrote:`;
+  return { to: inbound ? email.from : email.to, subject: subject.slice(0, 190), body: `\n\n${intro}\n${quoted}`.slice(0, 20000) };
+}
+
+export function EmailItem({ email, showLead = false, onReply }: { email: Email; showLead?: boolean; onReply?: (email: Email) => void }) {
   const inbound = email.direction === 'inbound';
   const when = email.receivedAt || email.sentAt || email.createdAt;
   const text = htmlToText(email.body);
@@ -223,16 +233,20 @@ export function EmailItem({ email, showLead = false }: { email: Email; showLead?
       {email.error && email.status !== 'sent' && email.status !== 'received' && <p className="crm-email-error">{email.error}</p>}
       {text && <details className="crm-email-body"><summary>Show message</summary><p>{text}</p></details>}
     </div>
-    <div className="crm-row-actions"><span className="sr-only">{inbound ? 'Received email' : 'Sent email'}, status</span><StatusBadge status={email.status} /></div>
+    <div className="crm-row-actions">
+      <span className="sr-only">{inbound ? 'Received email' : 'Sent email'}, status</span><StatusBadge status={email.status} />
+      {onReply && <button type="button" className="crm-button crm-button-ghost crm-button-small" onClick={() => onReply(email)} aria-label={`${inbound ? 'Reply to' : 'Follow up on'} “${email.subject || 'no subject'}”`}><Reply size={14} /> {inbound ? 'Reply' : 'Follow up'}</button>}
+    </div>
   </li>;
 }
 
-export function ComposeEmailForm({ leadId, defaultTo = '', onSent, onCancel }: { leadId?: number; defaultTo?: string; onSent?: (email: Email) => void; onCancel?: () => void }) {
-  const leads = useCrm<{ records: Lead[] }>(leadId === undefined ? '/leads' : null);
-  const [lead, setLead] = useState<number | null>(leadId ?? null);
-  const [to, setTo] = useState(defaultTo);
-  const [subject, setSubject] = useState('');
-  const [body, setBody] = useState('');
+export function ComposeEmailForm({ leadId, defaultTo = '', replyTo, onSent, onCancel }: { leadId?: number; defaultTo?: string; replyTo?: Email; onSent?: (email: Email) => void; onCancel?: () => void }) {
+  const draft = replyTo ? replyDraft(replyTo) : null;
+  const leads = useCrm<{ records: Lead[] }>(leadId === undefined && !replyTo ? '/leads' : null);
+  const [lead, setLead] = useState<number | null>(leadId ?? replyTo?.leadId ?? null);
+  const [to, setTo] = useState(draft?.to || defaultTo);
+  const [subject, setSubject] = useState(draft?.subject || '');
+  const [body, setBody] = useState(draft?.body || '');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<Email | null>(null);
@@ -250,7 +264,7 @@ export function ComposeEmailForm({ leadId, defaultTo = '', onSent, onCancel }: {
     setError('');
     setResult(null);
     try {
-      const response = await crm<{ email: Email }>('/emails', { method: 'POST', body: { ...(lead ? { leadId: lead } : {}), to: to.trim(), subject, body } });
+      const response = await crm<{ email: Email }>('/emails', { method: 'POST', body: { ...(lead ? { leadId: lead } : {}), ...(replyTo ? { replyToEmailId: replyTo.id } : {}), to: to.trim(), subject, body } });
       setResult(response.email);
       setSubject('');
       setBody('');
@@ -265,11 +279,11 @@ export function ComposeEmailForm({ leadId, defaultTo = '', onSent, onCancel }: {
   return <form className="crm-form" onSubmit={submit}>
     {outcome && <Notice tone={outcome.tone}>{outcome.message}</Notice>}
     <div className="crm-form-grid">
-      {leadId === undefined && <Field label="Lead (optional)" hint="Links the email to the lead’s timeline and fills in their address."><select value={lead === null ? '' : String(lead)} onChange={event => pickLead(event.target.value)}>
+      {leadId === undefined && !replyTo && <Field label="Lead (optional)" hint="Links the email to the lead’s timeline and fills in their address."><select value={lead === null ? '' : String(lead)} onChange={event => pickLead(event.target.value)}>
         <option value="">{leads.loading ? 'Loading leads…' : 'Not linked to a lead'}</option>
         {leads.data?.records.map(item => <option key={item.id} value={item.id}>{item.name} ({item.reference}){item.email ? '' : ' · no email'}</option>)}
       </select></Field>}
-      <Field label="To" full={leadId !== undefined}><input required type="email" maxLength={190} value={to} onChange={event => setTo(event.target.value)} autoComplete="off" /></Field>
+      <Field label="To" full={leadId !== undefined || Boolean(replyTo)}><input required type="email" maxLength={190} value={to} onChange={event => setTo(event.target.value)} autoComplete="off" /></Field>
       <Field label="Subject" full><input required maxLength={190} value={subject} onChange={event => setSubject(event.target.value)} /></Field>
       <Field label="Message" full hint="Plain text. Line breaks are kept."><textarea required rows={8} maxLength={20000} value={body} onChange={event => setBody(event.target.value)} /></Field>
     </div>
@@ -438,6 +452,16 @@ export function EmailPage() {
   const [notice, setNotice] = useState<NoticeState>(null);
   const [syncing, setSyncing] = useState(false);
   const [logVersion, setLogVersion] = useState(0);
+  // Pull in new customer replies whenever the page opens. Quiet: only speaks up when something arrived.
+  useEffect(() => {
+    let live = true;
+    crm<{ result: SyncResult }>('/emails/sync', { method: 'POST', body: {} }).then(({ result }) => {
+      if (!live || result.status !== 'ok') return;
+      setLogVersion(value => value + 1);
+      if (result.imported > 0) setNotice({ tone: 'success', message: `${result.imported} new message${result.imported === 1 ? '' : 's'} pulled in from the inbox.` });
+    }).catch(() => undefined);
+    return () => { live = false; };
+  }, []);
   const sync = async () => {
     setSyncing(true);
     setNotice(null);
@@ -475,11 +499,15 @@ function MailLog({ version }: { version: number }) {
   const { data, error, loading, reload } = useCrm<{ records: Email[] }>(`/emails${direction ? `?direction=${direction}` : ''}`);
   useEffect(() => { if (version) reload(); }, [version, reload]);
   const records = data?.records || [];
+  const [replying, setReplying] = useState<Email | null>(null);
   return <>
+    {replying && <Modal title={replying.direction === 'inbound' ? `Reply to ${replying.from}` : `Follow up with ${replying.to}`} wide onClose={() => { setReplying(null); reload(); }}>
+      <ComposeEmailForm replyTo={replying} onCancel={() => { setReplying(null); reload(); }} />
+    </Modal>}
     <div className="crm-toggle crm-filter" role="group" aria-label="Show">{([['', 'All'], ['outbound', 'Sent'], ['inbound', 'Received']] as const).map(([value, label]) => <button type="button" key={value || 'all'} aria-pressed={direction === value} onClick={() => setDirection(value)}>{label}</button>)}</div>
     <ErrorNote message={error} />
     <section className="admin-panel crm-panel">{loading && !data ? <Loading /> : !records.length ? <Empty icon={<Inbox size={22} />} title="No emails yet">Emails sent from the CRM, and replies pulled in by Sync inbox, appear here.</Empty>
-      : <ul className="crm-related crm-email-list">{records.map(email => <EmailItem key={email.id} email={email} showLead />)}</ul>}</section>
+      : <ul className="crm-related crm-email-list">{records.map(email => <EmailItem key={email.id} email={email} showLead onReply={setReplying} />)}</ul>}</section>
   </>;
 }
 

@@ -1635,6 +1635,7 @@ function crmDeliverEmail(array $mail): array
         $result = smtpSend(crmSmtpConfig(), [
             'from' => $from, 'envelopeFrom' => crmEnvelopeFrom(), 'fromName' => (string) crmMailValue('emailFromName'), 'to' => [(string) $mail['to']], 'replyTo' => (string) crmMailValue('emailReplyTo'),
             'subject' => (string) $mail['subject'], 'html' => (string) $mail['html'], 'attachments' => $mail['attachments'] ?? [], 'messageId' => $messageId,
+            'inReplyTo' => (string) ($mail['inReplyTo'] ?? ''),
         ]);
         $status = $result['ok'] ? 'sent' : 'failed';
         $error = $result['ok'] ? '' : crmSmtpExplain($result) . ' [' . $result['error'] . ']';
@@ -1771,11 +1772,21 @@ function crmComposeEmail(array $body, ?int $userId): array
         'to' => ['type' => 'email', 'required' => true],
         'subject' => ['type' => 'text', 'min' => 1, 'max' => 255, 'required' => true, 'message' => 'Add a subject.'],
         'body' => ['type' => 'text', 'min' => 1, 'max' => 20000, 'required' => true, 'message' => 'Write a message first.'],
+        'replyToEmailId' => ['type' => 'id', 'positive' => true, 'nullable' => true],
     ]);
     if (($input['to'] ?? '') === '') {
         fail(400, 'Enter a valid email address.');
     }
     $leadId = $input['leadId'] ?? null;
+    $inReplyTo = '';
+    if (!empty($input['replyToEmailId'])) {
+        $original = crmGet('crm_emails', (int) $input['replyToEmailId']);
+        if ($original === null) {
+            fail(404, 'The email you are replying to no longer exists.');
+        }
+        $inReplyTo = (string) ($original['message_id'] ?? '');
+        $leadId = $leadId ?: crmNullableInt($original['lead_id']);
+    }
     if ($leadId) {
         crmRequireLead($leadId);
     } else {
@@ -1784,7 +1795,7 @@ function crmComposeEmail(array $body, ?int $userId): array
         $found = $match->fetchColumn();
         $leadId = $found === false ? null : (int) $found;
     }
-    $email = crmDeliverEmail(['leadId' => $leadId, 'to' => $input['to'], 'subject' => smtpHeaderValue($input['subject']), 'html' => crmPlainToHtml($input['body']), 'userId' => $userId]);
+    $email = crmDeliverEmail(['leadId' => $leadId, 'to' => $input['to'], 'subject' => smtpHeaderValue($input['subject']), 'html' => crmPlainToHtml($input['body']), 'userId' => $userId, 'inReplyTo' => $inReplyTo]);
     if ($leadId && $email['status'] === 'sent') {
         crmMoveStage(crmRequireLead($leadId), 'contacted', $userId, 'email sent');
     }

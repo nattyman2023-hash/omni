@@ -489,6 +489,22 @@ describe('PHP CRM sales documents with MySQL', () => {
       const corrected = await crm('PATCH', `/invoices/${invoice.body.invoice.id}`, { items: [{ description: 'Stage 1 (revised)', quantity: 1, unitPricePence: 45000 }] }, cookie, server);
       expect(corrected.status).toBe(200);
       expect(corrected.body.invoice).toMatchObject({ status: 'issued', sentAt: null, amountPence: 45000 });
+
+      // Replying to a customer's email threads it under the original (In-Reply-To / References) and links the lead.
+      const inboundId = `<inbound-${runId}@customer.example>`;
+      const [inserted] = await connection.execute<mysql.ResultSetHeader>(
+        "INSERT INTO crm_emails (direction, lead_id, from_address, to_address, subject, body, status, message_id, received_at) VALUES ('inbound', ?, ?, 'sales@example.test', 'Question about the quote', '<p>Can we start in May?</p>', 'received', ?, UTC_TIMESTAMP())",
+        [lead.id, lead.email, inboundId],
+      );
+      const reply = await crm('POST', '/emails', { replyToEmailId: inserted.insertId, to: lead.email, subject: 'Re: Question about the quote', body: 'Yes, May works.' }, cookie, server);
+      expect(reply.status).toBe(201);
+      expect(reply.body.email).toMatchObject({ status: 'sent', leadId: lead.id, to: lead.email });
+      const replySession = smtp.sessions.find(item => item.data.includes('Subject: Re: Question about the quote'))!;
+      expect(replySession).toBeTruthy();
+      expect(mimePart(replySession.data, 'Content-Type: text/plain').toString()).toContain('Yes, May works.');
+      expect(replySession.data).toContain(`In-Reply-To: ${inboundId}`);
+      expect(replySession.data).toContain(`References: ${inboundId}`);
+      expect((await crm('POST', '/emails', { replyToEmailId: 99999999, to: lead.email, subject: 'x', body: 'y' }, cookie, server)).status).toBe(404);
     } finally {
       await server.close();
       await smtp.close();
