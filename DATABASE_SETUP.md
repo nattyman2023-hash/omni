@@ -34,6 +34,26 @@ or unreachable MySQL, or an incomplete schema, puts health into HTTP 503 degrade
 mode. Contact and quote APIs refuse the request with an honest retry-by-phone/email
 message; they never report success or fall back to memory.
 
+## Sales CRM, email and e-signature tables
+
+Migration `004_crm_sales_email_signing.sql` adds the sales stack:
+
+- `crm_contacts` — every lead and customer in a single contact record.
+- `crm_quotes` / `crm_quote_items` — line-item quotations and contracts, revisions
+  (`parent_quote_id` + `version`) and e-signature state (`sign_token`, `sign_status`,
+  `signed_at`, `signer_name/email/ip`).
+- `crm_invoices` / `crm_invoice_items` — the legacy flat invoice table is replaced by
+  a full invoice model that supports stage payments.
+- `crm_email_templates`, `crm_emails` — editable templates plus the outbound/inbound
+  email log.
+- `crm_followup_sequences` — scheduled chases for unsigned quotes and unpaid invoices.
+
+The same migration seeds company and bank details in `site_settings` (taken from the
+supplied invoice) and inserts the default email templates. It uses
+`CREATE TABLE IF NOT EXISTS` and `INSERT IGNORE`, so it is safe to re-run. The invoice
+tables are dropped and recreated, so run this migration before entering live invoice
+data — no invoice records exist in the previous release.
+
 ## Disposable persistence verification
 
 Copy `.env.test.example` to an ignored `.env.test` or set the five

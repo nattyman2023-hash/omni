@@ -11,6 +11,8 @@ import bcrypt from 'bcryptjs';
 import mysql, { Pool, ResultSetHeader } from 'mysql2/promise';
 import { z } from 'zod';
 import { sendNotification } from './services/emailService';
+import { registerCrmRoutes } from './crmRoutes';
+import { startCrmJobs } from './services/crmService';
 
 const projectRoot = path.resolve(__dirname, '..');
 const distPath = path.join(projectRoot, 'dist');
@@ -46,7 +48,7 @@ if (databaseConfigured) {
   });
 }
 
-const productionTables = ['users', 'projects', 'contact_enquiries', 'quote_requests', 'quote_request_files', 'staff_sessions', 'activity_audit_records', 'crm_site_visits', 'crm_tasks', 'crm_calendar_events', 'crm_invoices'] as const;
+const productionTables = ['users', 'projects', 'contact_enquiries', 'quote_requests', 'quote_request_files', 'staff_sessions', 'activity_audit_records', 'crm_site_visits', 'crm_tasks', 'crm_calendar_events', 'crm_invoices', 'crm_contacts', 'crm_quotes', 'crm_quote_items', 'crm_invoice_items', 'crm_email_templates', 'crm_emails', 'crm_followup_sequences'] as const;
 const enquiryUnavailableMessage = "We couldn't send your enquiry, please call or email us.";
 
 class DatabaseUnavailableError extends Error {
@@ -736,7 +738,6 @@ const crmReadRoutes = [
   ['/api/admin/site-visits', 'crm_site_visits', 'scheduled_at'],
   ['/api/admin/calendar', 'crm_calendar_events', 'starts_at'],
   ['/api/admin/tasks', 'crm_tasks', 'created_at'],
-  ['/api/admin/invoices', 'crm_invoices', 'created_at'],
 ] as const;
 for (const [route, table, order] of crmReadRoutes) app.get(route, adminRequired, async (_req, res, next) => {
   try {
@@ -745,6 +746,10 @@ for (const [route, table, order] of crmReadRoutes) app.get(route, adminRequired,
     return res.json({ records });
   } catch (error) { return next(error); }
 });
+// Sales, email, signing and follow-up routes live in their own module so the
+// core website server stays focused on public pages and staff authentication.
+const signingBaseUrl = (process.env.SIGNING_BASE_URL || process.env.APP_URL || `http://localhost:${port}`).replace(/\/$/, '');
+registerCrmRoutes(app, { getPool: () => pool, adminRequired, baseUrl: signingBaseUrl });
 app.get('/api/admin/session', adminRequired, (_req, res) => {
   const user = res.locals.staffUser as StaffUser;
   res.set('Cache-Control', 'no-store').json({ authenticated: true, user: { name: user.name, email: user.email, role: user.role } });
@@ -775,6 +780,7 @@ const spaRoutes = new Set([
   '/', '/services', '/projects', '/how-it-works', '/about', '/reviews', '/areas', '/guides', '/contact', '/quote',
   '/quote/thank-you', '/privacy', '/cookies', '/terms', '/staff/login', '/staff', '/staff/leads', '/staff/site-visits',
   '/staff/quotes', '/staff/projects', '/staff/calendar', '/staff/tasks', '/staff/invoices',
+  '/staff/contacts', '/staff/contracts', '/staff/email',
   '/services/home-extensions', '/services/loft-conversions', '/services/property-renovations', '/services/property-refurbishments',
   '/services/kitchen-renovations', '/services/bathroom-renovations', '/services/general-building-work',
   '/projects/open-plan-extension', '/projects/property-improvements', '/projects/bathroom-installation',
@@ -790,6 +796,8 @@ app.use(async (req, res, next) => {
     if (!validRoute && projectPath) {
       try { validRoute = Boolean(await findPublishedProject(projectPath[1])); } catch { validRoute = Boolean(localProjects.get(projectPath[1])?.published); }
     }
+    // Public e-signature links are handled by the SPA so the page can render.
+    if (!validRoute && /^\/sign\/[a-f0-9]{24,64}$/i.test(req.path)) validRoute = true;
     const status = validRoute ? 200 : 404;
     return res.status(status).sendFile(path.join(distPath, 'index.html'));
   }
@@ -815,6 +823,7 @@ async function startServer() {
     }
   }
   const server = app.listen(port, '0.0.0.0', () => process.stdout.write(`Omni Development server listening on port ${port}${stagingMode ? ' (temporary review mode)' : ''}\n`));
+  startCrmJobs(() => pool, signingBaseUrl);
   let shuttingDown = false;
   const shutdown = (signal: string) => {
     if (shuttingDown) return;

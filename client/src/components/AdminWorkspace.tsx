@@ -2,7 +2,7 @@ import { FormEvent, KeyboardEvent, ReactNode, createContext, useContext, useEffe
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   AlertTriangle, ArrowLeft, ArrowRight, BriefcaseBusiness, CalendarDays, Check, ClipboardList,
-  Eye, EyeOff, FileText, LayoutDashboard, LockKeyhole, LogOut, MapPin, Menu, Quote, Search, ShieldCheck, X,
+  Eye, EyeOff, FileSignature, FileText, LayoutDashboard, LockKeyhole, LogOut, Mail, MapPin, Menu, Quote, Search, ShieldCheck, Users, X,
 } from 'lucide-react';
 import StagingMarker from './StagingMarker';
 
@@ -66,11 +66,14 @@ const NAV: Array<[string, string, ReactNode]> = [
   ['Dashboard', '/staff', <LayoutDashboard size={17} />],
   ['Leads', '/staff/leads', <ClipboardList size={17} />],
   ['Site visits', '/staff/site-visits', <MapPin size={17} />],
+  ['Contacts', '/staff/contacts', <Users size={17} />],
   ['Quotes', '/staff/quotes', <Quote size={17} />],
+  ['Contracts', '/staff/contracts', <FileSignature size={17} />],
   ['Projects', '/staff/projects', <BriefcaseBusiness size={17} />],
   ['Calendar', '/staff/calendar', <CalendarDays size={17} />],
   ['Tasks', '/staff/tasks', <Check size={17} />],
   ['Invoices', '/staff/invoices', <FileText size={17} />],
+  ['Email', '/staff/email', <Mail size={17} />],
 ];
 
 function ShellFrame({ children, search }: { children: ReactNode; search?: { value: string; onChange: (value: string) => void; label: string } }) {
