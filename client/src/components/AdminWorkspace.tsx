@@ -5,8 +5,11 @@ import {
   Eye, EyeOff, FileText, LayoutDashboard, LockKeyhole, LogOut, MapPin, Menu, Quote, Search, ShieldCheck, Users, X,
 } from 'lucide-react';
 import StagingMarker from './StagingMarker';
+import { CRM_ONLY } from '../crmMode';
 
 type StaffUser = { name: string; email: string; role: string };
+/** Demo sign-in accounts the server publishes only while DEMO_MODE is enabled. */
+type DemoAccount = { role: string; email: string; password: string };
 type SessionState = { status: 'authenticated'; user: StaffUser } | { status: 'unauthenticated' } | { status: 'unavailable' };
 
 const LOGIN_MESSAGES = {
@@ -129,6 +132,7 @@ export function OperationalAdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [capsLock, setCapsLock] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [demoAccounts, setDemoAccounts] = useState<DemoAccount[]>([]);
   const alertRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -140,6 +144,19 @@ export function OperationalAdminLoginPage() {
     });
     return () => { active = false; };
   }, [navigate, destination]);
+
+  // Review builds advertise their sign-in accounts so a demo reviewer is never locked out.
+  useEffect(() => {
+    let active = true;
+    void fetch('/api/site-settings', { credentials: 'include', headers: { Accept: 'application/json' } })
+      .then((response) => response.ok ? response.json() as Promise<{ demoMode?: boolean; demoAccounts?: DemoAccount[] }> : null)
+      .then((settings) => {
+        if (!active || !settings?.demoMode || !Array.isArray(settings.demoAccounts)) return;
+        setDemoAccounts(settings.demoAccounts.filter((account) => Boolean(account?.email && account?.password)));
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => { if (message) alertRef.current?.focus(); }, [message]);
 
@@ -201,7 +218,15 @@ export function OperationalAdminLoginPage() {
           {message && <div className="form-status error" id="staff-login-error" role="alert" tabIndex={-1} ref={alertRef}>{message}</div>}
           <button className="button button-dark" disabled={loading} type="submit">{loading ? <><span className="admin-spinner" aria-hidden="true" /> Signing in…</> : <>Sign in <ArrowRight size={16} aria-hidden="true" /></>}</button>
         </form>
-        <Link className="admin-login-return" to="/"><ArrowLeft size={14} aria-hidden="true" /> Return to the website</Link>
+        {demoAccounts.length > 0 && <div className="admin-demo-access" aria-labelledby="staff-demo-title">
+          <h3 id="staff-demo-title">Demo access</h3>
+          <p>Review credentials, shown only while demo mode is enabled. Replace them before real customer data is entered.</p>
+          <ul>{demoAccounts.map(account => <li key={account.email}>
+            <span><strong>{account.role}</strong><small>{account.email}</small><code>{account.password}</code></span>
+            <button type="button" onClick={() => { setEmail(account.email); setPassword(account.password); setMessage(''); }} aria-label={`Fill the form with the ${account.role} demo account`}>Use</button>
+          </li>)}</ul>
+        </div>}
+        {!CRM_ONLY && <Link className="admin-login-return" to="/"><ArrowLeft size={14} aria-hidden="true" /> Return to the website</Link>}
       </section>
     </div>
   </main></>;

@@ -26,9 +26,9 @@ const HERO_TRUST = [
 type Metric = { icon: string; title: string; body: string };
 
 const METRICS: Metric[] = [
-  { icon: 'description', title: 'Written project scope', body: 'Understand what is being discussed before work begins.' },
+  { icon: 'request_quote', title: 'Written project scope', body: 'Understand what is being discussed before work begins.' },
   { icon: 'engineering', title: 'On-site coordination', body: 'A clear point of contact for practical project questions.' },
-  { icon: 'forum', title: 'Direct communication', body: 'Keep decisions and updates moving throughout the work.' },
+  { icon: 'chat_bubble_outline', title: 'Direct communication', body: 'Keep decisions and updates moving throughout the work.' },
   { icon: 'photo_library', title: 'Supplied photography', body: 'Browse photographs from the project library.' },
 ];
 
@@ -50,12 +50,12 @@ const PILLARS = [
 
 const JOURNEY = [
   { step: 'STEP 01', icon: 'chat_bubble_outline', title: 'Project Enquiry', body: 'Reach out via our online wizard, direct phone call, or WhatsApp message with your project aspirations.' },
-  { step: 'STEP 02', icon: 'forum', title: 'Initial Consultation', body: 'We review design feasibility, planning restrictions, budget ranges, and ideal target timelines.' },
+  { step: 'STEP 02', icon: 'record_voice_over', title: 'Initial Consultation', body: 'We review design feasibility, planning restrictions, budget ranges, and ideal target timelines.' },
   { step: 'STEP 03', icon: 'square_foot', title: 'Site Survey & Visit', body: 'Comprehensive physical inspection, laser measurements, foundation assessment, and drainage verification.' },
   { step: 'STEP 04', icon: 'receipt_long', title: 'Itemised Quotation', body: 'Review the scope, inclusions and quotation together before work starts.' },
   { step: 'STEP 05', icon: 'assignment_turned_in', title: 'Contract & Schedule', body: 'Agree the project documents, sequence and practical arrangements for the work.' },
   { step: 'STEP 06', icon: 'construction', title: 'Construction Phase', body: 'The agreed work is coordinated through the build with regular project communication.' },
-  { step: 'STEP 07', icon: 'task_alt', title: 'Final Inspection', body: 'A structured snagging review and walkthrough keeps the close-out details visible.' },
+  { step: 'STEP 07', icon: 'check_circle', title: 'Final Inspection', body: 'A structured snagging review and walkthrough keeps the close-out details visible.' },
   { step: 'STEP 08', icon: 'verified', title: 'Handover', body: 'The agreed project documents and handover details are reviewed with you.' },
 ] as const;
 
@@ -104,7 +104,7 @@ export default function HomePage() {
       title: project.title,
       body: project.description,
       image: project.image,
-      alt: `${project.title} â€” supplied project photography`,
+      alt: `${project.title} — supplied project photography`,
       category: project.category.toLowerCase(),
     }))
     .slice(0, 4);
@@ -116,64 +116,65 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-amber-highlight/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop relative z-10">
-          <div className="flex flex-wrap items-center gap-space-sm mb-space-md">
-            <span className="inline-flex items-center gap-space-2xs px-space-sm py-1 rounded bg-surface-dark font-label-caps text-label-caps tracking-widest text-amber-highlight uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-highlight animate-pulse" />
-              Home projects across Greater Manchester &amp; Cheshire
-            </span>
-            {(siteSettings.fmbRegistered || siteSettings.structuralWarranty10yr) && (
-              <span className="inline-flex items-center gap-space-2xs text-blue-subtle font-label-ui text-label-ui">
-                <MSIcon name="verified" size={16} className="text-amber-highlight" />
-                {[
-                  siteSettings.fmbRegistered && 'FMB Registered',
-                  siteSettings.structuralWarranty10yr && '10-Year Warranty',
-                ].filter(Boolean).join(' & ')}
-              </span>
-            )}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
-            <div className="lg:col-span-7 flex flex-col space-y-space-lg">
-              <h1 className="font-display-hero text-display-hero-mobile md:text-display-hero text-on-primary font-extrabold tracking-tight leading-none">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl lg:gap-space-xl items-center">
+            <div className="lg:col-span-7 flex flex-col gap-space-lg">
+              <div className="flex flex-wrap items-center gap-space-sm">
+                <span className="inline-flex items-center gap-space-2xs px-space-sm py-1 rounded bg-surface-dark font-label-caps text-label-caps tracking-widest text-amber-highlight uppercase">
+                  <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-amber-highlight animate-pulse" />
+                  Home projects across Greater Manchester &amp; Cheshire
+                </span>
+                {(siteSettings.fmbRegistered || siteSettings.structuralWarranty10yr) && (
+                  <span className="inline-flex items-center gap-space-2xs text-blue-subtle font-label-ui text-label-ui">
+                    <MSIcon name="verified" size={16} className="shrink-0 text-amber-highlight" />
+                    {[
+                      siteSettings.fmbRegistered && 'FMB Registered',
+                      siteSettings.structuralWarranty10yr && '10-Year Warranty',
+                    ].filter(Boolean).join(' & ')}
+                  </span>
+                )}
+              </div>
+              <h1 className="home-hero-title text-on-primary">
                 Transforming Homes Across <span className="text-amber-highlight underline decoration-secondary decoration-2 underline-offset-8">Greater Manchester</span>
               </h1>
               <p className="font-body-lead text-body-lead text-surface-ground max-w-2xl font-normal leading-relaxed">
                 Professional home extensions, structural loft conversions, property renovations, kitchens and bathrooms—shaped around the property, the brief and the next practical decision.
               </p>
-              <div className="flex flex-wrap items-center gap-space-md pt-space-xs">
-                <Link to="/quote" className="inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded bg-amber-highlight text-surface-dark font-headline-sm text-headline-sm font-bold shadow-lg hover:bg-secondary-container transition-all">
+              <div className="home-hero-actions">
+                <Link to="/quote" className="home-hero-btn home-hero-btn--primary">
                   <span>Get Your Free Detailed Quote</span>
-                  <MSIcon name="arrow_forward" size={18} />
+                  <MSIcon name="arrow_forward" size={18} className="shrink-0" />
                 </Link>
-                <a href="#featured-projects" className="inline-flex items-center justify-center gap-space-2xs px-space-lg py-space-sm rounded bg-surface-dark text-on-primary font-headline-sm text-headline-sm font-semibold hover:bg-surface-slate transition-colors">
-                  <MSIcon name="photo_library" size={18} className="text-amber-highlight" />
+                <a href="#featured-projects" className="home-hero-btn home-hero-btn--secondary">
+                  <MSIcon name="photo_library" size={18} className="shrink-0 text-amber-highlight" />
                   <span>Explore Completed Projects</span>
                 </a>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-md pt-space-md">
+              <ul className="home-hero-trust">
                 {HERO_TRUST.map((t) => (
-                  <div key={t.label} className="flex items-center gap-space-2xs">
-                    <MSIcon name={t.icon} size={18} className="text-amber-highlight" />
-                    <span className="font-label-ui text-body-sm text-outline-variant">{t.label}</span>
-                  </div>
+                  <li key={t.label}>
+                    <MSIcon name={t.icon} size={18} className="shrink-0 text-amber-highlight" />
+                    <span>{t.label}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
             <div className="lg:col-span-5 relative">
-              <div className="relative rounded-xl overflow-hidden shadow-2xl bg-surface-dark aspect-[4/3]">
-                <SafeImage sourceComponent="HomePage.Hero" src="/images/site-interior.webp" alt="Finished rear extension from supplied project photography" width={960} height={720} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-surface-dark/90 via-surface-dark/20 to-transparent" />
-                <div className="absolute bottom-space-md left-space-md right-space-md p-space-sm rounded-lg bg-surface-slate/95 backdrop-blur-md text-on-primary">
-                  <div className="flex items-center justify-between mb-1">
-                  <span className="font-label-caps text-label-caps text-amber-highlight uppercase tracking-wider">Supplied project photography</span>
+              {/* Phones: the caption sits below the photograph so it never hides the image; from sm it overlays the lower edge. */}
+              <figure className="relative m-0 rounded-xl overflow-hidden shadow-2xl bg-surface-dark">
+                <div className="relative aspect-[4/3]">
+                  <SafeImage sourceComponent="HomePage.Hero" src="/images/site-interior.webp" alt="Finished rear extension from supplied project photography" width={960} height={720} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 hidden sm:block bg-gradient-to-t from-surface-dark/90 via-surface-dark/20 to-transparent" />
                 </div>
-                  <p className="font-headline-sm text-headline-sm font-semibold truncate">Project details available through the enquiry process</p>
-                  <div className="flex items-center justify-between text-body-sm font-body-sm text-outline-variant mt-1">
+                <figcaption className="relative p-space-md sm:absolute sm:bottom-space-md sm:left-space-md sm:right-space-md sm:rounded-lg bg-surface-slate/95 sm:backdrop-blur-md text-on-primary">
+                  <span className="block mb-1 font-label-caps text-label-caps text-amber-highlight uppercase tracking-wider">Supplied project photography</span>
+                  <p className="home-hero-caption-title">Project details available through the enquiry process</p>
+                  <div className="flex flex-wrap items-center justify-between gap-x-space-sm gap-y-1 text-body-sm font-body-sm text-outline-variant mt-1">
                     <span>Featured project image</span>
                     <span className="text-on-primary font-medium">Details available on request</span>
                   </div>
-                </div>
-              </div>
-              <div className="absolute -top-4 -right-4 hidden sm:flex flex-col items-center justify-center p-space-sm rounded-xl bg-primary text-on-primary shadow-xl">
+                </figcaption>
+              </figure>
+              <div className="absolute -top-4 right-space-sm lg:-right-4 hidden sm:flex flex-col items-center justify-center p-space-sm rounded-xl bg-primary text-on-primary shadow-xl">
                 <span className="font-stat-metric text-stat-metric text-amber-highlight leading-none">Local</span>
                 <span className="font-label-caps text-label-caps uppercase tracking-wider text-center mt-1">project<br />experience</span>
               </div>
@@ -184,11 +185,11 @@ export default function HomePage() {
 
       {/* 2. METRIC & CREDIBILITY PODS — bg-surface-pure */}
       <section className="w-full bg-surface-pure py-space-xl shadow-sm relative z-20 -mt-6 rounded-t-2xl max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-space-lg text-center md:text-left">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-4 gap-space-md lg:gap-space-lg text-left">
           {METRICS.map((m) => (
-            <div key={m.title} className="flex flex-col space-y-1 p-space-sm rounded bg-surface-subtle">
-              <div className="flex items-center gap-space-2xs text-secondary">
-                <MSIcon name={m.icon} size={22} />
+            <div key={m.title} className="flex flex-col gap-1 p-space-md rounded bg-surface-subtle">
+              <div className="flex items-start gap-space-xs text-secondary">
+                <MSIcon name={m.icon} size={22} className="mt-0.5 shrink-0" />
                 <span className="font-headline-sm text-headline-sm font-bold text-on-surface">{m.title}</span>
               </div>
               <p className="font-body-sm text-body-sm text-on-surface-variant">{m.body}</p>
@@ -200,47 +201,43 @@ export default function HomePage() {
       {/* 3. CORE BUILDING SERVICES SHOWCASE — bg-surface-ground */}
       <section className="w-full py-space-3xl bg-surface-ground">
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-2xl gap-space-md">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-space-2xl gap-space-md lg:gap-space-xl">
             <div className="max-w-2xl space-y-space-xs">
               <span className="font-label-caps text-label-caps uppercase tracking-widest text-secondary font-bold">Specialised Architectural Building</span>
-              <h2 className="font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface">Comprehensive Design &amp; Build Services</h2>
+              <h2 className="home-section-title text-on-surface">Comprehensive Design &amp; Build Services</h2>
               <p className="font-body-lead text-body-lead text-on-surface-variant">
                 From extensions and structural remodels to considered interior finishes, each project is shaped around the property, the scope and the decisions that matter.
               </p>
             </div>
-            <div>
-              <Link to="/services" className="inline-flex items-center gap-space-2xs font-headline-sm text-headline-sm text-primary font-bold hover:text-secondary transition-colors">
-                <span>View All Detailed Service Specifications</span>
-                <MSIcon name="arrow_forward" size={18} />
-              </Link>
-            </div>
+            <Link to="/services" className="home-inline-cta shrink-0">
+              <span>View All Detailed Service Specifications</span>
+              <MSIcon name="arrow_forward" size={18} className="shrink-0" />
+            </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
             {SERVICES.map((s) => (
-              <div key={s.title} className="group flex flex-col bg-surface-pure rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-                <div className="relative h-60 w-full overflow-hidden bg-surface-container">
-                  <SafeImage sourceComponent="HomePage.ServiceCard" src={s.image} alt={s.alt} width={960} height={640} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <article key={s.title} className="home-service-card">
+                <div className="home-service-media">
+                  <SafeImage sourceComponent="HomePage.ServiceCard" src={s.image} alt={s.alt} width={960} height={640} className="w-full h-full object-cover" />
                   <span className="absolute top-space-sm left-space-sm px-space-xs py-1 rounded bg-surface-dark text-amber-highlight font-label-caps text-label-caps uppercase">{s.tag}</span>
                 </div>
-                <div className="p-space-lg flex flex-col flex-1 justify-between space-y-space-md">
-                  <div>
-                    <h3 className="font-headline-md text-headline-md font-bold text-on-surface group-hover:text-secondary transition-colors">{s.title}</h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant mt-2 leading-relaxed">{s.body}</p>
-                    <ul className="mt-space-md space-y-space-2xs text-body-sm font-body-sm text-on-surface-variant">
-                      {s.points.map((pt) => (
-                        <li key={pt} className="flex items-center gap-space-2xs">
-                          <MSIcon name="check_circle" size={16} className="text-success-green" />
-                          {pt}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <Link to={s.to} className="inline-flex items-center gap-space-2xs font-label-ui text-label-ui font-semibold text-primary group-hover:text-secondary transition-colors pt-space-xs">
+                <div className="home-service-body">
+                  <h3 className="home-service-title">{s.title}</h3>
+                  <p className="home-service-desc">{s.body}</p>
+                  <ul className="home-service-points">
+                    {s.points.map((pt) => (
+                      <li key={pt}>
+                        <MSIcon name="check_circle" size={16} />
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to={s.to} className="home-service-link">
                     <span>{s.link}</span>
-                    <MSIcon name="chevron_right" size={16} />
+                    <MSIcon name="chevron_right" size={16} className="shrink-0" />
                   </Link>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
@@ -251,32 +248,32 @@ export default function HomePage() {
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
           <div className="text-center max-w-2xl mx-auto mb-space-2xl space-y-space-xs">
             <span className="font-label-caps text-label-caps uppercase tracking-widest text-secondary font-bold">Supplied Project Photography</span>
-            <h2 className="font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface">The craft is in the detail</h2>
+            <h2 className="home-section-title text-on-surface">The craft is in the detail</h2>
             <p className="font-body-lead text-body-lead text-on-surface-variant">
               Browse the supplied project library for visual context. Project descriptions, locations and any comparison relationships are published only after owner approval.
             </p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-stretch">
-            <div className="lg:col-span-8">
-              <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden shadow-xl bg-surface-dark">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-space-xl items-stretch">
+            <div className="lg:col-span-7">
+              <div className="relative w-full aspect-[16/10] lg:aspect-auto lg:h-full lg:min-h-[400px] rounded-xl overflow-hidden shadow-xl bg-surface-dark">
                 <SafeImage sourceComponent="HomePage.ProjectSpotlight" src="/images/site-interior.webp" alt="Supplied project photography for a finished rear extension" width={960} height={600} className="absolute inset-0 w-full h-full object-cover" />
                 <span className="absolute bottom-4 left-4 z-10 px-3 py-1 rounded bg-surface-dark/85 text-amber-highlight font-label-caps text-label-caps tracking-wider uppercase">Supplied photograph</span>
               </div>
             </div>
-            <div className="lg:col-span-4 flex flex-col space-y-space-md p-space-lg rounded-xl bg-surface-ground">
-              <div className="space-y-1">
-                <span className="font-label-caps text-label-caps uppercase text-secondary font-bold">Project library</span>
-                <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Explore the work in context</h3>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">The gallery contains supplied photographs. The staff workflow is the source of truth for approved project details.</p>
+            <div className="lg:col-span-5 flex flex-col justify-center gap-space-lg p-space-lg xl:p-space-xl rounded-xl bg-surface-ground border border-solid border-border-stone">
+              <div className="flex flex-col gap-space-xs">
+                <span className="font-label-caps text-label-caps uppercase tracking-widest text-secondary font-bold">Project library</span>
+                <h3 className="font-headline-lg text-headline-md xl:text-headline-lg font-bold text-on-surface text-balance">Explore the work in context</h3>
+                <p className="font-body-md text-body-md text-on-surface-variant">The gallery contains supplied photographs. The staff workflow is the source of truth for approved project details.</p>
               </div>
-              <ul className="space-y-space-sm pt-space-xs font-body-sm text-body-sm text-on-surface">
-                <li className="flex items-start gap-space-xs"><MSIcon name="photo_library" size={18} className="text-secondary mt-0.5" /> Extension and renovation photography</li>
-                <li className="flex items-start gap-space-xs"><MSIcon name="fact_check" size={18} className="text-secondary mt-0.5" /> Descriptions added through the staff workflow</li>
-                <li className="flex items-start gap-space-xs"><MSIcon name="forum" size={18} className="text-secondary mt-0.5" /> Start a conversation about your own property</li>
+              <ul className="home-check-list">
+                <li><MSIcon name="photo_library" size={18} /><span>Extension and renovation photography</span></li>
+                <li><MSIcon name="rule" size={18} /><span>Descriptions added through the staff workflow</span></li>
+                <li><MSIcon name="chat_bubble_outline" size={18} /><span>Start a conversation about your own property</span></li>
               </ul>
-              <Link to="/projects" className="w-full mt-auto inline-flex items-center justify-center gap-space-xs py-space-sm px-space-md bg-primary text-on-primary font-label-ui text-label-ui rounded hover:bg-surface-slate transition-colors font-semibold">
+              <Link to="/projects" className="home-hero-btn home-dark-btn w-full sm:w-auto sm:self-start">
                 <span>View the project gallery</span>
-                <MSIcon name="arrow_forward" size={16} className="text-amber-highlight" />
+                <MSIcon name="arrow_forward" size={16} className="shrink-0 text-amber-highlight" />
               </Link>
             </div>
           </div>
@@ -290,7 +287,7 @@ export default function HomePage() {
             <span className="inline-flex items-center gap-space-2xs px-space-sm py-1 rounded bg-surface-dark font-label-caps text-label-caps text-amber-highlight tracking-widest uppercase">
               A considered project route
             </span>
-            <h2 className="font-headline-xl text-headline-xl font-bold tracking-tight text-on-primary">
+            <h2 className="home-section-title text-on-primary">
               Clear decisions from first conversation to handover
             </h2>
             <p className="font-body-lead text-body-lead text-surface-ground">
@@ -340,7 +337,7 @@ export default function HomePage() {
         <div className="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
           <div className="text-center max-w-2xl mx-auto mb-space-2xl space-y-space-xs">
             <span className="font-label-caps text-label-caps uppercase tracking-widest text-secondary font-bold">Process &amp; Project Governance</span>
-            <h2 className="font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface">A Clear, Stress-Free Journey From Blueprint to Handover</h2>
+            <h2 className="home-section-title text-on-surface">A Clear, Stress-Free Journey From Blueprint to Handover</h2>
             <p className="font-body-lead text-body-lead text-on-surface-variant">
               We strip out guesswork with a structured, transparent eight-step route from first conversation to handover.
             </p>
@@ -378,7 +375,7 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-2xl gap-space-md">
             <div className="space-y-space-xs">
               <span className="font-label-caps text-label-caps uppercase tracking-widest text-secondary font-bold">Proven Craftsmanship</span>
-              <h2 className="font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface">Recent Projects in Manchester &amp; Cheshire</h2>
+              <h2 className="home-section-title text-on-surface">Recent Projects in Manchester &amp; Cheshire</h2>
               <p className="font-body-lead text-body-lead text-on-surface-variant max-w-2xl">
                 Browse supplied photographs and the project context currently approved for publication.
               </p>
@@ -430,7 +427,7 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-space-2xl gap-space-md">
             <div className="space-y-space-xs">
               <span className="font-label-caps text-label-caps uppercase tracking-widest text-secondary font-bold">Homeowner Trust</span>
-              <h2 className="font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface">What Our Clients Say</h2>
+              <h2 className="home-section-title text-on-surface">What Our Clients Say</h2>
               <p className="font-body-lead text-body-lead text-on-surface-variant">
                 Owner-approved feedback will appear here when available.
               </p>
@@ -478,7 +475,7 @@ export default function HomePage() {
             <div className="lg:col-span-6 space-y-space-md">
               <div className="space-y-space-xs">
                 <span className="font-label-caps text-label-caps uppercase tracking-widest text-secondary font-bold">Operational Footprint</span>
-                <h2 className="font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface">Serving Greater Manchester &amp; South Cheshire</h2>
+                <h2 className="home-section-title text-on-surface">Serving Greater Manchester &amp; South Cheshire</h2>
                 <p className="font-body-lead text-body-lead text-on-surface-variant">
                   Explore the locations currently listed in our coverage area. Service availability and planning requirements are discussed for each individual property.
                 </p>

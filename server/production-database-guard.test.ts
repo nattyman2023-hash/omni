@@ -87,4 +87,18 @@ describe('production database requirement', () => {
     expect(response.status).toBe(503);
     expect(await response.json()).toEqual({ message: "We couldn't send your enquiry, please call or email us." });
   });
+
+  it('classifies staff configuration separately from public enquiry failures', async () => {
+    const login = await fetch(`${baseUrl}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'unknown@example.invalid', password: 'not-the-password' }),
+    });
+    expect(login.status).toBe(503);
+    expect(await login.json()).toEqual({ message: 'Staff access has not been configured.' });
+
+    const protectedRoute = await fetch(`${baseUrl}/api/admin/summary`);
+    expect(protectedRoute.status).toBe(401);
+    expect(await protectedRoute.json()).toEqual({ message: 'Staff authentication required.' });
+  });
 });

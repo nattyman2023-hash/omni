@@ -1,3 +1,8 @@
+> **Superseded for the current temporary site.** The temporary Hostinger site is served by the
+> PHP package (confirmed from its response headers), not the Node.js application. Follow
+> `DEPLOYMENT_PHP.md` for configuration, database import, first sign-in and verification.
+> This document is kept for a possible future Node.js deployment.
+
 # Hostinger temporary review preparation
 
 This document describes the inspected application and the files prepared for a new,

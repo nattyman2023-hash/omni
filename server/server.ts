@@ -20,6 +20,15 @@ const projectUploadRoot = path.resolve(process.env.PROJECT_UPLOAD_DIR || path.jo
 const port = Number(process.env.PORT || 3000);
 const productionMode = process.env.NODE_ENV === 'production';
 const stagingMode = ['1', 'true', 'yes'].includes(String(process.env.STAGING_MODE || '').trim().toLowerCase());
+// Demo profile: publishes the seeded sign-in accounts on /api/site-settings so the login
+// screen can show them. Never enable this on a deployment holding real customer data.
+const demoMode = ['1', 'true', 'yes'].includes(String(process.env.DEMO_MODE || '').trim().toLowerCase());
+const demoAccounts = demoMode
+  ? [
+      { role: 'Owner', email: process.env.DEMO_LOGIN_EMAIL || 'admin@omnidevelopment.co.uk', password: process.env.DEMO_LOGIN_PASSWORD || 'OmniDemo2026!' },
+      { role: 'Staff', email: process.env.DEMO_STAFF_EMAIL || 'staff@omnidevelopment.co.uk', password: process.env.DEMO_STAFF_PASSWORD || 'OmniStaff2026!' },
+    ]
+  : [];
 const outboundMessagesEnabled = ['1', 'true', 'yes'].includes(String(process.env.OUTBOUND_MESSAGES_ENABLED || '').trim().toLowerCase());
 const secureCookie = process.env.COOKIE_SECURE === undefined
   ? productionMode
@@ -533,7 +542,7 @@ async function healthPayload() {
 
 app.get(['/health', '/api/health'], async (_req, res) => { const health = await healthPayload(); res.status(health.statusCode).json(health.payload); });
 
-app.get('/api/site-settings', (_req, res) => res.json({ name: 'Omni Developments', area: 'Greater Manchester & Cheshire', phone: process.env.PUBLIC_PHONE || '07928 149 731', email: process.env.PUBLIC_EMAIL || 'admin@omnidevelopment.co.uk', whatsapp: process.env.PUBLIC_WHATSAPP || 'https://wa.me/447928149731', stagingMode, outboundMessagesEnabled }));
+app.get('/api/site-settings', (_req, res) => res.json({ name: 'Omni Developments', area: 'Greater Manchester & Cheshire', phone: process.env.PUBLIC_PHONE || '07928 149 731', email: process.env.PUBLIC_EMAIL || 'admin@omnidevelopment.co.uk', whatsapp: process.env.PUBLIC_WHATSAPP || 'https://wa.me/447928149731', stagingMode, outboundMessagesEnabled, demoMode, demoAccounts }));
 
 app.get('/api/projects', async (_req, res, next) => {
   try { res.json({ projects: await listProjects(false), database: pool ? 'configured' : 'not-configured' }); } catch (error) { next(error); }
