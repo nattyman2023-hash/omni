@@ -60,6 +60,30 @@ if (crmProfile) {
     throw new Error(`config.example.php no longer contains ${missing.join(', ')}; update the CRM template replacements.`);
   }
   fs.writeFileSync(path.join(output, 'api', 'config.local.php.TEMPLATE.php'), template);
+
+  // CRM only: no marketing website on this host. Website photography is not shipped, the bare
+  // address and every former website path go straight to the staff sign-in page, and the whole
+  // host is kept out of search engines. /staff/*, /sign/* (customer quote links), /api/* and
+  // /health keep working.
+  fs.rmSync(path.join(output, 'images'), { recursive: true, force: true });
+  fs.writeFileSync(path.join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  const htaccessPath = path.join(output, '.htaccess');
+  const htaccess = fs.readFileSync(htaccessPath, 'utf8');
+  const crmRules = [
+    '# CRM only: the address opens the staff sign-in page; former website pages redirect there too.',
+    'RewriteRule ^$ /staff/login [R=302,L]',
+    'RewriteRule ^(?:services|projects|how-it-works|about|reviews|areas|guides|contact|quote|privacy|cookies|terms|sitemap\\.xml)(?:/.*)?$ /staff/login [R=302,L]',
+  ].join('\n');
+  const marker = '# Dynamic crawler files use the configured public URL and staging mode.\nRewriteRule ^robots\\.txt$ api/index.php?resource=robots [QSA,L]\nRewriteRule ^sitemap\\.xml$ api/index.php?resource=sitemap [QSA,L]';
+  const normalised = htaccess.replace(/\r\n/g, '\n');
+  if (!normalised.includes(marker)) {
+    throw new Error('php/.htaccess crawler rules changed; update the CRM-only rewrite in build-php-deployment.cjs.');
+  }
+  const crmHtaccess = normalised
+    .replace(marker, crmRules)
+    .replace('<IfModule mod_headers.c>\n', '<IfModule mod_headers.c>\n  Header always set X-Robots-Tag "noindex, nofollow, noarchive"\n');
+  if (!crmHtaccess.includes('X-Robots-Tag')) throw new Error('Could not add the noindex header to the CRM .htaccess.');
+  fs.writeFileSync(htaccessPath, crmHtaccess);
 }
 
 console.log(`PHP deployment package created at ${path.relative(root, output)}${crmProfile ? ' (CRM profile, login-first)' : ''}`);
