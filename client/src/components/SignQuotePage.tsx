@@ -1,6 +1,6 @@
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CheckCircle2, Download, FileWarning, Mail, Phone } from 'lucide-react';
+import { CheckCircle2, Download, FileWarning, Mail, Phone, XCircle } from 'lucide-react';
 import { SignDocument, formatDay, formatMoney, formatPercent, formatQuantity, formatWhen } from './crm/crmApi';
 
 /*
@@ -27,6 +27,7 @@ function problemMessage(status: number, serverMessage?: string) {
 }
 
 const isSigned = (document: SignDocument) => Boolean(document.signedAt) || document.status === 'accepted';
+const isDeclined = (document: SignDocument) => document.status === 'declined';
 
 export default function SignQuotePage() {
   const { token = '' } = useParams();
@@ -38,6 +39,9 @@ export default function SignQuotePage() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
   const [justSigned, setJustSigned] = useState(false);
+  const [justDeclined, setJustDeclined] = useState(false);
+  const [showDecline, setShowDecline] = useState(false);
+  const [declineReason, setDeclineReason] = useState('');
   const statusRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
 
@@ -58,10 +62,10 @@ export default function SignQuotePage() {
   useEffect(() => {
     if (state.kind !== 'ready') return;
     const { document: doc } = state;
-    window.document.title = `${isSigned(doc) ? 'Signed' : 'Review and sign'}: quote ${doc.reference}${doc.company?.name ? ` | ${doc.company.name}` : ''}`;
+    window.document.title = `${isSigned(doc) ? 'Signed' : isDeclined(doc) ? 'Declined' : 'Review and respond'}: quote ${doc.reference}${doc.company?.name ? ` | ${doc.company.name}` : ''}`;
   }, [state]);
 
-  useEffect(() => { if (justSigned) statusRef.current?.focus(); }, [justSigned]);
+  useEffect(() => { if (justSigned || justDeclined) statusRef.current?.focus(); }, [justSigned, justDeclined]);
   useEffect(() => { if (formError) errorRef.current?.focus(); }, [formError]);
 
   const submit = async (event: FormEvent) => {
@@ -92,6 +96,28 @@ export default function SignQuotePage() {
     }
   };
 
+  const decline = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    setFormError('');
+    try {
+      const response = await fetch(base, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ decision: 'decline', reason: declineReason.trim() }) });
+      const payload = await readJson(response);
+      if (response.ok && payload.document) {
+        setState({ kind: 'ready', document: payload.document });
+        setJustDeclined(true);
+      } else if (response.status === 409) {
+        setVersion(value => value + 1);
+      } else {
+        setFormError(payload.message || problemMessage(response.status));
+      }
+    } catch {
+      setFormError(problemMessage(0));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (state.kind === 'loading') return <SignShell><div className="sign-card sign-center" aria-live="polite"><p>Loading your quote…</p></div></SignShell>;
   if (state.kind === 'problem') return <SignShell><div className="sign-card sign-center" role="alert">
     <FileWarning size={34} aria-hidden="true" className="sign-problem-icon" />
@@ -102,6 +128,7 @@ export default function SignQuotePage() {
 
   const doc = state.document;
   const signed = isSigned(doc);
+  const declined = isDeclined(doc);
   const items = doc.items || [];
   const expired = Boolean(doc.validUntil) && String(doc.validUntil) < new Date().toISOString().slice(0, 10);
 
@@ -109,7 +136,7 @@ export default function SignQuotePage() {
     <article className="sign-card" aria-labelledby="sign-title">
       <header className="sign-company">
         <div>
-          <strong>{doc.company?.name}</strong>
+          <img className="sign-logo" src="/brand/omni-logo-dark.png" alt={doc.company?.name || 'Omni Developments Ltd'} width={776} height={200} />
           {doc.company?.address && <p>{doc.company.address}</p>}
         </div>
         <ul>
@@ -157,6 +184,9 @@ export default function SignQuotePage() {
           <p>Signed by <strong>{doc.signedName || doc.customerName}</strong>{doc.signedAt ? ` on ${formatWhen(doc.signedAt)}` : ''}.{justSigned ? ' A confirmation email is on its way, and we’ll be in touch about next steps.' : ''}</p>
           <p>You can download a copy of the quote for your records using the link above.</p>
         </div>
+      </div> : declined ? <div className="sign-signed sign-declined" role="status" tabIndex={-1} ref={statusRef}>
+        <XCircle size={26} aria-hidden="true" />
+        <div><h2>{justDeclined ? 'Thank you — your response has been recorded' : 'This quote was declined'}</h2><p>Omni Developments can see your decision in the CRM and automatic quote reminders have stopped.</p>{doc.declinedReason && <p><strong>Your note:</strong> {doc.declinedReason}</p>}</div>
       </div> : expired ? <div className="sign-signed sign-expired" role="status">
         <FileWarning size={26} aria-hidden="true" />
         <div><h2>This quote has expired</h2><p>It was valid until {formatDay(doc.validUntil)}. Please contact us for an updated quote.</p></div>
@@ -170,7 +200,8 @@ export default function SignQuotePage() {
           <span>I agree to quote {doc.reference} for {formatMoney(doc.totalPence)}{doc.terms ? ' and the terms and conditions above' : ''}.</span>
         </label>
         {formError && <p className="sign-error" id="sign-error" role="alert" tabIndex={-1} ref={errorRef}>{formError}</p>}
-        <button type="submit" className="sign-button" disabled={submitting}>{submitting ? 'Signing…' : 'Sign and accept quote'}</button>
+        <div className="sign-decision-actions"><button type="submit" className="sign-button" disabled={submitting}>{submitting ? 'Saving…' : 'Sign and accept quote'}</button><button type="button" className="sign-button sign-button-decline" disabled={submitting} onClick={() => setShowDecline(value => !value)}>Decline quote</button></div>
+        {showDecline && <div className="sign-decline-box"><label htmlFor="decline-reason">Reason (optional)</label><textarea id="decline-reason" rows={3} maxLength={1000} value={declineReason} onChange={event => setDeclineReason(event.target.value)} placeholder="Tell us what did not work for you, if you would like to." /><button type="button" className="sign-button sign-button-decline" disabled={submitting} onClick={() => void decline()}>{submitting ? 'Saving…' : 'Confirm decline'}</button></div>}
       </form>}
     </article>
   </SignShell>;

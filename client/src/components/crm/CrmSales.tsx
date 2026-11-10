@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, Inbox, Mail, RefreshCw, Reply, Send, Settings as SettingsIcon, Timer } from 'lucide-react';
 import { AdminWorkspaceShell, useStaffUser } from '../AdminWorkspace';
 import {
-  CompanySettings, CrmRequestError, Email, EmailTemplate, Followup, FollowupRunResult, Invoice, Lead, MailSettings, MailSettingsInput, MailStatus, MailTestResult, Quote, SyncResult,
+  AgentSettings, CompanySettings, CrmRequestError, Email, EmailTemplate, Followup, FollowupRunResult, Invoice, Lead, MailSettings, MailSettingsInput, MailStatus, MailTestResult, Quote, SyncResult,
   crm, emailOutcome, formatDay, formatMoney, formatPercent, formatWhen, htmlToText, useCrm,
 } from './crmApi';
 import { Field, Modal, invoiceIsLocked } from './CrmForms';
@@ -24,6 +24,7 @@ async function copyText(text: string) {
 /* ---------- Sending a quote or invoice ---------- */
 function SendDocumentForm({ what, reference, recipient, path, onClose, onDone }: { what: 'quote' | 'invoice'; reference: string; recipient: string; path: string; onClose: () => void; onDone: () => void }) {
   const [message, setMessage] = useState('');
+  const [trackAction, setTrackAction] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [email, setEmail] = useState<Email | null>(null);
@@ -33,7 +34,7 @@ function SendDocumentForm({ what, reference, recipient, path, onClose, onDone }:
     setSending(true);
     setError('');
     try {
-      const result = await crm<{ email: Email }>(path, { method: 'POST', body: message.trim() ? { message: message.trim() } : {} });
+      const result = await crm<{ email: Email }>(path, { method: 'POST', body: { ...(message.trim() ? { message: message.trim() } : {}), ...(what === 'quote' ? { requestDecision: trackAction } : { scheduleReminders: trackAction }) } });
       setEmail(result.email);
     } catch (reason) {
       setError(errorText(reason, `Could not send the ${what}.`));
@@ -56,6 +57,7 @@ function SendDocumentForm({ what, reference, recipient, path, onClose, onDone }:
     <div className="crm-form-grid">
       <Field label="Personal message (optional)" full hint="Added to the standard email template."><textarea rows={4} maxLength={5000} value={message} onChange={event => setMessage(event.target.value)} /></Field>
     </div>
+    <label className="crm-switch"><input type="checkbox" role="switch" checked={trackAction} onChange={event => setTrackAction(event.target.checked)} /><span><strong>{what === 'quote' ? 'Request an online decision and signature' : 'Schedule payment reminders'}</strong><small>{what === 'quote' ? (trackAction ? 'The email includes Accept and Decline actions, records the response in the CRM, and chases unanswered quotes.' : 'Sends the PDF only; no signing link or automatic quote reminders.') : (trackAction ? 'Unpaid invoices are followed up automatically until marked paid.' : 'Sends this invoice without automatic payment reminders.')}</small></span></label>
     {error && <p className="crm-form-error" role="alert">{error}</p>}
     <div className="crm-form-actions"><button type="button" className="crm-button crm-button-ghost" onClick={onClose} disabled={sending}>Cancel</button><button type="submit" className="crm-button" disabled={sending}><Send size={15} /> {sending ? 'Sending…' : 'Send email'}</button></div>
   </form>;
@@ -229,7 +231,7 @@ export function EmailItem({ email, showLead = false, onReply }: { email: Email; 
     <span className={`crm-email-dir crm-email-${email.direction}`} aria-hidden="true">{inbound ? <ArrowDownLeft size={15} /> : <ArrowUpRight size={15} />}</span>
     <div>
       <strong>{email.subject || '(no subject)'}</strong>
-      <span>{inbound ? `From ${email.from}` : `To ${email.to}`}{when ? ` · ${formatWhen(when)}` : ''}{showLead && email.leadId ? <> · <LeadLinkText id={email.leadId} name={email.leadName} /></> : null}</span>
+      <span>{inbound ? `From ${email.from}` : `To ${email.to}`}{when ? ` · ${formatWhen(when)}` : ''}{email.respondedAt ? ` · Replied ${formatWhen(email.respondedAt)}` : ''}{showLead && email.leadId ? <> · <LeadLinkText id={email.leadId} name={email.leadName} /></> : null}</span>
       {email.error && email.status !== 'sent' && email.status !== 'received' && <p className="crm-email-error">{email.error}</p>}
       {text && <details className="crm-email-body"><summary>Show message</summary><p>{text}</p></details>}
     </div>
@@ -581,7 +583,7 @@ function FollowupsPanel() {
   };
   const records = data?.records || [];
   return <>
-    <div className="crm-panel-toolbar"><p className="crm-muted">Unsigned quotes and unpaid invoices are chased automatically every 3 days, up to 3 times, until they are signed or paid.</p><button type="button" className="crm-button crm-button-ghost" onClick={() => void run()} disabled={running}><Timer size={15} /> {running ? 'Running…' : 'Run follow-ups now'}</button></div>
+    <div className="crm-panel-toolbar"><p className="crm-muted">Unsigned quotes are only chased while the customer stays quiet — if they reply or you log a call, note or site visit, the reminders stop. Unpaid invoices are always chased. Reminders run every 3 days, up to 3 times.</p><button type="button" className="crm-button crm-button-ghost" onClick={() => void run()} disabled={running}><Timer size={15} /> {running ? 'Running…' : 'Run follow-ups now'}</button></div>
     {notice && <Notice tone={notice.tone} onDismiss={() => setNotice(null)}>{notice.message}</Notice>}
     <ErrorNote message={error} />
     <section className="admin-panel crm-panel">{loading && !data ? <Loading /> : !records.length ? <Empty icon={<Timer size={22} />} title="No follow-ups">Reminders are scheduled when you email a quote or invoice.</Empty>
@@ -592,7 +594,7 @@ function FollowupsPanel() {
           <td>{FOLLOWUP_TEMPLATE_LABELS[item.templateKey] || item.templateKey}</td>
           <td>{item.status === 'pending' ? formatWhen(item.dueAt) || '—' : '—'}</td>
           <td>{item.attempts} of {item.maxAttempts}{item.lastSentAt && <small>Last {formatDay(item.lastSentAt)}</small>}</td>
-          <td><StatusBadge status={item.status} /></td>
+          <td><StatusBadge status={item.status} />{item.suppressReason && <small>{item.suppressReason}</small>}</td>
         </tr>)}
       </tbody></table></div>}</section>
   </>;
@@ -650,6 +652,7 @@ export function SettingsPage() {
 
   return <AdminWorkspaceShell><div className="admin-content">
     <PageTitle eyebrow="Settings" title="Company settings" intro="Your company, VAT and bank details are printed on quote and invoice PDFs and used in customer emails." />
+    <WorkspaceLinks />
     <ErrorNote message={loadError} />
     {readOnly && draft && <Notice tone="info">Only owners and administrators can change these settings. Ask one of them if something needs updating.</Notice>}
     {!draft && !loadError ? <Loading /> : draft && <form className="crm-form crm-settings" onSubmit={submit}>
@@ -679,7 +682,48 @@ export function SettingsPage() {
       {!readOnly && <div className="crm-form-actions"><button type="submit" className="crm-button" disabled={saving}>{saving ? 'Saving…' : 'Save settings'}</button></div>}
     </form>}
     <MailSettingsSection canEdit={roleCanEdit} />
+    <AiAgentSection canEdit={roleCanEdit} />
   </div></AdminWorkspaceShell>;
+}
+
+function WorkspaceLinks() {
+  const [copied, setCopied] = useState(false);
+  const loginUrl = `${window.location.origin}/staff/login`;
+  const copy = async () => { await copyText(loginUrl); setCopied(true); window.setTimeout(() => setCopied(false), 2500); };
+  return <section className="admin-panel crm-panel crm-share-links"><div className="panel-heading"><h2>Share the CRM</h2></div><div className="crm-panel-body"><p className="crm-muted">Send this secure sign-in address to staff or administrators. Each person should use their own team account.</p><div className="crm-copy-row"><code>{loginUrl}</code><button type="button" className="crm-button crm-button-ghost crm-button-small" onClick={() => void copy()}>{copied ? 'Copied ✓' : 'Copy sign-in link'}</button></div></div></section>;
+}
+
+function AiAgentSection({ canEdit }: { canEdit: boolean }) {
+  const [settings, setSettings] = useState<AgentSettings | null>(null);
+  const [enabled, setEnabled] = useState(false);
+  const [followupEnabled, setFollowupEnabled] = useState(false);
+  const [model, setModel] = useState('deepseek-chat');
+  const [apiKey, setApiKey] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState<NoticeState>(null);
+  useEffect(() => {
+    if (!canEdit) return;
+    crm<{ settings: AgentSettings }>('/agent/settings').then(result => { setSettings(result.settings); setEnabled(result.settings.enabled); setFollowupEnabled(result.settings.followupEnabled); setModel(result.settings.model); }).catch(reason => setNotice({ tone: 'error', message: errorText(reason, 'Could not load the AI settings.') }));
+  }, [canEdit]);
+  const submit = async (event: FormEvent) => {
+    event.preventDefault(); if (saving) return; setSaving(true); setNotice(null);
+    try {
+      const result = await crm<{ settings: AgentSettings }>('/agent/settings', { method: 'PATCH', body: { enabled, followupEnabled, model: model.trim() || 'deepseek-chat', ...(apiKey ? { apiKey: apiKey.trim() } : {}) } });
+      setSettings(result.settings); setEnabled(result.settings.enabled); setFollowupEnabled(result.settings.followupEnabled); setModel(result.settings.model); setApiKey('');
+      setNotice({ tone: 'success', message: 'DeepSeek assistant settings saved. Its next analysis can be run from the dashboard.' });
+    } catch (reason) { setNotice({ tone: 'error', message: errorText(reason, 'Could not save the AI settings.') }); }
+    finally { setSaving(false); }
+  };
+  return <section id="ai-agent" className="admin-panel crm-panel crm-settings-mail" aria-labelledby="ai-agent-title"><div className="panel-heading"><h2 id="ai-agent-title">Quiet follow-up assistant</h2><SettingsIcon size={18} aria-hidden="true" /></div><div className="crm-panel-body">
+    {!canEdit ? <p className="crm-muted">Only owners and administrators can configure the DeepSeek connection.</p> : !settings ? <Loading /> : <form className="crm-form" onSubmit={submit}>
+      <p className="crm-muted">When enabled, the server sends only operational metadata—record references, names, task titles, email subjects and dates—to DeepSeek. It never sends message bodies, addresses, phone numbers or bank details, and it never contacts customers or changes records by itself.</p>
+      <label className="crm-switch"><input type="checkbox" role="switch" checked={enabled} onChange={event => setEnabled(event.target.checked)} /><span><strong>DeepSeek analysis on</strong><small>Ranks unanswered emails, overdue tasks and leads without recent follow-up. The scheduled CRM job refreshes it at most every six hours.</small></span></label>
+      <label className="crm-switch"><input type="checkbox" role="switch" checked={followupEnabled} onChange={event => setFollowupEnabled(event.target.checked)} /><span><strong>Personalise quote reminders</strong><small>When a sent quote goes quiet, DeepSeek writes a short, warm one-line nudge into each reminder. Needs a saved DeepSeek key. If it is unreachable, the plain reminder is still sent, and customers who have replied or been contacted are never chased.</small></span></label>
+      <div className="crm-form-grid"><Field label="DeepSeek API key" hint={settings.source === 'config' ? 'Set in the server configuration.' : settings.apiKeySet ? 'Key saved securely ✓ — leave blank to keep it.' : 'Paste the key here; it is encrypted before storage.'}><input type="password" autoComplete="new-password" maxLength={500} value={apiKey} onChange={event => setApiKey(event.target.value)} disabled={settings.source === 'config'} placeholder={settings.apiKeySet ? '••••••••  (saved)' : 'sk-…'} /></Field><Field label="Model" hint="The OpenAI-compatible DeepSeek model name."><input maxLength={100} value={model} onChange={event => setModel(event.target.value)} /></Field></div>
+      {notice && <Notice tone={notice.tone}>{notice.message}</Notice>}
+      <div className="crm-form-actions"><button type="submit" className="crm-button" disabled={saving}>{saving ? 'Saving…' : 'Save AI settings'}</button></div>
+    </form>}
+  </div></section>;
 }
 
 /* ---------- Email (Zoho Mail) settings ---------- */

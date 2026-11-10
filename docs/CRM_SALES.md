@@ -51,6 +51,11 @@ Follow-ups run (a) whenever staff use the CRM, at most every 10 minutes, (b) fro
 inbox. Suggested Hostinger cron (every 15 minutes):
 `curl -fsS "https://crm.omnidevelopment.co.uk/api/cron/crm?key=…" > /dev/null`
 
+Quote reminders are **silence-gated**: a reminder is skipped (and the follow-up cancelled with a
+`suppressReason`) when the customer has been in touch since the quote was sent — an inbound email, or
+a staff-logged call, note or site visit. Our own outbound email, stage, quote and task logs are
+ignored, so a reminder never cancels the next one. Invoices are always chased, reply or not.
+
 ## Zoho Mail (the domain's mail provider)
 
 omnidevelopment.co.uk uses Zoho Mail on Zoho's **UK** data centre (MX `mx.zoho.uk`). Settings:
@@ -162,6 +167,7 @@ type Followup = {
   id: number; documentType: 'quote' | 'invoice'; documentId: number; documentReference: string;
   leadId: number | null; leadName: string; templateKey: string;
   dueAt: string | null; status: 'pending' | 'sent' | 'cancelled'; attempts: number; maxAttempts: number; lastSentAt: string | null;
+  suppressReason: string | null;
 };
 
 type CompanySettings = {
@@ -241,5 +247,34 @@ CRM-only build.
 `{{invoice.reference}}`, `{{invoice.total}}`, `{{invoice.dueDate}}`, `{{invoice.paymentDetails}}`,
 `{{message}}` (the optional note typed when sending). Values are HTML-escaped.
 
-Default templates: `quote_issued`, `quote_reminder`, `quote_accepted`, `invoice_issued`,
-`invoice_reminder`.
+Default templates: `quote_issued`, `quote_copy`, `quote_reminder`, `quote_accepted`,
+`quote_declined`, `invoice_issued`, `invoice_reminder`.
+
+## Customer decisions and optional automation
+
+`POST /quotes/:id/send` accepts `requestDecision` (default `true`). When enabled, the email includes
+the public Accept/Decline page, acceptance requires a typed electronic signature, either decision is
+tracked in the CRM, and unanswered quotes are followed up. When disabled, only the branded PDF copy
+is sent and no signing link or reminders are created. `POST /invoices/:id/send` similarly accepts
+`scheduleReminders` (default `true`).
+
+The public signing endpoint accepts either `{ decision: "accept", name, agree: true }` or
+`{ decision: "decline", reason? }`. A decline stores the optional reason, cancels reminders and sends
+a short confirmation. Signed and declined responses remain viewable at their private token URL.
+
+## Quiet DeepSeek follow-up assistant
+
+`GET /agent` returns deterministic lists of overdue tasks, outbound email without a later inbound
+reply, and active leads with no activity for three days, plus the last AI analysis. `POST /agent`
+refreshes the analysis. Owner/admin `GET/PATCH /agent/settings` manages the enable switch, model and
+write-only encrypted API key. `DEEPSEEK_API_KEY` and `DEEPSEEK_MODEL` can instead pin those values in
+server configuration. The CRM cron refreshes an enabled analysis at most every six hours.
+
+`PATCH /agent/settings` also accepts `followupEnabled` (independent of `enabled`). When it is on and a
+DeepSeek key is saved, each silence-gated quote reminder gets a short, warm one-sentence body that
+DeepSeek writes from metadata only (first name, quote reference, title, total, valid-until), injected
+as `{{message}}`. If DeepSeek is unreachable or returns nothing usable, the plain reminder is sent.
+
+The integration sends only record references, customer names, task titles, email subjects and dates.
+It excludes message bodies, addresses, phone numbers, bank details and document values. It is
+read-only: it never changes a CRM record or contacts a customer.

@@ -59,6 +59,8 @@ function loadConfig(): array
         'IMAP_MAILBOX' => '',
         'SIGNING_BASE_URL' => '',
         'CRM_CRON_SECRET' => '',
+        'DEEPSEEK_API_KEY' => '',
+        'DEEPSEEK_MODEL' => '',
     ];
     // Precedence: environment variable > omni-crm-config.php (one level above the web root, so a
     // deploy that replaces public_html never deletes it) > api/config.local.php > defaults.

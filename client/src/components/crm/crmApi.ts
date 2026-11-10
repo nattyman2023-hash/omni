@@ -39,7 +39,7 @@ export type Quote = LeadLink & {
   /** Set once emailed; null when amended/declined. */
   signingUrl: string | null;
   signedName: string; signedAt: string | null;
-  sentAt: string | null; decidedAt: string | null; emailedAt: string | null; createdAt: string | null;
+  sentAt: string | null; decidedAt: string | null; declinedReason: string; emailedAt: string | null; createdAt: string | null;
 };
 export type InvoiceStatus = 'draft' | 'issued' | 'paid' | 'void';
 export type Invoice = LeadLink & {
@@ -66,13 +66,14 @@ export type Email = LeadLink & {
   /** HTML. Never render it as markup — use htmlToText. */
   body: string;
   status: EmailStatus; error: string;
-  sentAt: string | null; receivedAt: string | null; createdAt: string | null;
+  sentAt: string | null; receivedAt: string | null; respondedAt: string | null; createdAt: string | null;
 };
 export type EmailTemplate = { key: string; name: string; subject: string; body: string; isActive: boolean; placeholders: string[] };
 export type Followup = {
   id: number; documentType: 'quote' | 'invoice'; documentId: number; documentReference: string;
   leadId: number | null; leadName: string; templateKey: string;
   dueAt: string | null; status: 'pending' | 'sent' | 'cancelled'; attempts: number; maxAttempts: number; lastSentAt: string | null;
+  suppressReason?: string | null;
 };
 export type CompanySettings = {
   companyName: string; companyAddress: string; companyEmail: string; companyPhone: string; companyVatNumber: string;
@@ -98,11 +99,19 @@ export type MailSettingsInput = Partial<Omit<MailSettings, 'smtpPasswordSet' | '
 export type MailTestResult = { ok: boolean; stage: 'config' | 'connect' | 'tls' | 'auth' | 'send' | 'done'; message: string };
 export type SyncResult = { status: 'ok' | 'not-configured' | 'unavailable' | 'failed'; imported: number; message: string };
 export type FollowupRunResult = { sent: number; failed: number; cancelled: number };
+export type AgentSettings = { enabled: boolean; followupEnabled: boolean; model: string; apiKeySet: boolean; source: 'config' | 'database'; lastRun: string | null };
+export type AgentPriority = { severity: 'high' | 'medium' | 'low'; title: string; reason: string; kind: 'task' | 'lead' | 'email'; recordId: number };
+export type AgentData = {
+  settings: AgentSettings;
+  signals: { overdueTasks: Array<{ id: number; title: string; dueAt: string | null; leadReference: string; leadName: string }>; unfollowedLeads: Array<{ id: number; reference: string; name: string; stage: Stage; lastActivity: string | null }>; unansweredEmails: Array<{ id: number; subject: string; sentAt: string | null; leadReference: string; leadName: string }> };
+  analysis: { summary: string; priorities: AgentPriority[] } | null;
+};
 /** The customer-facing view of a quote served by the public signing API. */
 export type SignDocument = {
   reference: string; title: string; version: number; status: QuoteStatus;
   customerName: string; items: LineItem[]; subtotalPence: number; vatRatePercent: number; vatPence: number; totalPence: number;
   validUntil: string | null; notes: string; terms: string; signedName: string; signedAt: string | null;
+  declinedReason: string;
   company: { name: string; address: string; email: string; phone: string };
 };
 export type Activity = LeadLink & { id: number; kind: string; body: string; userName: string; createdAt: string | null };

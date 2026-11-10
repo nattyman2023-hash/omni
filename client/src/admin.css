@@ -101,3 +101,9 @@
 .admin-demo-access li button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
 @media (max-width: 520px) { .admin-demo-access { max-width: none; } }
 
+
+/* Company logo (white on transparent) in the dark sidebar and on the sign-in panel. */
+.admin-logo-link { display: block; width: 100%; max-width: 200px; }
+.admin-logo { display: block; width: 100%; height: auto; }
+.admin-login-intro .admin-logo-link { max-width: 300px; }
+

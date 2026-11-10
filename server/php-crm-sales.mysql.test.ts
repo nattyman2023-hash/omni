@@ -147,7 +147,8 @@ describe('PHP CRM sales documents with MySQL', () => {
   });
 
   it('applies a missing 005 migration on the first staff request, once, even when requests race', async () => {
-    await connection.query("DELETE FROM schema_migrations WHERE version = '005_crm_sales'");
+    // Forget 005 and every later migration (006+ alter tables that 005 creates), so all are re-applied in order.
+    await connection.query("DELETE FROM schema_migrations WHERE version >= '005'");
     await connection.query('DROP TABLE crm_followups');
     const replies = await Promise.all([crm('GET', '/mail-status'), crm('GET', '/mail-status'), crm('GET', '/followups')]);
     for (const reply of replies) expect(reply.status).toBe(200);
@@ -355,7 +356,9 @@ describe('PHP CRM sales documents with MySQL', () => {
     const composed = await crm('POST', '/emails', { leadId: lead.id, to: lead.email, subject: 'Site visit', body: 'Hello,\n\nSee you on Tuesday.' });
     expect(composed.status).toBe(201);
     expect(composed.body.email).toMatchObject({ status: 'queued', subject: 'Site visit', leadId: lead.id });
-    expect(composed.body.email.body).toBe('<p>Hello,</p><p>See you on Tuesday.</p>');
+    // Sent inside the branded layout (logo header + company footer).
+    expect(composed.body.email.body).toContain('<p>Hello,</p><p>See you on Tuesday.</p>');
+    expect(composed.body.email.body).toContain('/brand/omni-logo-email.png');
     expect((await crm('POST', '/emails', { to: 'not-an-email', subject: 'x', body: 'y' })).status).toBe(400);
     const list = await crm('GET', `/emails?leadId=${lead.id}&direction=outbound`);
     expect((list.body.records as Json[]).map(row => row.id)).toContain(composed.body.email.id);
@@ -365,9 +368,27 @@ describe('PHP CRM sales documents with MySQL', () => {
     expect((await crm('POST', '/emails/sync')).body.result).toMatchObject({ status: 'not-configured', imported: 0 });
   });
 
+  it('quietly skips a quote reminder once the customer has been in touch since it was sent', async () => {
+    const lead = await createLead();
+    const quote = await crm('POST', '/quotes', { leadId: lead.id, title: 'Garden room', amountPence: 800000 });
+    const quoteId = quote.body.quote.id as number;
+    await crm('POST', `/quotes/${quoteId}/send`, {});
+    // Pretend the quote went out a week ago so "since then" is unambiguous.
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 19).replace('T', ' ');
+    await connection.execute('UPDATE crm_quotes SET sent_at = ?, emailed_at = ? WHERE id = ?', [weekAgo, weekAgo, quoteId]);
+    await connection.execute("UPDATE crm_followups SET created_at = ?, due_at = '2000-01-01 00:00:00' WHERE document_type = 'quote' AND document_id = ?", [weekAgo, quoteId]);
+    // The customer rings back and staff log it: the reminder stops instead of chasing them again.
+    expect((await crm('POST', `/leads/${lead.id}/activities`, { kind: 'call', body: 'Called the customer; they are reviewing the quote.' })).status).toBe(201);
+    const run = await crm('POST', '/followups/run');
+    expect(run.status).toBe(200);
+    const after = await followupFor('quote', quoteId);
+    expect(after).toMatchObject({ status: 'cancelled', suppressReason: 'Heard back from customer' });
+    expect(after!.attempts).toBe(0); // never sent — the silence gate caught it first
+  });
+
   it('edits templates, and limits company and mail settings to owners and administrators', async () => {
     const templates = await crm('GET', '/email-templates');
-    expect((templates.body.templates as Json[]).map(row => row.key)).toEqual(['quote_issued', 'quote_reminder', 'quote_accepted', 'invoice_issued', 'invoice_reminder']);
+    expect((templates.body.templates as Json[]).map(row => row.key)).toEqual(['quote_issued', 'quote_copy', 'quote_reminder', 'quote_accepted', 'quote_declined', 'invoice_issued', 'invoice_reminder']);
     expect(templates.body.templates[0].placeholders).toContain('sign.link');
     const patched = await crm('PATCH', '/email-templates/quote_reminder', { subject: 'Any questions about {{quote.reference}}?', isActive: false });
     expect(patched.body.template).toMatchObject({ key: 'quote_reminder', subject: 'Any questions about {{quote.reference}}?', isActive: false });
@@ -560,7 +581,7 @@ describe('PHP CRM sales documents with MySQL', () => {
   });
 
   it('requires a staff session for every sales route', async () => {
-    for (const route of ['/quotes/1/pdf', '/emails', '/email-templates', '/followups', '/mail-status', '/mail-settings', '/settings']) {
+    for (const route of ['/quotes/1/pdf', '/emails', '/email-templates', '/followups', '/mail-status', '/mail-settings', '/agent', '/agent/settings', '/settings']) {
       expect((await crm('GET', route, undefined, '')).status).toBe(401);
     }
     expect((await crm('POST', '/mail-test', { to: 'a@b.c' }, '')).status).toBe(401);

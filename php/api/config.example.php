@@ -76,4 +76,7 @@ return [
     // At least 32 random characters enables GET /api/cron/crm?key=... for a Hostinger cron job
     // (follow-ups + inbox sync). Shorter or empty disables the endpoint (it answers 404).
     'CRM_CRON_SECRET' => '',
+    // Optional server-pinned DeepSeek settings. Leave blank to configure the encrypted key in CRM Settings.
+    'DEEPSEEK_API_KEY' => '',
+    'DEEPSEEK_MODEL' => '',       // default deepseek-chat
 ];

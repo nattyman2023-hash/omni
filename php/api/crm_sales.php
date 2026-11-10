@@ -25,7 +25,7 @@ const CRM_FOLLOWUP_LAZY_SECONDS = 600;
 const CRM_MAX_ITEMS = 200;
 const CRM_IMAP_BATCH = 50;
 const CRM_SIGNED_MESSAGE = 'This quote has been signed. Revise it to make changes.';
-const CRM_TEMPLATE_KEYS = ['quote_issued', 'quote_reminder', 'quote_accepted', 'invoice_issued', 'invoice_reminder'];
+const CRM_TEMPLATE_KEYS = ['quote_issued', 'quote_copy', 'quote_reminder', 'quote_accepted', 'quote_declined', 'invoice_issued', 'invoice_reminder'];
 const CRM_PLACEHOLDERS_COMMON = ['lead.name', 'lead.firstName', 'company.name', 'company.phone', 'company.email', 'message'];
 const CRM_PLACEHOLDERS_QUOTE = ['quote.reference', 'quote.title', 'quote.total', 'quote.validUntil', 'sign.link'];
 const CRM_PLACEHOLDERS_INVOICE = ['invoice.reference', 'invoice.total', 'invoice.dueDate', 'invoice.paymentDetails'];
@@ -509,6 +509,7 @@ function crmQuoteOut(array $row, array $lookups): array
         'signedAt' => crmIso($row['signed_at']),
         'sentAt' => crmIso($row['sent_at']),
         'decidedAt' => crmIso($row['decided_at']),
+        'declinedReason' => crmText($row['declined_reason'] ?? null),
         'emailedAt' => crmIso($row['emailed_at']),
         'createdAt' => crmIso($row['created_at']),
         'updatedAt' => crmIso($row['updated_at']),
@@ -568,6 +569,7 @@ function crmEmailOut(array $row, array $lookups): array
         'error' => crmText($row['error']),
         'sentAt' => crmIso($row['sent_at']),
         'receivedAt' => crmIso($row['received_at']),
+        'respondedAt' => crmIso($row['responded_at'] ?? null),
         'createdAt' => crmIso($row['created_at']),
     ];
 }
@@ -590,6 +592,7 @@ function crmFollowupOut(array $row, array $lookups, array $references): array
         'attempts' => (int) $row['attempts'],
         'maxAttempts' => (int) $row['max_attempts'],
         'lastSentAt' => crmIso($row['last_sent_at']),
+        'suppressReason' => isset($row['suppress_reason']) && $row['suppress_reason'] !== null && $row['suppress_reason'] !== '' ? crmText($row['suppress_reason']) : null,
     ];
 }
 
@@ -1252,6 +1255,26 @@ function crmPlainToHtml(string $text): string
     return implode('', array_map(fn ($paragraph) => '<p>' . nl2br(htmlspecialchars(trim($paragraph), ENT_QUOTES | ENT_HTML5, 'UTF-8'), false) . '</p>', $paragraphs));
 }
 
+/** Consistent, responsive branding for every CRM email (templates and one-off messages). */
+function crmEmailLayout(string $content): string
+{
+    $company = crmCompanySettings();
+    $name = htmlspecialchars((string) $company['companyName'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $address = htmlspecialchars((string) $company['companyAddress'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $phone = htmlspecialchars((string) $company['companyPhone'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $email = htmlspecialchars((string) $company['companyEmail'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $base = htmlspecialchars(crmPublicBaseUrl(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $logo = $base . '/brand/omni-logo-email.png';
+    return '<!doctype html><html><body style="margin:0;padding:0;background:#f1f5f9;color:#172033;font-family:Arial,Helvetica,sans-serif">'
+        . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f1f5f9"><tr><td align="center" style="padding:24px 12px">'
+        . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border:1px solid #dbe2ea;border-radius:12px;overflow:hidden">'
+        . '<tr><td style="padding:22px 28px;background:#05070b"><img src="' . $logo . '" width="300" alt="' . $name . '" style="display:block;width:100%;max-width:300px;height:auto;border:0"></td></tr>'
+        . '<tr><td style="padding:30px 28px;font-size:16px;line-height:1.6">' . $content . '</td></tr>'
+        . '<tr><td style="padding:18px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;color:#667085;font-size:12px;line-height:1.55"><strong style="color:#172033">' . $name . '</strong><br>'
+        . nl2br($address, false) . ($phone !== '' ? '<br>' . $phone : '') . ($email !== '' ? '<br><a href="mailto:' . $email . '" style="color:#8a5a00">' . $email . '</a>' : '')
+        . '</td></tr></table></td></tr></table></body></html>';
+}
+
 /* ---------------------------------------------------------------------------
  * Mail settings: config file / environment > database (CRM Settings page) > Zoho UK defaults
  * ------------------------------------------------------------------------ */
@@ -1615,6 +1638,7 @@ function crmMailHostname(): string
  */
 function crmDeliverEmail(array $mail): array
 {
+    $mail['html'] = crmEmailLayout((string) $mail['html']);
     $from = crmFromAddress() ?: (string) crmCompanySettings()['companyEmail'];
     $domain = substr(strrchr($from, '@') ?: '@omni.local', 1);
     $messageId = '<' . bin2hex(random_bytes(16)) . '@' . $domain . '>';
@@ -1692,15 +1716,19 @@ function crmSendQuote(int $id, array $body, ?int $userId): array
     if (in_array($quote['status'], ['accepted', 'declined', 'amended'], true)) {
         fail(409, 'This quote is ' . $quote['status'] . ' and can no longer be sent.');
     }
-    $message = crmValidate($body, ['message' => crmOptionalText(5000)], true)['message'] ?? '';
+    $input = crmValidate($body, ['message' => crmOptionalText(5000), 'requestDecision' => ['type' => 'bool']], true);
+    $message = $input['message'] ?? '';
+    $requestDecision = $input['requestDecision'] ?? true;
     $lead = crmRequireLead((int) $quote['lead_id']);
     $to = crmLeadEmail($lead, $quote);
     if ($to === '') {
         fail(400, 'Add an email address to the lead first.');
     }
     $patch = [];
-    if (crmText($quote['signing_token']) === '') {
+    if ($requestDecision && crmText($quote['signing_token']) === '') {
         $patch['signing_token'] = bin2hex(random_bytes(32));
+    } elseif (!$requestDecision) {
+        $patch['signing_token'] = null;
     }
     if (!$quote['valid_until']) {
         $patch['valid_until'] = gmdate('Y-m-d', time() + 30 * 86400);
@@ -1716,11 +1744,15 @@ function crmSendQuote(int $id, array $body, ?int $userId): array
     if ($wasDraft) {
         crmQuoteStatusEffects($quote, 'sent', $userId);
     }
-    $email = crmSendTemplate('quote_issued', $lead, $quote, null, (string) $message, $to, [['filename' => $quote['quote_reference'] . '.pdf', 'contentType' => 'application/pdf', 'content' => crmQuotePdf($quote)]], $userId);
+    $email = crmSendTemplate($requestDecision ? 'quote_issued' : 'quote_copy', $lead, $quote, null, (string) $message, $to, [['filename' => $quote['quote_reference'] . '.pdf', 'contentType' => 'application/pdf', 'content' => crmQuotePdf($quote)]], $userId);
     if ($email['status'] === 'sent') {
         crmUpdate('crm_quotes', $id, ['emailed_at' => crmNow()]);
     }
-    crmScheduleFollowup('quote', $id, (int) $lead['id'], 'quote_reminder', time() + CRM_FOLLOWUP_DAYS * 86400);
+    if ($requestDecision) {
+        crmScheduleFollowup('quote', $id, (int) $lead['id'], 'quote_reminder', time() + CRM_FOLLOWUP_DAYS * 86400);
+    } else {
+        crmCancelFollowups('quote', $id);
+    }
     $lookups = crmLookups();
     return ['quote' => crmQuoteOut(crmGet('crm_quotes', $id), $lookups), 'email' => crmEmailOut($email, $lookups)];
 }
@@ -1731,7 +1763,9 @@ function crmSendInvoice(int $id, array $body, ?int $userId): array
     if (in_array($invoice['status'], ['paid', 'void'], true)) {
         fail(409, 'This invoice is ' . $invoice['status'] . ' and can no longer be sent.');
     }
-    $message = crmValidate($body, ['message' => crmOptionalText(5000)], true)['message'] ?? '';
+    $input = crmValidate($body, ['message' => crmOptionalText(5000), 'scheduleReminders' => ['type' => 'bool']], true);
+    $message = $input['message'] ?? '';
+    $scheduleReminders = $input['scheduleReminders'] ?? true;
     $lead = $invoice['lead_id'] ? crmGet('crm_leads', (int) $invoice['lead_id']) : null;
     $to = crmLeadEmail($lead, $invoice);
     if ($to === '') {
@@ -1760,7 +1794,11 @@ function crmSendInvoice(int $id, array $body, ?int $userId): array
     }
     // First reminder on the due date (or in 3 days, whichever is later), then every 3 days.
     $due = strtotime(crmDate($invoice['due_at']) . ' 09:00:00 UTC') ?: 0;
-    crmScheduleFollowup('invoice', $id, crmNullableInt($invoice['lead_id']), 'invoice_reminder', max(time() + CRM_FOLLOWUP_DAYS * 86400, $due));
+    if ($scheduleReminders) {
+        crmScheduleFollowup('invoice', $id, crmNullableInt($invoice['lead_id']), 'invoice_reminder', max(time() + CRM_FOLLOWUP_DAYS * 86400, $due));
+    } else {
+        crmCancelFollowups('invoice', $id);
+    }
     $lookups = crmLookups();
     return ['invoice' => crmInvoiceOut(crmGet('crm_invoices', $id), $lookups), 'email' => crmEmailOut($email, $lookups)];
 }
@@ -1822,7 +1860,7 @@ function crmListEmails(): array
         $where[] = 'direction = ?';
         $values[] = $direction;
     }
-    $statement = database()->prepare('SELECT * FROM crm_emails' . ($where ? ' WHERE ' . implode(' AND ', $where) : '') . ' ORDER BY COALESCE(received_at, sent_at, created_at) DESC, id DESC LIMIT 500');
+    $statement = database()->prepare("SELECT e.*, CASE WHEN e.direction='outbound' THEN (SELECT MIN(i.received_at) FROM crm_emails i WHERE i.lead_id=e.lead_id AND i.direction='inbound' AND i.received_at > e.sent_at) ELSE NULL END AS responded_at FROM crm_emails e" . ($where ? ' WHERE ' . implode(' AND ', array_map(fn ($clause) => 'e.' . $clause, $where)) : '') . ' ORDER BY COALESCE(e.received_at, e.sent_at, e.created_at) DESC, e.id DESC LIMIT 500');
     $statement->execute($values);
     $lookups = crmLookups();
     return array_map(fn ($row) => crmEmailOut($row, $lookups), $statement->fetchAll());
@@ -1878,6 +1916,28 @@ function crmListFollowups(): array
     return array_map(fn ($row) => crmFollowupOut($row, $lookups, $references), $rows);
 }
 
+/**
+ * True when the customer has shown any sign of life since $since: an inbound email, or a staff-logged
+ * call, note or site visit. Our own outbound email / stage / quote / task logs are ignored so a reminder
+ * never cancels the next one. With no $since, any reply or logged contact counts.
+ */
+function crmHeardFromLeadSince(int $leadId, ?string $since): bool
+{
+    if ($leadId <= 0) {
+        return false;
+    }
+    $hasBoundary = $since !== null && $since !== '';
+    $pdo = database();
+    $inbound = $pdo->prepare("SELECT 1 FROM crm_emails WHERE lead_id = ? AND direction = 'inbound' AND received_at IS NOT NULL" . ($hasBoundary ? ' AND received_at > ?' : '') . ' LIMIT 1');
+    $inbound->execute($hasBoundary ? [$leadId, $since] : [$leadId]);
+    if ($inbound->fetchColumn() !== false) {
+        return true;
+    }
+    $activity = $pdo->prepare("SELECT 1 FROM crm_lead_activities WHERE lead_id = ? AND kind IN ('call','note','visit')" . ($hasBoundary ? ' AND created_at > ?' : '') . ' LIMIT 1');
+    $activity->execute($hasBoundary ? [$leadId, $since] : [$leadId]);
+    return $activity->fetchColumn() !== false;
+}
+
 /** Sends every due reminder (unsigned quotes, unpaid invoices); cancels ones that no longer apply. */
 function crmRunFollowups(int $limit = 25): array
 {
@@ -1908,12 +1968,25 @@ function crmRunFollowups(int $limit = 25): array
             $cancel();
             continue;
         }
+        // Quiet follow-up: for quotes, stay silent when the customer has already been in touch since we
+        // sent the quote (or the last reminder). Invoices are always chased, reply or not.
+        if ($isQuote && $lead) {
+            $bounds = array_filter([(string) ($document['emailed_at'] ?? ''), (string) ($document['sent_at'] ?? ''), (string) ($followup['last_sent_at'] ?? ''), (string) ($followup['created_at'] ?? '')], fn ($value) => $value !== '');
+            $since = $bounds ? max($bounds) : null;
+            if (crmHeardFromLeadSince((int) $lead['id'], $since)) {
+                crmUpdate('crm_followups', $id, ['status' => 'cancelled', 'suppress_reason' => 'Heard back from customer']);
+                $result['cancelled']++;
+                continue;
+            }
+        }
         try {
             $attachment = $isQuote
                 ? ['filename' => $document['quote_reference'] . '.pdf', 'contentType' => 'application/pdf', 'content' => crmQuotePdf($document)]
                 : ['filename' => $document['invoice_reference'] . '.pdf', 'contentType' => 'application/pdf', 'content' => crmInvoicePdf($document)];
-            $email = crmSendTemplate((string) $followup['template_key'], $lead, $isQuote ? $document : null, $isQuote ? null : $document, '', $to, [$attachment], null);
+            $message = $isQuote ? crmAiFollowupLine($lead, $document) : '';
+            $email = crmSendTemplate((string) $followup['template_key'], $lead, $isQuote ? $document : null, $isQuote ? null : $document, $message, $to, [$attachment], null);
             $sent = $email['status'] === 'sent';
+
         } catch (Throwable $error) {
             error_log('[omni-api] follow-up ' . $id . ' failed: ' . get_class($error));
             $sent = false;
@@ -2133,6 +2206,181 @@ function crmSyncInbox(): array
 }
 
 /* ---------------------------------------------------------------------------
+ * Discreet DeepSeek analyst: read-only prioritisation of CRM follow-up signals
+ * ------------------------------------------------------------------------ */
+
+function crmAiStored(): array
+{
+    $rows = database()->query("SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('ai.enabled','ai.followup_enabled','ai.model','ai.api_key','ai.last_analysis','ai.last_run')")->fetchAll();
+    $out = [];
+    foreach ($rows as $row) $out[(string) $row['setting_key']] = (string) ($row['setting_value'] ?? '');
+    return $out;
+}
+
+function crmAiConfig(): array
+{
+    $stored = crmAiStored();
+    $configKey = trim(setting('DEEPSEEK_API_KEY'));
+    $key = $configKey !== '' ? $configKey : (($stored['ai.api_key'] ?? '') !== '' ? crmDecryptSecret($stored['ai.api_key']) : '');
+    $configModel = trim(setting('DEEPSEEK_MODEL'));
+    return [
+        'enabled' => in_array(strtolower($stored['ai.enabled'] ?? 'false'), ['1', 'true', 'yes', 'on'], true),
+        'followupEnabled' => in_array(strtolower($stored['ai.followup_enabled'] ?? 'false'), ['1', 'true', 'yes', 'on'], true),
+        'model' => $configModel !== '' ? $configModel : ($stored['ai.model'] ?? 'deepseek-chat'),
+        'apiKey' => $key,
+        'apiKeySet' => $key !== '',
+        'source' => $configKey !== '' ? 'config' : 'database',
+        'lastRun' => crmIso($stored['ai.last_run'] ?? null),
+        'lastAnalysis' => $stored['ai.last_analysis'] ?? '',
+    ];
+}
+
+function crmAiSettingsOut(): array
+{
+    $config = crmAiConfig();
+    return ['enabled' => $config['enabled'], 'followupEnabled' => $config['followupEnabled'], 'model' => $config['model'], 'apiKeySet' => $config['apiKeySet'], 'source' => $config['source'], 'lastRun' => $config['lastRun']];
+}
+
+/**
+ * One short, warm follow-up sentence for a quote reminder, written by DeepSeek. Returns '' when the
+ * assistant is off, unconfigured, unreachable or returns nothing usable, and the caller then sends the
+ * plain reminder. Only metadata is sent (first name, reference, title, total, valid-until) — never
+ * message bodies, addresses, phone numbers or bank details. The returned line is raw text: the template
+ * renderer escapes it and turns it into a paragraph.
+ */
+function crmAiFollowupLine(?array $lead, ?array $quote): string
+{
+    $config = crmAiConfig();
+    if (!$config['followupEnabled'] || !$config['apiKeySet'] || !function_exists('curl_init') || $quote === null) {
+        return '';
+    }
+    $name = crmText($lead['name'] ?? ($quote['customer_name'] ?? ''));
+    $first = trim((string) (preg_split('/\s+/', trim($name))[0] ?? ''));
+    $context = [
+        'firstName' => $first !== '' ? $first : 'there',
+        'reference' => crmText($quote['quote_reference'] ?? ''),
+        'title' => crmText($quote['title'] ?? ''),
+        'total' => crmMoney((int) ($quote['amount_pence'] ?? 0)),
+        'validUntil' => crmLongDate(crmDate($quote['valid_until'] ?? null)),
+    ];
+    $request = json_encode([
+        'model' => $config['model'], 'max_tokens' => 120, 'temperature' => 0.6,
+        'messages' => [
+            ['role' => 'system', 'content' => 'You write one warm, natural, single-sentence follow-up line for a UK construction company, as if from the same team that sent the quote. Reference the project naturally. British English, no emoji, no pressure, no placeholders, no greeting or sign-off, maximum 35 words. Never invent facts.'],
+            ['role' => 'user', 'content' => 'Write the follow-up line for this quote: ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)],
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    try {
+        $curl = curl_init('https://api.deepseek.com/chat/completions');
+        curl_setopt_array($curl, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 20, CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $config['apiKey'], 'Content-Type: application/json'], CURLOPT_POSTFIELDS => $request]);
+        $raw = curl_exec($curl);
+        $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $error = curl_error($curl);
+        curl_close($curl);
+        if (!is_string($raw) || $raw === '' || $status < 200 || $status >= 300) {
+            error_log('[omni-api] DeepSeek follow-up line failed: HTTP ' . $status . ' ' . $error);
+            return '';
+        }
+        $response = json_decode($raw, true);
+        $line = trim((string) ($response['choices'][0]['message']['content'] ?? ''));
+        $line = trim((string) preg_replace('/\s+/', ' ', strip_tags($line)));
+        $line = trim($line, " \t\n\r\0\x0B\"'");
+        return mb_substr($line, 0, 400);
+    } catch (Throwable $error) {
+        error_log('[omni-api] DeepSeek follow-up line error: ' . get_class($error));
+        return '';
+    }
+}
+
+function crmUpdateAiSettings(array $body): array
+{
+    $input = crmValidate($body, ['enabled' => ['type' => 'bool'], 'followupEnabled' => ['type' => 'bool'], 'model' => ['type' => 'text', 'min' => 1, 'max' => 100]], true);
+    $writes = [];
+    if (array_key_exists('enabled', $input)) $writes['ai.enabled'] = $input['enabled'] ? 'true' : 'false';
+    if (array_key_exists('followupEnabled', $input)) $writes['ai.followup_enabled'] = $input['followupEnabled'] ? 'true' : 'false';
+    if (array_key_exists('model', $input)) $writes['ai.model'] = trim($input['model']);
+    if (array_key_exists('apiKey', $body)) {
+        if (trim(setting('DEEPSEEK_API_KEY')) !== '') fail(409, 'The DeepSeek key is set in the server configuration and cannot be changed here.');
+        $value = $body['apiKey'];
+        if ($value === null) $writes['ai.api_key'] = '';
+        elseif (!is_string($value) || strlen($value) > 500) fail(400, 'Enter a valid API key.');
+        elseif ($value !== '') $writes['ai.api_key'] = crmEncryptSecret(trim($value));
+    }
+    $statement = database()->prepare('INSERT INTO site_settings (setting_key, setting_value, is_public) VALUES (?, ?, FALSE) ON DUPLICATE KEY UPDATE setting_value = ?, is_public = FALSE');
+    foreach ($writes as $key => $value) $statement->execute([$key, $value, $value]);
+    return crmAiSettingsOut();
+}
+
+/** Only operational metadata is sent: no message bodies, phone numbers, addresses or financial details. */
+function crmAiSignals(): array
+{
+    $pdo = database();
+    $overdue = $pdo->query("SELECT t.id, t.title, t.due_at, l.lead_reference, l.name AS lead_name FROM crm_tasks t LEFT JOIN crm_leads l ON l.id=t.lead_id WHERE t.status='open' AND t.due_at IS NOT NULL AND t.due_at < UTC_TIMESTAMP() ORDER BY t.due_at LIMIT 40")->fetchAll();
+    $unfollowed = $pdo->query("SELECT l.id, l.lead_reference, l.name, l.stage, l.updated_at, MAX(a.created_at) AS last_activity FROM crm_leads l LEFT JOIN crm_lead_activities a ON a.lead_id=l.id WHERE l.stage IN ('new','contacted','site_visit','quoted') GROUP BY l.id HAVING COALESCE(MAX(a.created_at), l.created_at) < DATE_SUB(UTC_TIMESTAMP(), INTERVAL 3 DAY) ORDER BY COALESCE(MAX(a.created_at), l.created_at) LIMIT 40")->fetchAll();
+    $unanswered = $pdo->query("SELECT o.id, o.subject, o.sent_at, l.lead_reference, l.name AS lead_name FROM crm_emails o LEFT JOIN crm_leads l ON l.id=o.lead_id WHERE o.direction='outbound' AND o.status='sent' AND o.sent_at < DATE_SUB(UTC_TIMESTAMP(), INTERVAL 2 DAY) AND o.lead_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM crm_emails i WHERE i.lead_id=o.lead_id AND i.direction='inbound' AND i.received_at > o.sent_at) ORDER BY o.sent_at LIMIT 40")->fetchAll();
+    return [
+        'overdueTasks' => array_map(fn ($row) => ['id' => (int) $row['id'], 'title' => crmText($row['title']), 'dueAt' => crmIso($row['due_at']), 'leadReference' => crmText($row['lead_reference']), 'leadName' => crmText($row['lead_name'])], $overdue),
+        'unfollowedLeads' => array_map(fn ($row) => ['id' => (int) $row['id'], 'reference' => crmText($row['lead_reference']), 'name' => crmText($row['name']), 'stage' => crmText($row['stage']), 'lastActivity' => crmIso($row['last_activity'] ?: $row['updated_at'])], $unfollowed),
+        'unansweredEmails' => array_map(fn ($row) => ['id' => (int) $row['id'], 'subject' => crmText($row['subject']), 'sentAt' => crmIso($row['sent_at']), 'leadReference' => crmText($row['lead_reference']), 'leadName' => crmText($row['lead_name'])], $unanswered),
+    ];
+}
+
+function crmAiAnalysisOut(): array
+{
+    $config = crmAiConfig();
+    $analysis = json_decode($config['lastAnalysis'], true);
+    return ['settings' => crmAiSettingsOut(), 'signals' => crmAiSignals(), 'analysis' => is_array($analysis) ? $analysis : null];
+}
+
+function crmRunAiAnalysis(): array
+{
+    $config = crmAiConfig();
+    if (!$config['enabled']) fail(409, 'The DeepSeek analyst is switched off. Enable it in Settings first.');
+    if (!$config['apiKeySet']) fail(409, 'Add a DeepSeek API key in Settings first.');
+    if (!function_exists('curl_init')) fail(503, 'The server needs the PHP cURL extension to run the DeepSeek analyst.');
+    $signals = crmAiSignals();
+    $prompt = json_encode($signals, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $request = json_encode([
+        'model' => $config['model'], 'max_tokens' => 1200, 'response_format' => ['type' => 'json_object'],
+        'messages' => [
+            ['role' => 'system', 'content' => 'You are a discreet CRM operations analyst for a UK construction company. Return JSON only: {"summary":"one short sentence","priorities":[{"severity":"high|medium|low","title":"short action","reason":"short evidence","kind":"task|lead|email","recordId":123}]}. Prioritise missed customer follow-up and overdue commitments. Never invent facts. Maximum 8 priorities.'],
+            ['role' => 'user', 'content' => 'Analyse this CRM signal JSON and prioritise the work: ' . $prompt],
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $curl = curl_init('https://api.deepseek.com/chat/completions');
+    curl_setopt_array($curl, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 40, CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $config['apiKey'], 'Content-Type: application/json'], CURLOPT_POSTFIELDS => $request]);
+    $raw = curl_exec($curl); $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE); $error = curl_error($curl); curl_close($curl);
+    if (!is_string($raw) || $raw === '' || $status < 200 || $status >= 300) {
+        error_log('[omni-api] DeepSeek request failed: HTTP ' . $status . ' ' . $error);
+        fail(502, $status === 401 ? 'DeepSeek rejected the API key. Check it in Settings.' : 'DeepSeek analysis is temporarily unavailable.');
+    }
+    $response = json_decode($raw, true);
+    $content = trim((string) ($response['choices'][0]['message']['content'] ?? ''));
+    $analysis = json_decode($content, true);
+    if (!is_array($analysis) || !is_string($analysis['summary'] ?? null) || !is_array($analysis['priorities'] ?? null)) fail(502, 'DeepSeek returned an unexpected analysis. Please try again.');
+    $safe = ['summary' => mb_substr(strip_tags($analysis['summary']), 0, 500), 'priorities' => []];
+    foreach (array_slice($analysis['priorities'], 0, 8) as $item) {
+        if (!is_array($item)) continue;
+        $safe['priorities'][] = ['severity' => in_array($item['severity'] ?? '', ['high','medium','low'], true) ? $item['severity'] : 'medium', 'title' => mb_substr(strip_tags((string) ($item['title'] ?? 'Follow up')), 0, 180), 'reason' => mb_substr(strip_tags((string) ($item['reason'] ?? '')), 0, 500), 'kind' => in_array($item['kind'] ?? '', ['task','lead','email'], true) ? $item['kind'] : 'lead', 'recordId' => max(0, (int) ($item['recordId'] ?? 0))];
+    }
+    $json = json_encode($safe, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $now = crmNow();
+    $statement = database()->prepare('INSERT INTO site_settings (setting_key, setting_value, is_public) VALUES (?, ?, FALSE) ON DUPLICATE KEY UPDATE setting_value = ?, is_public = FALSE');
+    $statement->execute(['ai.last_analysis', $json, $json]);
+    $statement->execute(['ai.last_run', $now, $now]);
+    return crmAiAnalysisOut();
+}
+
+function crmMaybeRunAiAnalysis(): void
+{
+    $config = crmAiConfig();
+    if (!$config['enabled'] || !$config['apiKeySet']) return;
+    $last = $config['lastRun'] ? strtotime($config['lastRun']) : 0;
+    if ($last > time() - 6 * 3600) return;
+    try { crmRunAiAnalysis(); } catch (Throwable $error) { error_log('[omni-api] background DeepSeek analysis failed: ' . get_class($error)); }
+}
+
+/* ---------------------------------------------------------------------------
  * Public signing
  * ------------------------------------------------------------------------ */
 
@@ -2151,13 +2399,13 @@ function crmQuoteByToken(string $token): array
 /** 410 when the document can no longer be viewed or signed. Signed quotes stay viewable. */
 function crmAssertSignable(array $quote): void
 {
-    if ($quote['status'] === 'accepted') {
+    if (in_array($quote['status'], ['accepted', 'declined'], true)) {
         return;
     }
     if ($quote['status'] === 'amended') {
         fail(410, 'This quote has been replaced by a newer version. Please use the link in our latest email.');
     }
-    if ($quote['status'] === 'declined' || $quote['status'] === 'draft') {
+    if ($quote['status'] === 'draft') {
         fail(410, 'This quote is no longer available. Please contact us for an up-to-date quote.');
     }
     $validUntil = crmDate($quote['valid_until']);
@@ -2186,6 +2434,7 @@ function crmSignDocument(array $quote): array
         'terms' => crmText($quote['terms']),
         'signedName' => crmText($quote['signed_name']),
         'signedAt' => crmIso($quote['signed_at']),
+        'declinedReason' => crmText($quote['declined_reason'] ?? null),
         'company' => ['name' => $company['companyName'], 'address' => $company['companyAddress'], 'email' => $company['companyEmail'], 'phone' => $company['companyPhone']],
     ];
 }
@@ -2197,6 +2446,35 @@ function crmSignQuote(string $token, array $body): array
         fail(409, 'This quote has already been signed.');
     }
     crmAssertSignable($quote);
+    $decision = is_string($body['decision'] ?? null) ? strtolower(trim($body['decision'])) : 'accept';
+    if ($decision === 'decline') {
+        $reason = is_string($body['reason'] ?? null) ? trim((string) preg_replace('/\s+/', ' ', $body['reason'])) : '';
+        if (mb_strlen($reason) > 1000) {
+            fail(400, 'Please keep the reason under 1,000 characters.');
+        }
+        $now = crmNow();
+        $statement = database()->prepare("UPDATE crm_quotes SET status = 'declined', declined_reason = ?, decided_at = ? WHERE id = ? AND status = 'sent' AND signed_at IS NULL");
+        $statement->execute([$reason !== '' ? $reason : null, $now, (int) $quote['id']]);
+        if ($statement->rowCount() !== 1) {
+            fail(409, 'A response has already been recorded for this quote.');
+        }
+        $quote = crmGet('crm_quotes', (int) $quote['id']);
+        crmLog((int) $quote['lead_id'], 'quote', 'Quote ' . $quote['quote_reference'] . ' declined online' . ($reason !== '' ? ': ' . $reason : '.'), null);
+        crmCancelFollowups('quote', (int) $quote['id']);
+        try {
+            $lead = crmGet('crm_leads', (int) $quote['lead_id']);
+            $to = crmLeadEmail($lead, $quote);
+            if ($to !== '') {
+                crmSendTemplate('quote_declined', $lead, $quote, null, '', $to, [], null);
+            }
+        } catch (Throwable $error) {
+            error_log('[omni-api] declined-quote confirmation failed: ' . get_class($error));
+        }
+        return crmSignDocument($quote);
+    }
+    if ($decision !== 'accept') {
+        fail(400, 'Choose accept or decline.');
+    }
     $name = is_string($body['name'] ?? null) ? trim((string) preg_replace('/\s+/', ' ', $body['name'])) : '';
     if (mb_strlen($name) < 2 || mb_strlen($name) > 190) {
         fail(400, 'Type your full name to sign.');
@@ -2269,6 +2547,7 @@ function handleCrmSalesPublicRoute(string $method, string $route): void
             $sync = ['status' => 'failed', 'imported' => 0, 'message' => 'Inbox sync failed.'];
         }
         database()->prepare("UPDATE site_settings SET setting_value = ? WHERE setting_key = 'crm.followups_last_run'")->execute([crmNow()]);
+        crmMaybeRunAiAnalysis();
         crmRespond(['result' => ['followups' => $followups, 'sync' => $sync]]);
     }
 }
@@ -2360,6 +2639,20 @@ function handleCrmSalesRoute(string $method, string $path, array $user, ?int $us
     }
     if ($method === 'POST' && $path === '/imap-test') {
         crmRespond(['result' => crmImapTest()]);
+    }
+    if ($path === '/agent') {
+        if ($method === 'GET') crmRespond(crmAiAnalysisOut());
+        if ($method === 'POST') crmRespond(crmRunAiAnalysis());
+    }
+    if ($path === '/agent/settings') {
+        if ($method === 'GET') {
+            crmRequireManager($user, 'Only owners and administrators can view the AI settings.');
+            crmRespond(['settings' => crmAiSettingsOut()]);
+        }
+        if ($method === 'PATCH') {
+            crmRequireManager($user, 'Only owners and administrators can change the AI settings.');
+            crmRespond(['settings' => crmUpdateAiSettings($body)]);
+        }
     }
     if ($path === '/settings') {
         if ($method === 'GET') {

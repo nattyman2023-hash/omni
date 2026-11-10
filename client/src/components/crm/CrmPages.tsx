@@ -2,11 +2,11 @@ import { DragEvent, FormEvent, ReactNode, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Download, FileText, LayoutGrid, List,
-  Mail, MapPin, MessageCircle, Pencil, Phone, Plus, Quote as QuoteIcon, StickyNote, Trash2, Undo2, Users,
+  Mail, MapPin, MessageCircle, Pencil, Phone, Plus, Quote as QuoteIcon, Sparkles, StickyNote, Trash2, Undo2, Users,
 } from 'lucide-react';
 import { AdminWorkspaceShell } from '../AdminWorkspace';
 import {
-  Activity, CONTACT_TYPE_LABELS, Email, Invoice, Lead, LeadDetail, Quote, ROLE_LABELS, SOURCE_LABELS, STAGE_LABELS, STAGES, Stage, Summary, Task, TeamMember, TeamRole, Visit,
+  Activity, AgentData, CONTACT_TYPE_LABELS, Email, Invoice, Lead, LeadDetail, Quote, ROLE_LABELS, SOURCE_LABELS, STAGE_LABELS, STAGES, Stage, Summary, Task, TeamMember, TeamRole, Visit,
   crm, formatAgo, formatBytes, formatDay, formatMoney, formatWhen, useCrm,
 } from './crmApi';
 import { Field, InvoiceForm, LeadForm, Modal, QuoteForm, TaskForm, VisitForm } from './CrmForms';
@@ -52,6 +52,8 @@ export function CrmDashboardPage() {
       {STAGES.map(stage => <Link key={stage} to={`/staff/leads?stage=${stage}`} className={`crm-pipeline-step crm-stage-${stage}`}><strong>{data.stages[stage]}</strong><span>{STAGE_LABELS[stage]}</span></Link>)}
     </section>}
 
+    <AgentBrief />
+
     <div className="crm-dashboard-columns">
       <section className="admin-panel crm-panel" aria-labelledby="dash-new"><div className="panel-heading"><h2 id="dash-new">New leads to contact</h2><Link to="/staff/leads?stage=new">All new</Link></div>
         {loading ? <Loading /> : !data?.newLeads.length ? <Empty icon={<ClipboardList size={22} />} title="All caught up">Every lead has been contacted.</Empty>
@@ -71,6 +73,29 @@ export function CrmDashboardPage() {
       </section>
     </div>
   </div></AdminWorkspaceShell>;
+}
+
+function AgentBrief() {
+  const { data, error, loading, reload } = useCrm<AgentData>('/agent');
+  const [running, setRunning] = useState(false);
+  const [runError, setRunError] = useState('');
+  const signals = data ? data.signals.overdueTasks.length + data.signals.unfollowedLeads.length + data.signals.unansweredEmails.length : 0;
+  const run = async () => {
+    setRunning(true); setRunError('');
+    try { await crm('/agent', { method: 'POST', body: {} }); reload(); }
+    catch (reason) { setRunError(reason instanceof Error ? reason.message : 'Could not refresh the analysis.'); }
+    finally { setRunning(false); }
+  };
+  const href = (kind: string, id: number) => kind === 'lead' ? `/staff/leads/${id}` : kind === 'task' ? '/staff/tasks' : '/staff/email';
+  return <section className="admin-panel crm-panel crm-agent-brief" aria-labelledby="agent-brief-title"><div className="panel-heading"><h2 id="agent-brief-title"><Sparkles size={17} aria-hidden="true" /> Quiet follow-up assistant</h2><span className="crm-muted">{signals} item{signals === 1 ? '' : 's'} need attention</span></div>
+    {loading && !data ? <Loading /> : <div className="crm-panel-body">
+      <ErrorNote message={error || runError} />
+      {!data?.settings.enabled || !data.settings.apiKeySet ? <p className="crm-muted">The CRM is already detecting overdue tasks, unanswered email and untouched leads. <Link to="/staff/settings#ai-agent">Connect DeepSeek</Link> to rank them into a short daily action list.</p>
+        : data.analysis ? <><p className="crm-agent-summary">{data.analysis.summary}</p><ul className="crm-agent-list">{data.analysis.priorities.map((item, index) => <li key={`${item.kind}-${item.recordId}-${index}`} className={`crm-agent-${item.severity}`}><Link to={href(item.kind, item.recordId)}><strong>{item.title}</strong><span>{item.reason}</span></Link></li>)}</ul></>
+          : <p className="crm-muted">DeepSeek is connected. Run the first analysis to create the prioritised action list.</p>}
+      <div className="crm-agent-actions"><span className="crm-muted">{data?.settings.lastRun ? `Last analysed ${formatAgo(data.settings.lastRun)}` : 'No AI analysis yet'}</span>{data?.settings.enabled && data.settings.apiKeySet && <button type="button" className="crm-button crm-button-ghost crm-button-small" onClick={() => void run()} disabled={running}><Sparkles size={14} /> {running ? 'Analysing…' : 'Refresh analysis'}</button>}</div>
+    </div>}
+  </section>;
 }
 
 /* ---------- Leads ---------- */

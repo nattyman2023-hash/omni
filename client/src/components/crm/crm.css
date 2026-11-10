@@ -319,6 +319,20 @@ a.crm-link-button { display: inline-block; }
 .crm-settings { margin-top: 22px; }
 .crm-settings-fieldset { display: grid; min-width: 0; gap: 14px; margin: 0; padding: 0; border: 0; }
 .crm-settings-fieldset:disabled input, .crm-settings-fieldset:disabled textarea { color: var(--slate); background: #f8fafc; }
+.crm-agent-brief { margin-top: 18px; border-left: 3px solid var(--amber); }
+.crm-agent-brief .panel-heading h2 { display: inline-flex; align-items: center; gap: 7px; }
+.crm-agent-summary { margin: 0 0 12px; font-weight: 600; }
+.crm-agent-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.crm-agent-list li { border-left: 3px solid #94a3b8; border-radius: 6px; background: #f8fafc; }
+.crm-agent-list li.crm-agent-high { border-left-color: #d92d20; }
+.crm-agent-list li.crm-agent-medium { border-left-color: #f79009; }
+.crm-agent-list li.crm-agent-low { border-left-color: #12b76a; }
+.crm-agent-list a { display: grid; gap: 2px; padding: 10px 12px; color: inherit; text-decoration: none; }
+.crm-agent-list span { color: var(--slate); font-size: 13px; }
+.crm-agent-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.crm-share-links { margin-top: 18px; }
+.crm-copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.crm-copy-row code { flex: 1 1 320px; padding: 10px 12px; overflow-wrap: anywhere; border-radius: 7px; background: #eef2f6; font-size: 13px; }
 
 @media (max-width: 640px) {
   .crm-items { padding: 12px 10px; }
@@ -338,6 +352,7 @@ a.crm-link-button { display: inline-block; }
 .sign-problem-icon { color: var(--amber-dark); }
 .sign-company { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
 .sign-company strong { font: 800 18px Manrope, sans-serif; }
+.sign-logo { display: block; width: min(320px, 72vw); height: auto; }
 .sign-company p { margin: 4px 0 0; color: var(--slate); font-size: 13px; white-space: pre-line; }
 .sign-company ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
 .sign-company li { display: flex; align-items: center; gap: 6px; }
@@ -377,12 +392,21 @@ a.crm-link-button { display: inline-block; }
 .sign-button:hover { background: var(--navy-2); }
 .sign-button:disabled { cursor: progress; opacity: .7; }
 .sign-button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.sign-decision-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.sign-button-decline { color: #912018; border: 1px solid #fda29b; background: #fff; }
+.sign-button-decline:hover { background: #fef3f2; }
+.sign-decline-box { display: grid; gap: 8px; margin-top: 4px; padding: 14px; border: 1px solid #fda29b; border-radius: 8px; background: #fffafa; }
+.sign-decline-box label { font-weight: 700; }
+.sign-decline-box textarea { width: 100%; padding: 10px 12px; border: 1px solid #94a3b8; border-radius: 8px; font: inherit; resize: vertical; }
+.sign-decline-box .sign-button { justify-self: start; }
 .sign-signed { display: flex; align-items: flex-start; gap: 14px; margin-top: 30px; padding: 20px; color: #05603a; border: 1px solid #a6f4c5; border-radius: 12px; background: #ecfdf3; }
 .sign-signed:focus { outline: none; }
 .sign-signed p { margin: 4px 0 0; color: #05603a; }
 .sign-signed h2 { color: #05603a; }
 .sign-expired, .sign-expired p, .sign-expired h2 { color: #7a2e0e; }
 .sign-expired { border-color: #fedf89; background: #fffaeb; }
+.sign-declined, .sign-declined p, .sign-declined h2 { color: #7a271a; }
+.sign-declined { border-color: #fda29b; background: #fef3f2; }
 @media (max-width: 640px) {
   .sign-page { padding: 16px 12px 40px; }
   .sign-card { padding: 18px 16px; }

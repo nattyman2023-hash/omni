@@ -34,6 +34,8 @@ The repository contains names only in `.env.example`. Values below are required 
 | `ADMIN_NOTIFICATION_EMAIL` | when notifications enabled | Notification destination. |
 | `PROJECT_UPLOAD_DIR` | optional | Local storage directory for staff-uploaded project images; defaults to `uploads/public/projects`. |
 | `CRM_WEBHOOK_SECRET` | when the WordPress connector is used | Shared HMAC secret (32+ characters, e.g. `openssl rand -hex 32`) that the WordPress "Omni CRM Connector" plugin signs lead webhooks with. Enter the same value in WordPress under Settings → Omni CRM. Without it the webhook answers 503. |
+| `DEEPSEEK_API_KEY` | optional CRM analyst | Server-pinned DeepSeek secret. Leave unset to save an encrypted key from CRM Settings instead. Never expose it to Vite. |
+| `DEEPSEEK_MODEL` | optional CRM analyst | DeepSeek model name; defaults to `deepseek-chat`. |
 | `PUBLIC_PHONE` | optional | Configurable public phone number. |
 | `PUBLIC_EMAIL` | optional | Configurable public email. |
 | `PUBLIC_WHATSAPP` | optional | Configurable `https://wa.me/` link. |

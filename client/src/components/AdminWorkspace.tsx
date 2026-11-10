@@ -48,7 +48,7 @@ export function useStaffUser() {
 }
 
 function AdminBrand() {
-  return <Link className="admin-workspace-brand" to="/" aria-label="Omni Developments home"><span className="admin-workspace-mark" aria-hidden="true">O</span><span><strong>OMNI</strong><small>DEVELOPMENTS</small></span></Link>;
+  return <Link className="admin-workspace-brand admin-logo-link" to="/" aria-label="Omni Developments Ltd home"><img className="admin-logo" src="/brand/omni-logo-white.png" alt="Omni Developments Ltd" width={776} height={200} /></Link>;
 }
 
 function AuthGate({ children }: { children: ReactNode }) {

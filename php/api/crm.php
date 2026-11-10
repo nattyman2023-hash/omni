@@ -28,7 +28,7 @@ const CRM_COLUMNS = [
     'crm_quote_items' => ['quote_id', 'position', 'description', 'quantity', 'unit_price_pence', 'amount_pence'],
     'crm_invoice_items' => ['invoice_id', 'position', 'description', 'quantity', 'unit_price_pence', 'amount_pence'],
     'crm_emails' => ['direction', 'lead_id', 'template_key', 'related_type', 'related_id', 'from_address', 'to_address', 'subject', 'body', 'status', 'error', 'message_id', 'sent_at', 'received_at'],
-    'crm_followups' => ['document_type', 'document_id', 'lead_id', 'template_key', 'due_at', 'status', 'attempts', 'max_attempts', 'last_sent_at'],
+    'crm_followups' => ['document_type', 'document_id', 'lead_id', 'template_key', 'due_at', 'status', 'attempts', 'max_attempts', 'last_sent_at', 'suppress_reason'],
 ];
 const CRM_GENERIC_INVALID = 'Please check the details entered.';
 const CRM_MAX_PENCE = 100000000000;

@@ -152,6 +152,26 @@ final class CrmPdf
         $this->append(sprintf('%s g %s%s %s %s %s re %s', self::number($fillGray), $stroke, self::number($x), self::number(self::HEIGHT - $y - $height), self::number($width), self::number($height), $operator));
     }
 
+    /** @var array<string, array{data: string, width: int, height: int, gray: bool}> JPEG images by resource name */
+    private array $images = [];
+
+    /**
+     * Draws a baseline JPEG (embedded as-is with DCTDecode) with its top-left corner at ($x, $y),
+     * scaled to $width points. Returns the drawn height, or 0 when the data is not a usable JPEG.
+     */
+    public function jpeg(string $data, float $x, float $y, float $width): float
+    {
+        $info = @getimagesizefromstring($data);
+        if (!is_array($info) || ($info[2] ?? 0) !== IMAGETYPE_JPEG || $info[0] < 1 || $info[1] < 1) {
+            return 0.0;
+        }
+        $name = 'Im' . substr(md5($data), 0, 8);
+        $this->images[$name] ??= ['data' => $data, 'width' => (int) $info[0], 'height' => (int) $info[1], 'gray' => ($info['channels'] ?? 3) === 1];
+        $height = $width * $info[1] / $info[0];
+        $this->append(sprintf('q %s 0 0 %s %s %s cm /%s Do Q', self::number($width), self::number($height), self::number($x), self::number(self::HEIGHT - $y - $height), $name));
+        return $height;
+    }
+
     public function output(string $title = ''): string
     {
         if (!$this->pages) {
@@ -159,6 +179,15 @@ final class CrmPdf
         }
         $objects = [];
         $pageCount = count($this->pages);
+        // Images follow the page objects; every page may reference any of them.
+        $imageIds = [];
+        $nextId = 6 + $pageCount * 2;
+        foreach ($this->images as $name => $image) {
+            $imageIds[$name] = $nextId;
+            $objects[$nextId] = sprintf('<< /Type /XObject /Subtype /Image /Width %d /Height %d /ColorSpace /%s /BitsPerComponent 8 /Filter /DCTDecode /Length %d >>', $image['width'], $image['height'], $image['gray'] ? 'DeviceGray' : 'DeviceRGB', strlen($image['data'])) . "\nstream\n" . $image['data'] . "\nendstream";
+            $nextId++;
+        }
+        $xobjects = $imageIds ? ' /XObject << ' . implode(' ', array_map(fn ($name, $id) => "/$name $id 0 R", array_keys($imageIds), $imageIds)) . ' >>' : '';
         // 1 catalog, 2 page tree, 3/4 fonts, 5 info, then a page + content stream pair per page.
         $kids = [];
         for ($i = 0; $i < $pageCount; $i++) {
@@ -172,7 +201,7 @@ final class CrmPdf
         $objects[5] = '<< /Title (' . $info . ') /Producer (Omni CRM) /CreationDate (D:' . gmdate('YmdHis') . "Z) >>";
         foreach ($this->pages as $index => $content) {
             $pageId = 6 + $index * 2;
-            $objects[$pageId] = sprintf('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %s %s] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents %d 0 R >>', self::number(self::WIDTH), self::number(self::HEIGHT), $pageId + 1);
+            $objects[$pageId] = sprintf('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %s %s] /Resources << /Font << /F1 3 0 R /F2 4 0 R >>%s >> /Contents %d 0 R >>', self::number(self::WIDTH), self::number(self::HEIGHT), $xobjects, $pageId + 1);
             $objects[$pageId + 1] = '<< /Length ' . strlen($content) . " >>\nstream\n" . $content . "\nendstream";
         }
         ksort($objects);
@@ -224,8 +253,15 @@ function crmRenderSalesPdf(array $doc): string
     $pdf->addPage();
     // Company block (left) and document heading (right).
     $y = 62.0;
-    $pdf->text($left, $y, (string) $company['name'], 16, true);
-    $leftY = $y + 16;
+    // Company logo (black on white JPEG) when available; otherwise the company name as text.
+    $logoFile = dirname(__DIR__) . '/private/omni-logo-pdf.jpg';
+    $logoHeight = is_file($logoFile) ? $pdf->jpeg((string) file_get_contents($logoFile), $left, 36.0, 190.0) : 0.0;
+    if ($logoHeight > 0) {
+        $leftY = 36.0 + $logoHeight + 14;
+    } else {
+        $pdf->text($left, $y, (string) $company['name'], 16, true);
+        $leftY = $y + 16;
+    }
     foreach ($pdf->wrap((string) $company['address'], 260, 9) as $line) {
         $pdf->text($left, $leftY, $line, 9, false, 'left', 0.25);
         $leftY += 12;
